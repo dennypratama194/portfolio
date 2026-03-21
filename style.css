@@ -933,6 +933,7 @@
       transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
     }
     .pm-btn-send:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(232,50,10,0.4); }
+    .pm-btn-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
     .pm-success-check {
       width: 56px; height: 56px; border-radius: 50%;
