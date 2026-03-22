@@ -62,9 +62,9 @@ document.querySelectorAll('section').forEach(s => io.observe(s));
 /* ── HORIZONTAL SCROLL DRAG ── */
 const hs = document.getElementById('hscroll');
 if (hs) {
-  let isDown = false, startX, scrollLeft;
+  let isDown = false, startX, scrollLeft, dragged = false;
   hs.addEventListener('mousedown', e => {
-    isDown = true; hs.classList.add('grabbing');
+    isDown = true; dragged = false; hs.classList.add('grabbing');
     startX = e.pageX - hs.offsetLeft; scrollLeft = hs.scrollLeft;
   });
   hs.addEventListener('mouseleave', () => { isDown = false; hs.classList.remove('grabbing'); });
@@ -72,8 +72,12 @@ if (hs) {
   hs.addEventListener('mousemove', e => {
     if (!isDown) return;
     e.preventDefault();
+    dragged = true;
     hs.scrollLeft = scrollLeft - (e.pageX - hs.offsetLeft - startX) * 1.8;
   });
+  hs.addEventListener('click', e => {
+    if (dragged) e.preventDefault();
+  }, true);
 }
 
 /* ── MAGNETIC BUTTONS ── */

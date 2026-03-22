@@ -91,7 +91,7 @@
     <div class="hscroll-outer" id="hscroll">
       <div class="hscroll-track">
 
-        <div class="project-panel">
+        <a class="project-panel" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
             <div class="proj-idx">01 — Ongoing</div>
             <div class="proj-name">Xertra</div>
@@ -109,9 +109,9 @@
             </div>
             <span class="proj-year">2025</span>
           </div>
-        </div>
+        </a>
 
-        <div class="project-panel">
+        <a class="project-panel" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
             <div class="proj-idx">02 — Ongoing</div>
             <div class="proj-name">Wordsburg</div>
@@ -130,9 +130,9 @@
             </div>
             <span class="proj-year">2025</span>
           </div>
-        </div>
+        </a>
 
-        <div class="project-panel">
+        <a class="project-panel" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
             <div class="proj-idx">03 — Ongoing</div>
             <div class="proj-name">Digital Revo</div>
@@ -151,9 +151,9 @@
             </div>
             <span class="proj-year">2025</span>
           </div>
-        </div>
+        </a>
 
-        <div class="project-panel">
+        <a class="project-panel" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
             <div class="proj-idx">04 — 2025</div>
             <div class="proj-name">CMS</div>
@@ -168,9 +168,9 @@
               <span class="ptag">UI/UX</span>
               <span class="ptag">Web Design</span>
             </div>
-            <span class="proj-year">2026</span>
+            <span class="proj-year">2025</span>
           </div>
-        </div>
+        </a>
 
       </div><!-- /hscroll-track -->
     </div><!-- /hscroll-outer -->
