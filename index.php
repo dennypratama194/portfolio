@@ -156,7 +156,7 @@
         <div class="project-panel">
           <div class="proj-head">
             <div class="proj-idx">04 — 2025</div>
-            <div class="proj-name">Claims Management System</div>
+            <div class="proj-name">CMS</div>
           </div>
           <div class="proj-visual vis-dp">
             <div class="dp-lines"></div>
