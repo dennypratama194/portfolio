@@ -88,6 +88,8 @@
       return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
     }
 
+    const CAT_LABELS = { uiux: 'UI/UX', development: 'Development', ai: 'AI' };
+
     function renderPost(post) {
       document.title = post.title + ' — Denny Pratama';
 
@@ -95,6 +97,7 @@
         <div class="post-hero">
           <div class="post-hero-meta">
             <a class="post-hero-back" href="blog.html">← Blog</a>
+            ${post.category ? `<span class="cat-badge">${CAT_LABELS[post.category] || post.category}</span>` : ''}
             <span>${formatDate(post.published_at)}</span>
           </div>
           <h1 class="post-hero-title">${post.title}</h1>

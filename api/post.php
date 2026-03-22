@@ -13,7 +13,7 @@ if (!$slug) {
 }
 
 $stmt = $pdo->prepare(
-    'SELECT title, slug, excerpt, featured_image, body, published_at
+    'SELECT title, slug, excerpt, featured_image, body, published_at, category
      FROM posts
      WHERE slug = ? AND is_published = 1
      LIMIT 1'

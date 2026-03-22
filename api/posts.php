@@ -5,7 +5,7 @@ header('Access-Control-Allow-Origin: *');
 require __DIR__ . '/db.php';
 
 $stmt = $pdo->query(
-    'SELECT title, slug, excerpt, featured_image, published_at
+    'SELECT title, slug, excerpt, featured_image, published_at, category
      FROM posts
      WHERE is_published = 1
      ORDER BY published_at DESC'

@@ -4,7 +4,7 @@ if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
-$post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>''];
+$post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>''];
 $errors = [];
 
 /* ── Load existing post for edit ── */
@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slug        = trim($_POST['slug']        ?? '');
     $excerpt     = trim($_POST['excerpt']     ?? '');
     $body        = $_POST['body']             ?? '';
+    $category    = trim($_POST['category']    ?? '');
     $is_pub      = isset($_POST['is_published']) ? 1 : 0;
     $keep_img    = $post['featured_image'];   /* existing image filename */
 
@@ -73,14 +74,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($id) {
             $stmt = $pdo->prepare(
-                'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, is_published=?, published_at=? WHERE id=?'
+                'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, category=?, is_published=?, published_at=? WHERE id=?'
             );
-            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $is_pub, $pub_at, $id]);
+            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $id]);
         } else {
             $stmt = $pdo->prepare(
-                'INSERT INTO posts (title, slug, excerpt, body, featured_image, is_published, published_at) VALUES (?,?,?,?,?,?,?)'
+                'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at) VALUES (?,?,?,?,?,?,?,?)'
             );
-            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $is_pub, $pub_at]);
+            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at]);
         }
         header('Location: index.php');
         exit;
@@ -91,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post['slug']        = $slug;
     $post['excerpt']     = $excerpt;
     $post['body']        = $body;
+    $post['category']    = $category;
     $post['is_published'] = $is_pub;
 }
 ?>
@@ -144,6 +146,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); margin-bottom: 8px;
     }
+    select {
+      width: 100%; background: rgba(236,234,226,0.05);
+      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      font-family: 'Inter', sans-serif; font-size: 15px;
+      padding: 12px 14px; outline: none; transition: border-color 0.2s;
+      appearance: none; cursor: pointer;
+    }
+    select:focus { border-color: #E8320A; }
+    select option { background: #1a1917; }
     input[type=text], input[type=file], textarea {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
@@ -168,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       color: #ECEAE2; font-family: 'Inter', sans-serif;
       font-size: 15px; line-height: 1.7; min-height: 320px;
     }
+    .ql-editor p { margin-bottom: 0.5em; }
     .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }
     .ql-snow .ql-stroke { stroke: rgba(236,234,226,0.5); }
     .ql-snow .ql-fill { fill: rgba(236,234,226,0.5); }
@@ -257,6 +269,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
         <textarea id="excerpt" name="excerpt" rows="3"
                   placeholder="Short summary of the post..."><?= htmlspecialchars($post['excerpt']) ?></textarea>
+      </div>
+
+      <div class="field">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="" <?= $post['category']==='' ? 'selected' : '' ?>>— No category —</option>
+          <option value="uiux"        <?= $post['category']==='uiux'        ? 'selected' : '' ?>>UI/UX</option>
+          <option value="development" <?= $post['category']==='development' ? 'selected' : '' ?>>Development</option>
+          <option value="ai"          <?= $post['category']==='ai'          ? 'selected' : '' ?>>AI</option>
+        </select>
       </div>
 
       <div class="field">

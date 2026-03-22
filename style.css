@@ -1338,11 +1338,11 @@
       letter-spacing: -0.045em; line-height: 0.92; color: var(--ink); max-width: 900px;
     }
     .post-featured-img {
-      width: 100%; max-height: 560px; object-fit: cover; display: block;
+      width: 100%; max-height: 680px; object-fit: cover; display: block;
       border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     }
     .post-body { max-width: 720px; margin: 0 auto; padding: 80px var(--pad-x); }
-    .post-body p   { font-size: 18px; font-weight: 300; line-height: 1.8; color: var(--ink-2); margin-bottom: 28px; }
+    .post-body p   { font-size: 18px; font-weight: 300; line-height: 1.8; color: var(--ink-2); margin-bottom: 16px; }
     .post-body h2  {
       font-family: 'Instrument Serif', serif; font-style: italic;
       font-size: clamp(28px, 3.5vw, 44px); font-weight: 400;
@@ -1371,6 +1371,34 @@
       display: flex; align-items: center; gap: 8px; transition: color 0.2s, gap 0.3s;
     }
     .post-footer-back:hover { color: var(--ink); gap: 14px; }
+
+    /* Category badge */
+    .cat-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--red); border: 1px solid rgba(232,50,10,0.3);
+      padding: 3px 10px; line-height: 1;
+    }
+
+    /* Blog category filter tabs */
+    .blog-filter {
+      display: flex; gap: 0; margin: 0 var(--pad-x) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .blog-filter-btn {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-3); background: none; border: none; border-bottom: 2px solid transparent;
+      padding: 14px 20px; cursor: pointer; transition: color 0.2s, border-color 0.2s;
+      margin-bottom: -1px;
+    }
+    .blog-filter-btn:hover { color: var(--ink); }
+    .blog-filter-btn.active { color: var(--ink); border-bottom-color: var(--red); }
+
+    /* Category badge on blog cards */
+    .blog-card-cat {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 8px; display: block;
+    }
 
     /* ═══════════════════════════════════════
        BLOG RESPONSIVE
