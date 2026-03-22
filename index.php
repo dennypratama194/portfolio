@@ -1,48 +1,12 @@
+<?php $title = 'Denny Pratama — Design is Conviction'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Denny Pratama — Design is Conviction</title>
-  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-
-  <link rel="icon" type="image/png" href="assets/logo.png"/>
-  <link rel="stylesheet" href="style.css?v=4"/>
+<?php include 'partials/head.php'; ?>
 </head>
 <body>
 
-  <!-- ── CUSTOM CURSOR ── -->
-  <div id="cursor-ring"></div>
-  <div id="cursor-dot"></div>
-
-  <!-- ── NAV ── -->
-  <nav>
-    <a class="nav-logo" href="#">
-      <img src="assets/logo.png" alt="Denny Pratama" class="nav-logo-img"/>
-    </a>
-    <div class="nav-right">
-      <a class="nav-link" href="#work">Work</a>
-      <a class="nav-link" href="#about">About</a>
-      <a class="nav-link" href="blog.html">Blog</a>
-      <a class="nav-link" href="#cta">Contact</a>
-      <a class="nav-cta js-open-modal" href="#">Available →</a>
-    </div>
-    <button class="nav-burger" id="nav-burger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- ── MOBILE MENU ── -->
-  <div class="nav-mobile" id="nav-mobile">
-    <a class="nav-mobile-link" href="#work">Work</a>
-    <a class="nav-mobile-link" href="#about">About</a>
-    <a class="nav-mobile-link" href="blog.html">Blog</a>
-    <a class="nav-mobile-link" href="#cta">Contact</a>
-    <a class="nav-mobile-cta js-open-modal" href="#">Start a project →</a>
-  </div>
+<?php include 'partials/nav.php'; ?>
 
   <!-- ══════════════════════════════════════
        HERO
@@ -341,34 +305,34 @@
     </div>
     <div class="clients-grid">
       <div class="client-cell">
-        <img src="assets/client-wordsburg.png" alt="Wordsburg" class="client-logo"/>
+        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-xertra.png" alt="Xertra" class="client-logo"/>
+        <img src="/assets/client-xertra.png" alt="Xertra" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-mariwisata.png" alt="Mariwisata" class="client-logo"/>
+        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-ortex.png" alt="Ortex" class="client-logo"/>
+        <img src="/assets/client-ortex.png" alt="Ortex" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-more.png" alt="*MORe Creative Agency" class="client-logo"/>
+        <img src="/assets/client-more.png" alt="*MORe Creative Agency" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-labme.png" alt="LAB.ME" class="client-logo"/>
+        <img src="/assets/client-labme.png" alt="LAB.ME" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-socialbee.png" alt="socialbee" class="client-logo"/>
+        <img src="/assets/client-socialbee.png" alt="socialbee" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-edufarmers.png" alt="edufarmers" class="client-logo"/>
+        <img src="/assets/client-edufarmers.png" alt="edufarmers" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-ispapp.png" alt="ISPApp" class="client-logo"/>
+        <img src="/assets/client-ispapp.png" alt="ISPApp" class="client-logo"/>
       </div>
       <div class="client-cell">
-        <img src="assets/client-isohorns.png" alt="IsoHorns" class="client-logo"/>
+        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="client-logo"/>
       </div>
     </div>
   </section>
@@ -379,7 +343,7 @@
   <section id="blog-preview">
     <div class="bp-header">
       <div class="bp-eyebrow">05 — Writing</div>
-      <a class="bp-view-all" href="blog.html">View all →</a>
+      <a class="bp-view-all" href="/blog">View all →</a>
     </div>
     <h2 class="bp-title">Thoughts &amp; ideas.</h2>
     <div class="bp-grid" id="bp-grid">
@@ -418,61 +382,9 @@
     </div>
   </section>
 
+<?php include 'partials/modal.php'; ?>
+<?php include 'partials/footer.php'; ?>
 
-  <!-- ═══════════════════════════════════════
-       START A PROJECT — MODAL
-  ═══════════════════════════════════════ -->
-  <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="pmodal-inner">
-      <div class="pmodal-header">
-        <span class="pmodal-logo">DP</span>
-        <button class="pmodal-close" id="pm-close" aria-label="Close">✕</button>
-      </div>
-      <div class="pmodal-body">
-
-        <div class="pm-form" id="pm-form">
-          <div class="pm-eyebrow">Let’s work together</div>
-          <h2 class="pm-title">Start a project.</h2>
-          <div class="pm-fields">
-            <div class="pm-field">
-              <label class="pm-label" for="pm-name">Name</label>
-              <input class="pm-input" type="text" id="pm-name" placeholder="Your name" autocomplete="name"/>
-            </div>
-            <div class="pm-field">
-              <label class="pm-label" for="pm-email">Email</label>
-              <input class="pm-input" type="email" id="pm-email" placeholder="hello@company.com" autocomplete="email"/>
-            </div>
-            <div class="pm-field">
-              <label class="pm-label" for="pm-enquiry">Enquiry</label>
-              <textarea class="pm-input pm-textarea" id="pm-enquiry" placeholder="Tell me about your project…"></textarea>
-            </div>
-          </div>
-          <button class="pm-btn-send" id="pm-send">Send it →</button>
-        </div>
-
-        <div class="pm-success" id="pm-success">
-          <div class="pm-success-check">✓</div>
-          <h2 class="pm-title">Message sent.</h2>
-          <p class="pm-success-sub">Thanks for your submission. I’ll get back to you within 24 hours. Talk soon.</p>
-          <button class="pm-success-back" id="pm-success-back">Back to portfolio →</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ── FOOTER ── -->
-  <footer>
-    <span class="footer-copy">© 2026 — All rights reserved</span>
-    <div class="footer-socials">
-      <a href="https://dribbble.com/dennypratama">Dribbble</a>
-      <a href="https://www.linkedin.com/in/denny-pratama-740a14151/">LinkedIn</a>
-      <a href="https://instagram.com/dennypratama">Instagram</a>
-      <a href="https://threads.com/dennypratama">Threads</a>
-      <a href="https://github.com/dennypratama194">Github</a>
-    </div>
-  </footer>
-
-  <script src="script.js" defer></script>
+  <script src="/script.js" defer></script>
 </body>
 </html>

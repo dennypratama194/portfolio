@@ -61,18 +61,20 @@ document.querySelectorAll('section').forEach(s => io.observe(s));
 
 /* ── HORIZONTAL SCROLL DRAG ── */
 const hs = document.getElementById('hscroll');
-let isDown = false, startX, scrollLeft;
-hs.addEventListener('mousedown', e => {
-  isDown = true; hs.classList.add('grabbing');
-  startX = e.pageX - hs.offsetLeft; scrollLeft = hs.scrollLeft;
-});
-hs.addEventListener('mouseleave', () => { isDown = false; hs.classList.remove('grabbing'); });
-hs.addEventListener('mouseup',    () => { isDown = false; hs.classList.remove('grabbing'); });
-hs.addEventListener('mousemove', e => {
-  if (!isDown) return;
-  e.preventDefault();
-  hs.scrollLeft = scrollLeft - (e.pageX - hs.offsetLeft - startX) * 1.8;
-});
+if (hs) {
+  let isDown = false, startX, scrollLeft;
+  hs.addEventListener('mousedown', e => {
+    isDown = true; hs.classList.add('grabbing');
+    startX = e.pageX - hs.offsetLeft; scrollLeft = hs.scrollLeft;
+  });
+  hs.addEventListener('mouseleave', () => { isDown = false; hs.classList.remove('grabbing'); });
+  hs.addEventListener('mouseup',    () => { isDown = false; hs.classList.remove('grabbing'); });
+  hs.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    hs.scrollLeft = scrollLeft - (e.pageX - hs.offsetLeft - startX) * 1.8;
+  });
+}
 
 /* ── MAGNETIC BUTTONS ── */
 document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
@@ -95,13 +97,13 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
-  fetch('api/posts.php')
+  fetch('/api/posts.php')
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(posts => {
       if (!posts.length) { grid.innerHTML = ''; return; }
       const latest = posts.slice(0, 3);
       grid.innerHTML = latest.map(p => `
-        <a class="bp-card" href="post.html?slug=${encodeURIComponent(p.slug)}">
+        <a class="bp-card" href="/post?slug=${encodeURIComponent(p.slug)}">
           ${p.featured_image
             ? `<img class="bp-card-img" src="${p.featured_image}" alt="${p.title}" loading="lazy"/>`
             : `<div class="bp-card-img"></div>`}
@@ -122,6 +124,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
 /* ── PROJECT MODAL ── */
 (function () {
   const modal       = document.getElementById('project-modal');
+  if (!modal) return;
   const closeBtn    = document.getElementById('pm-close');
   const sendBtn     = document.getElementById('pm-send');
   const successBack = document.getElementById('pm-success-back');

@@ -65,7 +65,6 @@
 
   <!-- ── FOOTER ── -->
   <footer>
-    <span class="footer-logo">Denny Pratama</span>
     <span class="footer-copy">© 2026 — All rights reserved</span>
     <div class="footer-socials">
       <a href="https://dribbble.com/dennypratama">Dribbble</a>
@@ -88,6 +87,22 @@
     /* ── NAV SCROLL ── */
     const navEl = document.querySelector('nav');
     window.addEventListener('scroll', () => navEl.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    /* ── MOBILE BURGER ── */
+    const burger = document.getElementById('nav-burger');
+    const navMobile = document.getElementById('nav-mobile');
+    if (burger) {
+      burger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
+      document.querySelectorAll('.nav-mobile-link, .nav-mobile-cta').forEach(link => {
+        link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+      });
+      document.addEventListener('click', e => {
+        if (document.body.classList.contains('nav-open') &&
+            !burger.contains(e.target) && !navMobile.contains(e.target)) {
+          document.body.classList.remove('nav-open');
+        }
+      });
+    }
 
     /* ── DARK CURSOR on footer ── */
     document.querySelector('footer').addEventListener('mouseenter', () => document.body.classList.add('on-dark'));

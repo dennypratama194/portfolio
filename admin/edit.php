@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       color: #ECEAE2; font-family: 'Inter', sans-serif;
       font-size: 15px; line-height: 1.7; min-height: 320px;
     }
-    .ql-editor p { margin-bottom: 0.5em; }
+    .ql-editor p { margin-bottom: 0.3em; }
     .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }
     .ql-snow .ql-stroke { stroke: rgba(236,234,226,0.5); }
     .ql-snow .ql-fill { fill: rgba(236,234,226,0.5); }
