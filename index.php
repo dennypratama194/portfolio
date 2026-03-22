@@ -96,11 +96,10 @@
             <div class="proj-idx">01 — Ongoing</div>
             <div class="proj-name">Xertra</div>
           </div>
-          <div class="proj-visual vis-ortex">
-            <div class="vgrid"></div>
-            <div class="vfloat-3"></div>
-            <div class="vfloat-1"></div>
-            <div class="vfloat-2"></div>
+          <div class="proj-visual vis-brand">
+            <div class="vb-grid"></div>
+            <div class="vb-mark"></div>
+            <div class="vb-pal"></div>
           </div>
           <div class="proj-foot">
             <div class="proj-tags">
@@ -116,12 +115,10 @@
             <div class="proj-idx">02 — Ongoing</div>
             <div class="proj-name">Wordsburg</div>
           </div>
-          <div class="proj-visual vis-tanka">
-            <div class="big-t">T</div>
-            <div class="hor-bar hor-bar-1"></div>
-            <div class="hor-bar hor-bar-2"></div>
-            <div class="hor-bar hor-bar-3"></div>
-            <div class="dot-accent"></div>
+          <div class="proj-visual vis-uiux">
+            <div class="vu-nav"></div>
+            <div class="vu-card1"></div>
+            <div class="vu-card2"></div>
           </div>
           <div class="proj-foot">
             <div class="proj-tags">
@@ -137,11 +134,10 @@
             <div class="proj-idx">03 — Ongoing</div>
             <div class="proj-name">Digital Revo</div>
           </div>
-          <div class="proj-visual vis-more">
-            <div class="blk blk-1"></div>
-            <div class="blk blk-2"></div>
-            <div class="blk blk-3"></div>
-            <div class="m-word">Mo.</div>
+          <div class="proj-visual vis-dev">
+            <div class="vd-chrome"></div>
+            <div class="vd-lines"></div>
+            <div class="vd-cursor"></div>
           </div>
           <div class="proj-foot">
             <div class="proj-tags">
@@ -158,10 +154,10 @@
             <div class="proj-idx">04 — 2025</div>
             <div class="proj-name">CMS</div>
           </div>
-          <div class="proj-visual vis-dp">
-            <div class="dp-lines"></div>
-            <div class="dp-large">DP</div>
-            <div class="dp-accent"></div>
+          <div class="proj-visual vis-dash">
+            <div class="vh-sidebar"></div>
+            <div class="vh-chart"></div>
+            <div class="vh-dot"></div>
           </div>
           <div class="proj-foot">
             <div class="proj-tags">
