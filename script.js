@@ -135,7 +135,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   const formEl      = document.getElementById('pm-form');
   const successEl   = document.getElementById('pm-success');
 
-  const RECAPTCHA_SITE_KEY = 'YOUR_SITE_KEY';
+  const RECAPTCHA_SITE_KEY = '6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ';
   let recaptchaLoaded = false;
 
   function loadRecaptcha() {
