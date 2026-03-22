@@ -385,6 +385,6 @@
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js" defer></script>
+  <script src="/script.js?v=2" defer></script>
 </body>
 </html>
