@@ -5,16 +5,18 @@
    (found in cPanel → MySQL Databases)
 ════════════════════════════════════════ */
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'your_db_name');   // ← replace
-define('DB_USER', 'your_db_user');   // ← replace
-define('DB_PASS', 'your_db_pass');   // ← replace
+define('DB_NAME', 'digh8452_portfolio');
+define('DB_USER', 'digh8452_denny');
+define('DB_PASS', 'Mycsapin87');
 
 /* ── Admin credentials ── */
 define('ADMIN_USER', 'denny');
-define('ADMIN_PASS_HASH', password_hash('change_this_password', PASSWORD_BCRYPT));
-// After setup, generate a real hash by running this once in PHP:
-// echo password_hash('your_chosen_password', PASSWORD_BCRYPT);
-// Then paste the result above instead of calling password_hash() here.
+$_hash_file = __DIR__ . '/.admin_hash';
+define('ADMIN_PASS_HASH', file_exists($_hash_file)
+    ? trim(file_get_contents($_hash_file))
+    : '$2y$10$CFUblz69PYpZkGj7v.LnV.yOFuFa8B7Q3WVzXvkfFMatgnpdy7UHu'
+);
+unset($_hash_file);
 
 /* ── DB connection ── */
 try {

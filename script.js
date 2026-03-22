@@ -17,6 +17,24 @@ document.querySelectorAll('a, button, .project-panel, .cap-item, .stat-cell').fo
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
 });
 
+/* ── MOBILE NAV BURGER ── */
+const burger     = document.getElementById('nav-burger');
+const navMobile  = document.getElementById('nav-mobile');
+if (burger) {
+  burger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
+  /* Close menu when a link is clicked */
+  document.querySelectorAll('.nav-mobile-link, .nav-mobile-cta').forEach(link => {
+    link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+  });
+  /* Close on outside click */
+  document.addEventListener('click', e => {
+    if (document.body.classList.contains('nav-open') &&
+        !burger.contains(e.target) && !navMobile.contains(e.target)) {
+      document.body.classList.remove('nav-open');
+    }
+  });
+}
+
 /* ── NAV SCROLL BLUR ── */
 const navEl = document.querySelector('nav');
 window.addEventListener('scroll', () => {

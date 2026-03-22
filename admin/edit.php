@@ -215,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="sidebar-nav">
       <a class="sidebar-link" href="index.php">Posts</a>
       <a class="sidebar-link active" href="edit.php">New Post</a>
+      <a class="sidebar-link" href="change-password.php">Change Password</a>
       <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
     </nav>
     <div class="sidebar-bottom">
