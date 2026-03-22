@@ -135,7 +135,20 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   const formEl      = document.getElementById('pm-form');
   const successEl   = document.getElementById('pm-success');
 
+  const RECAPTCHA_SITE_KEY = 'YOUR_SITE_KEY';
+  let recaptchaLoaded = false;
+
+  function loadRecaptcha() {
+    if (recaptchaLoaded || typeof grecaptcha !== 'undefined') { recaptchaLoaded = true; return; }
+    const s = document.createElement('script');
+    s.src = 'https://www.google.com/recaptcha/api.js?render=' + RECAPTCHA_SITE_KEY;
+    s.async = true;
+    document.head.appendChild(s);
+    recaptchaLoaded = true;
+  }
+
   function openModal() {
+    loadRecaptcha();
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
