@@ -72,19 +72,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pub_at = $is_pub ? ($post['published_at'] ?? date('Y-m-d H:i:s')) : null;
         if ($is_pub && !$post['published_at']) $pub_at = date('Y-m-d H:i:s');
 
-        if ($id) {
-            $stmt = $pdo->prepare(
-                'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, category=?, is_published=?, published_at=? WHERE id=?'
-            );
-            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $id]);
-        } else {
-            $stmt = $pdo->prepare(
-                'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at) VALUES (?,?,?,?,?,?,?,?)'
-            );
-            $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at]);
+        try {
+            if ($id) {
+                $stmt = $pdo->prepare(
+                    'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, category=?, is_published=?, published_at=? WHERE id=?'
+                );
+                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $id]);
+            } else {
+                $stmt = $pdo->prepare(
+                    'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at) VALUES (?,?,?,?,?,?,?,?)'
+                );
+                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at]);
+            }
+            header('Location: index.php');
+            exit;
+        } catch (PDOException $e) {
+            if (str_contains($e->getMessage(), 'category')) {
+                $errors[] = 'Database missing "category" column — run this SQL in phpMyAdmin: ALTER TABLE posts ADD COLUMN category VARCHAR(50) DEFAULT NULL AFTER excerpt;';
+            } else {
+                $errors[] = 'Database error: ' . $e->getMessage();
+            }
         }
-        header('Location: index.php');
-        exit;
     }
 
     /* Re-populate form values on error */
