@@ -2,7 +2,7 @@
   <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true">
     <div class="pmodal-inner">
       <div class="pmodal-header">
-        <span class="pmodal-logo">DP</span>
+        <img class="pmodal-logo" src="/assets/logo.png" alt="Denny Pratama"/>
         <button class="pmodal-close" id="pm-close" aria-label="Close">✕</button>
       </div>
       <div class="pmodal-body">

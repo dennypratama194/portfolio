@@ -1042,9 +1042,8 @@
       flex-shrink: 0;
     }
     .pmodal-logo {
-      font-family: 'Instrument Serif', serif; font-style: italic;
-      font-size: 20px; letter-spacing: -0.02em;
-      color: rgba(236,234,226,0.4);
+      width: 32px; height: 32px; object-fit: contain;
+      filter: invert(1) brightness(0.6);
     }
     .pmodal-close {
       width: 40px; height: 40px; border-radius: 50%;
