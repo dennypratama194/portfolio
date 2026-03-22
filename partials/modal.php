@@ -25,6 +25,7 @@
             </div>
           </div>
           <button class="pm-btn-send" id="pm-send">Send it →</button>
+          <p class="pm-recaptcha-note">Protected by reCAPTCHA — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a> &amp; <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a></p>
         </div>
 
         <div class="pm-success" id="pm-success">

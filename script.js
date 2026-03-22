@@ -168,21 +168,26 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     sendBtn.textContent = 'Sending…';
 
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: '89b01a8a-31ae-4672-a5de-53c2c8d834bd',
-          subject: 'New project enquiry from ' + name,
-          name, email, enquiry
-        })
+      /* Get reCAPTCHA v3 token */
+      const recaptcha_token = await new Promise((resolve, reject) => {
+        if (typeof grecaptcha === 'undefined') { reject(new Error('reCAPTCHA not loaded')); return; }
+        grecaptcha.ready(() =>
+          grecaptcha.execute('YOUR_SITE_KEY', { action: 'contact' }).then(resolve).catch(reject)
+        );
       });
 
-      if (res.ok) {
+      const res = await fetch('/api/contact.php', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, enquiry, recaptcha_token })
+      });
+
+      const json = await res.json();
+      if (res.ok && json.success) {
         formEl.style.display    = 'none';
         successEl.style.display = 'flex';
       } else {
-        throw new Error('Server error');
+        throw new Error(json.message || 'Server error');
       }
     } catch {
       sendBtn.textContent = 'Failed — try again';

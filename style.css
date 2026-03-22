@@ -1131,6 +1131,12 @@
       transition: color 0.2s, gap 0.3s;
     }
     .pm-success-back:hover { color: var(--red); gap: 16px; }
+    /* Hide reCAPTCHA badge — branding kept via form note */
+    .grecaptcha-badge { visibility: hidden !important; }
+    .pm-recaptcha-note {
+      margin-top: 12px; font-size: 11px; color: rgba(236,234,226,0.25); line-height: 1.5;
+    }
+    .pm-recaptcha-note a { color: rgba(236,234,226,0.35); text-decoration: underline; text-underline-offset: 2px; }
 
     /* cursor on dark sections (CTA, footer) and modal */
     body.on-dark #cursor-ring,
@@ -1190,8 +1196,8 @@
       .nav-burger { display: flex; cursor: pointer; }
 
       #hero { padding: 0 24px 48px; min-height: 100svh; }
-      .hero-overline { top: 90px; left: 24px; }
-      .hero-year { top: 90px; right: 24px; }
+      .hero-overline { top: 90px; left: 24px; right: 24px; }
+      .hero-year { display: none; }
       .hero-line-1, .hero-line-2 { font-size: clamp(52px, 16vw, 80px); line-height: 0.9; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
       .scroll-cue { display: none; }
@@ -1469,13 +1475,13 @@
       border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     }
     .post-body { max-width: 720px; margin: 0 auto; padding: 80px var(--pad-x); }
-    .post-body p   { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--ink-2); margin-bottom: 12px; }
+    .post-body p   { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--ink-2); margin-bottom: 8px; }
     .post-body h2  {
       font-family: 'Instrument Serif', serif; font-style: italic;
       font-size: clamp(28px, 3.5vw, 44px); font-weight: 400;
-      letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); margin: 32px 0 12px;
+      letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); margin: 20px 0 8px;
     }
-    .post-body h3  { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 24px 0 10px; }
+    .post-body h3  { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 16px 0 8px; }
     .post-body strong { font-weight: 600; color: var(--ink); }
     .post-body em  { font-style: italic; }
     .post-body a   { color: var(--red); text-decoration: underline; text-underline-offset: 3px; }

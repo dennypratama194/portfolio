@@ -5,4 +5,5 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=7"/>
+  <link rel="stylesheet" href="/style.css?v=8"/>
+  <script src="https://www.google.com/recaptcha/api.js?render=YOUR_SITE_KEY" async></script>
