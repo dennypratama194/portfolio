@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /admin/uploads/
+
+Sitemap: https://dennypratama.com/sitemap.xml
