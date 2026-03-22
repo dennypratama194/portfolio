@@ -152,7 +152,7 @@
         <a class="project-panel" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
             <div class="proj-idx">04 — 2025</div>
-            <div class="proj-name">CMS</div>
+            <div class="proj-name">MoRe</div>
           </div>
           <div class="proj-visual vis-dash">
             <div class="vh-sidebar"></div>
@@ -161,8 +161,7 @@
           </div>
           <div class="proj-foot">
             <div class="proj-tags">
-              <span class="ptag">UI/UX</span>
-              <span class="ptag">Web Design</span>
+              <span class="ptag">Web Development</span>
             </div>
             <span class="proj-year">2025</span>
           </div>
