@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
+  <link rel="icon" type="image/png" href="logo.png"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -19,10 +20,13 @@
 
   <!-- ── NAV ── -->
   <nav>
-    <a class="nav-logo" href="#">DP</a>
+    <a class="nav-logo" href="#">
+      <img src="logo.png" alt="Denny Pratama" class="nav-logo-img"/>
+    </a>
     <div class="nav-right">
       <a class="nav-link" href="#work">Work</a>
       <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="blog.html">Blog</a>
       <a class="nav-link" href="#cta">Contact</a>
       <a class="nav-cta js-open-modal" href="#">Available →</a>
     </div>
@@ -53,7 +57,7 @@
           <span class="hero-role">UI/UX · Dev · Brand · AI</span>
         </div>
         <p class="hero-desc">
-          I craft digital products where aesthetics and
+          I build digital products where aesthetics and
           function refuse to compromise on each other.
         </p>
         <div class="hero-ctas">
@@ -214,11 +218,11 @@
       <!-- Left: manifesto -->
       <div class="about-left-sticky">
         <div class="manifesto-label">02 — About</div>
-        <div class="manifesto-text">
+        <h2 class="manifesto-text">
           The designer<br>
           who builds.<br/>
           <span class="accent">Both ways.</span>
-        </div>
+        </h2>
         <blockquote class="about-quote">
           "Life is full of learning; when you stop learning,<br/>you stop living."
         </blockquote>
@@ -292,6 +296,7 @@
        APPROACH
   ══════════════════════════════════════ -->
   <section id="approach">
+    <h2 class="sr-only">My Process</h2>
     <div class="approach-eyebrow">03 — Process</div>
     <div class="approach-steps">
       <div class="approach-step">
@@ -318,17 +323,82 @@
   </section>
 
   <!-- ══════════════════════════════════════
+       CLIENTS
+  ══════════════════════════════════════ -->
+  <section id="clients">
+    <div class="clients-header">
+      <h2 class="sr-only">Clients</h2>
+      <div class="clients-eyebrow">04 — Clients</div>
+      <p class="clients-desc">Brands and teams I've had the privilege to work with.</p>
+    </div>
+    <div class="clients-grid">
+      <!-- Row 1 -->
+      <div class="client-cell">
+        <!-- Replace src with actual logo file e.g. src="clients/decodes.png" -->
+        <span class="client-name">Decodes Media</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">Mariwisata</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">Ortex</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">*MORe Creative Agency</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">IsoHorns</span>
+      </div>
+      <!-- Row 2 -->
+      <div class="client-cell">
+        <span class="client-name">tänka</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">LAB.ME</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">socialbee</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">edufarmers</span>
+      </div>
+      <div class="client-cell">
+        <span class="client-name">ISPApp</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       BLOG PREVIEW
+  ══════════════════════════════════════ -->
+  <section id="blog-preview">
+    <div class="bp-header">
+      <div class="bp-eyebrow">05 — Writing</div>
+      <a class="bp-view-all" href="blog.html">View all →</a>
+    </div>
+    <h2 class="bp-title">Thoughts<br/>&amp; ideas.</h2>
+    <div class="bp-grid" id="bp-grid">
+      <!-- populated by JS -->
+      <div class="bp-loading">
+        <span class="blog-loading-dot"></span>
+        <span class="blog-loading-dot"></span>
+        <span class="blog-loading-dot"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
        CTA
   ══════════════════════════════════════ -->
   <section id="cta">
     <div class="cta-bg-type">Let's go.</div>
     <div class="cta-inner">
-      <div class="cta-label">04 — Let's Work</div>
-      <div class="cta-title">
+      <div class="cta-label">06 — Let's Work</div>
+      <h2 class="cta-title">
         Something<br/>
         worth<br/>
         <span class="cta-outline">building</span><span class="cta-accent">?</span>
-      </div>
+      </h2>
 
       <div class="cta-row">
         <p class="cta-desc">
@@ -388,7 +458,6 @@
 
   <!-- ── FOOTER ── -->
   <footer>
-    <span class="footer-logo">Denny Pratama</span>
     <span class="footer-copy">© 2026 — All rights reserved</span>
     <div class="footer-socials">
       <a href="https://dribbble.com/dennypratama">Dribbble</a>

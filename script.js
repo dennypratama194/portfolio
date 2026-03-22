@@ -67,6 +67,40 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
 });
 
+/* ── BLOG PREVIEW ── */
+(function () {
+  const grid = document.getElementById('bp-grid');
+  if (!grid) return;
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  fetch('api/posts.php')
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(posts => {
+      if (!posts.length) { grid.innerHTML = ''; return; }
+      const latest = posts.slice(0, 3);
+      grid.innerHTML = latest.map(p => `
+        <a class="bp-card" href="post.html?slug=${encodeURIComponent(p.slug)}">
+          ${p.featured_image
+            ? `<img class="bp-card-img" src="${p.featured_image}" alt="${p.title}" loading="lazy"/>`
+            : `<div class="bp-card-img"></div>`}
+          <div class="bp-card-meta">${formatDate(p.published_at)}</div>
+          <div class="bp-card-title">${p.title}</div>
+          ${p.excerpt ? `<div class="bp-card-excerpt">${p.excerpt}</div>` : ''}
+          <div class="bp-card-read">Read →</div>
+        </a>
+      `).join('');
+      grid.querySelectorAll('.bp-card').forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+      });
+    })
+    .catch(() => { grid.innerHTML = ''; });
+})();
+
 /* ── PROJECT MODAL ── */
 (function () {
   const modal       = document.getElementById('project-modal');

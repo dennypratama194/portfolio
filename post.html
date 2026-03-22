@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post — Denny Pratama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="icon" type="image/png" href="logo.png"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ── CUSTOM CURSOR ── -->
+  <div id="cursor-ring"></div>
+  <div id="cursor-dot"></div>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="logo.png" alt="Denny Pratama" class="nav-logo-img"/>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="index.html#work">Work</a>
+      <a class="nav-link" href="index.html#about">About</a>
+      <a class="nav-link" href="blog.html">Blog</a>
+      <a class="nav-link" href="index.html#cta">Contact</a>
+      <a class="nav-cta js-open-modal" href="#">Available →</a>
+    </div>
+  </nav>
+
+  <!-- ── POST CONTENT (populated by JS) ── -->
+  <article id="post-root">
+    <div class="post-hero" style="display:flex;align-items:center;gap:8px;padding-top:200px;">
+      <span class="blog-loading-dot"></span>
+      <span class="blog-loading-dot"></span>
+      <span class="blog-loading-dot"></span>
+    </div>
+  </article>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-logo">Denny Pratama</span>
+    <span class="footer-copy">© 2026 — All rights reserved</span>
+    <div class="footer-socials">
+      <a href="https://dribbble.com/dennypratama">Dribbble</a>
+      <a href="https://www.linkedin.com/in/denny-pratama-740a14151/">LinkedIn</a>
+      <a href="https://instagram.com/dennypratama">Instagram</a>
+      <a href="https://threads.com/dennypratama">Threads</a>
+      <a href="https://github.com/dennypratama194">Github</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ── CURSOR ── */
+    const ring = document.getElementById('cursor-ring');
+    const dot  = document.getElementById('cursor-dot');
+    let rX = 0, rY = 0, dX = 0, dY = 0;
+    document.addEventListener('mousemove', e => { dX = e.clientX; dY = e.clientY; dot.style.left = dX+'px'; dot.style.top = dY+'px'; });
+    function lerpCursor() { rX += (dX-rX)*0.12; rY += (dY-rY)*0.12; ring.style.left = rX+'px'; ring.style.top = rY+'px'; requestAnimationFrame(lerpCursor); }
+    lerpCursor();
+
+    /* ── NAV SCROLL ── */
+    const navEl = document.querySelector('nav');
+    window.addEventListener('scroll', () => navEl.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    /* ── DARK CURSOR on footer ── */
+    document.querySelector('footer').addEventListener('mouseenter', () => document.body.classList.add('on-dark'));
+    document.querySelector('footer').addEventListener('mouseleave', () => document.body.classList.remove('on-dark'));
+
+    /* ── Read slug from URL ── */
+    const slug = new URLSearchParams(window.location.search).get('slug');
+    if (!slug) { window.location.replace('blog.html'); }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function renderPost(post) {
+      document.title = post.title + ' — Denny Pratama';
+
+      document.getElementById('post-root').innerHTML = `
+        <div class="post-hero">
+          <div class="post-hero-meta">
+            <a class="post-hero-back" href="blog.html">← Blog</a>
+            <span>${formatDate(post.published_at)}</span>
+          </div>
+          <h1 class="post-hero-title">${post.title}</h1>
+        </div>
+
+        ${post.featured_image
+          ? `<img class="post-featured-img" src="${post.featured_image}" alt="${post.title}"/>`
+          : ''
+        }
+
+        <div class="post-body">${post.body || ''}</div>
+
+        <div class="post-footer">
+          <a class="post-footer-back" href="blog.html">← All posts</a>
+        </div>
+      `;
+    }
+
+    fetch('api/post.php?slug=' + encodeURIComponent(slug))
+      .then(r => {
+        if (r.status === 404) { window.location.replace('blog.html'); return null; }
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      })
+      .then(data => { if (data) renderPost(data); })
+      .catch(() => {
+        document.getElementById('post-root').innerHTML = `
+          <div class="post-hero" style="padding-top:200px;">
+            <div class="post-hero-meta"><a class="post-hero-back" href="blog.html">← Blog</a></div>
+            <h1 class="post-hero-title" style="font-size:clamp(28px,4vw,48px)">Could not load this post.</h1>
+          </div>`;
+      });
+  </script>
+</body>
+</html>

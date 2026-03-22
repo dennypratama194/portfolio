@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog — Denny Pratama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="icon" type="image/png" href="logo.png"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ── CUSTOM CURSOR ── -->
+  <div id="cursor-ring"></div>
+  <div id="cursor-dot"></div>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="logo.png" alt="Denny Pratama" class="nav-logo-img"/>
+    </a>
+    <div class="nav-right">
+      <a class="nav-link" href="index.html#work">Work</a>
+      <a class="nav-link" href="index.html#about">About</a>
+      <a class="nav-link" href="blog.html">Blog</a>
+      <a class="nav-link" href="index.html#cta">Contact</a>
+      <a class="nav-cta js-open-modal" href="#">Available →</a>
+    </div>
+  </nav>
+
+  <!-- ── BLOG HERO ── -->
+  <section class="blog-hero">
+    <div class="blog-hero-eyebrow">04 — Writing</div>
+    <h1 class="blog-hero-title">Thoughts<br/>& ideas.</h1>
+  </section>
+
+  <!-- ── BLOG GRID (populated by JS) ── -->
+  <div class="blog-grid" id="blog-grid">
+    <div class="blog-loading">
+      <span class="blog-loading-dot"></span>
+      <span class="blog-loading-dot"></span>
+      <span class="blog-loading-dot"></span>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span class="footer-logo">Denny Pratama</span>
+    <span class="footer-copy">© 2026 — All rights reserved</span>
+    <div class="footer-socials">
+      <a href="https://dribbble.com/dennypratama">Dribbble</a>
+      <a href="https://www.linkedin.com/in/denny-pratama-740a14151/">LinkedIn</a>
+      <a href="https://instagram.com/dennypratama">Instagram</a>
+      <a href="https://threads.com/dennypratama">Threads</a>
+      <a href="https://github.com/dennypratama194">Github</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ── CURSOR ── */
+    const ring = document.getElementById('cursor-ring');
+    const dot  = document.getElementById('cursor-dot');
+    let rX = 0, rY = 0, dX = 0, dY = 0;
+    document.addEventListener('mousemove', e => { dX = e.clientX; dY = e.clientY; dot.style.left = dX+'px'; dot.style.top = dY+'px'; });
+    function lerpCursor() { rX += (dX-rX)*0.12; rY += (dY-rY)*0.12; ring.style.left = rX+'px'; ring.style.top = rY+'px'; requestAnimationFrame(lerpCursor); }
+    lerpCursor();
+
+    /* ── NAV SCROLL ── */
+    const navEl = document.querySelector('nav');
+    window.addEventListener('scroll', () => navEl.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    /* ── DARK CURSOR on footer ── */
+    document.querySelector('footer').addEventListener('mouseenter', () => document.body.classList.add('on-dark'));
+    document.querySelector('footer').addEventListener('mouseleave', () => document.body.classList.remove('on-dark'));
+
+    /* ─────────────────────────────────────
+       BLOG FETCH
+       API endpoint is relative — works on
+       any domain once deployed.
+    ───────────────────────────────────── */
+    function formatDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function renderCards(posts) {
+      const grid = document.getElementById('blog-grid');
+      if (!posts.length) {
+        grid.innerHTML = '<div class="blog-empty">No posts yet. Check back soon.</div>';
+        return;
+      }
+      grid.innerHTML = posts.map(post => `
+        <a class="blog-card" href="post.html?slug=${encodeURIComponent(post.slug)}">
+          ${post.featured_image
+            ? `<img class="blog-card-img" src="${post.featured_image}" alt="${post.title}" loading="lazy"/>`
+            : `<div class="blog-card-img"></div>`
+          }
+          <div class="blog-card-meta">${formatDate(post.published_at)}</div>
+          <div class="blog-card-title">${post.title}</div>
+          ${post.excerpt ? `<div class="blog-card-excerpt">${post.excerpt}</div>` : ''}
+          <div class="blog-card-readmore">Read →</div>
+        </a>
+      `).join('');
+
+      document.querySelectorAll('.blog-card').forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+      });
+    }
+
+    fetch('api/posts.php')
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => renderCards(data))
+      .catch(() => {
+        document.getElementById('blog-grid').innerHTML =
+          '<div class="blog-empty">Could not load posts. Please try again later.</div>';
+      });
+  </script>
+</body>
+</html>
