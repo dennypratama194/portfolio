@@ -33,14 +33,14 @@
           <span class="hero-role">UI/UX · Dev · Brand · AI</span>
         </div>
         <p class="hero-desc">
-          I build digital products where aesthetics and
-          function refuse to compromise on each other.
+          I bridge the gap between visual craft and technical execution to build 
+          digital products that look exceptional and drive measurable results.
         </p>
         <div class="hero-ctas">
           <a class="btn-hero-primary" href="#work">View Selected Work</a>
           <a class="btn-hero-ghost js-open-modal" href="#">
             <span class="arrow">↗</span>
-            Start a project
+            Discuss your project
           </a>
         </div>
       </div>

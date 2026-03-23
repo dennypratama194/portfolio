@@ -1295,6 +1295,7 @@
       display: flex; align-items: center; justify-content: center;
       padding: 40px 32px;
       transition: background 0.3s;
+      height: 150px;
     }
     .client-cell:hover { background: rgba(232,50,10,0.03); }
     .client-logo {
