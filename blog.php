@@ -87,6 +87,6 @@
           '<div class="blog-empty">Could not load posts. Please try again later.</div>';
       });
   </script>
-  <script src="/script.js?v=2" defer></script>
+  <script src="/script.js?v=3" defer></script>
 </body>
 </html>
