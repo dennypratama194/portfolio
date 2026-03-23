@@ -41,6 +41,23 @@ window.addEventListener('scroll', () => {
   navEl.classList.toggle('scrolled', window.scrollY > 40);
 }, { passive: true });
 
+/* ── SCROLL FADE BOTTOM THEME ── */
+const fadEl = document.querySelector('.scroll-fade-bottom');
+if (fadEl) {
+  const darkEls = document.querySelectorAll('#cta, footer');
+  function updateFade() {
+    const vh = window.innerHeight;
+    let isDark = false;
+    darkEls.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh && r.bottom > vh * 0.5) isDark = true;
+    });
+    fadEl.classList.toggle('is-dark', isDark);
+  }
+  window.addEventListener('scroll', updateFade, { passive: true });
+  updateFade();
+}
+
 document.querySelectorAll('#cta, footer').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('on-dark'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('on-dark'));

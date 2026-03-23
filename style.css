@@ -1143,6 +1143,10 @@
       -webkit-backdrop-filter: blur(6px);
       pointer-events: none;
       z-index: 90;
+      transition: background 0.4s ease;
+    }
+    .scroll-fade-bottom.is-dark {
+      background: linear-gradient(to top, rgba(13,12,9,0.95) 0%, rgba(13,12,9,0) 100%);
     }
     .pm-recaptcha-note {
       margin-top: 12px; font-size: 11px; color: rgba(236,234,226,0.25); line-height: 1.5;
