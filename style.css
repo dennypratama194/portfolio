@@ -1135,21 +1135,25 @@
     /* Hide reCAPTCHA badge — branding kept via form note */
     .grecaptcha-badge { visibility: hidden !important; }
 
-    /* ── SCROLL FADE BOTTOM ── */
+    /* ── SCROLL FADE BOTTOM — progressive blur ── */
     .scroll-fade-bottom {
       position: fixed;
       bottom: 0; left: 0; right: 0;
-      height: 160px;
-      background: linear-gradient(to top, rgba(236,234,226,0.7) 0%, rgba(236,234,226,0.3) 40%, rgba(236,234,226,0) 100%);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      height: 200px;
       pointer-events: none;
       z-index: 90;
-      transition: background 0.4s ease, opacity 0.4s ease;
+      transition: opacity 0.4s ease;
     }
-    .scroll-fade-bottom.is-dark {
-      background: linear-gradient(to top, rgba(13,12,9,0.7) 0%, rgba(13,12,9,0.3) 40%, rgba(13,12,9,0) 100%);
+    .sfb-l {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+      mask-image: linear-gradient(to top, black 0%, transparent 100%);
     }
+    .sfb-l1 { height: 50px;  backdrop-filter: blur(1px);  -webkit-backdrop-filter: blur(1px); }
+    .sfb-l2 { height: 90px;  backdrop-filter: blur(3px);  -webkit-backdrop-filter: blur(3px); }
+    .sfb-l3 { height: 140px; backdrop-filter: blur(6px);  -webkit-backdrop-filter: blur(6px); }
+    .sfb-l4 { height: 200px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
     .pm-recaptcha-note {
       margin-top: 12px; font-size: 11px; color: rgba(236,234,226,0.25); line-height: 1.5;
     }
