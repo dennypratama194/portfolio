@@ -1143,7 +1143,7 @@
       -webkit-backdrop-filter: blur(2px);
       pointer-events: none;
       z-index: 90;
-      transition: background 0.4s ease;
+      transition: background 0.4s ease, opacity 0.4s ease;
     }
     .scroll-fade-bottom.is-dark {
       background: linear-gradient(to top, rgba(13,12,9,0.7) 0%, rgba(13,12,9,0.3) 40%, rgba(13,12,9,0) 100%);

@@ -47,6 +47,8 @@ if (fadEl) {
   const darkEls = document.querySelectorAll('#cta, footer');
   function updateFade() {
     const vh = window.innerHeight;
+    const atBottom = window.scrollY + vh >= document.body.scrollHeight - 40;
+    fadEl.style.opacity = atBottom ? '0' : '1';
     let isDark = false;
     darkEls.forEach(el => {
       const r = el.getBoundingClientRect();
