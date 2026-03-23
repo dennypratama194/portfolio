@@ -1,3 +1,5 @@
+  <div class="scroll-fade-bottom"></div>
+
   <footer>
     <span class="footer-copy">© 2026 — All rights reserved</span>
     <div class="footer-socials">

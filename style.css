@@ -1132,6 +1132,19 @@
     .pm-success-back:hover { color: var(--red); gap: 16px; }
     /* Hide reCAPTCHA badge — branding kept via form note */
     .grecaptcha-badge { visibility: hidden !important; }
+
+    /* ── SCROLL FADE BOTTOM ── */
+    .scroll-fade-bottom {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 100px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+      mask-image: linear-gradient(to top, black 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 90;
+    }
     .pm-recaptcha-note {
       margin-top: 12px; font-size: 11px; color: rgba(236,234,226,0.25); line-height: 1.5;
     }
