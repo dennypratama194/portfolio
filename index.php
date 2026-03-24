@@ -1,4 +1,7 @@
-<?php $title = 'Denny Pratama — Design is Conviction'; ?>
+<?php
+$title       = 'Denny Pratama — Design is Conviction';
+$description = 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -300,34 +303,34 @@
     </div>
     <div class="clients-grid">
       <div class="client-cell">
-        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="client-logo"/>
+        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-xertra.png" alt="Xertra" class="client-logo"/>
+        <img src="/assets/client-xertra.png" alt="Xertra" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="client-logo"/>
+        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-ortex.png" alt="Ortex" class="client-logo"/>
+        <img src="/assets/client-ortex.png" alt="Ortex" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-more.png" alt="*MORe Creative Agency" class="client-logo"/>
+        <img src="/assets/client-more.png" alt="*MORe Creative Agency" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-labme.png" alt="LAB.ME" class="client-logo"/>
+        <img src="/assets/client-labme.png" alt="LAB.ME" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-socialbee.png" alt="socialbee" class="client-logo"/>
+        <img src="/assets/client-socialbee.png" alt="socialbee" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-edufarmers.png" alt="edufarmers" class="client-logo"/>
+        <img src="/assets/client-edufarmers.png" alt="edufarmers" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-ispapp.png" alt="ISPApp" class="client-logo"/>
+        <img src="/assets/client-ispapp.png" alt="ISPApp" class="client-logo" loading="lazy"/>
       </div>
       <div class="client-cell">
-        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="client-logo"/>
+        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="client-logo" loading="lazy"/>
       </div>
     </div>
   </section>

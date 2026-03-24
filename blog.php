@@ -1,4 +1,7 @@
-<?php $title = 'Blog — Denny Pratama'; ?>
+<?php
+$title       = 'Blog — Denny Pratama';
+$description = 'Thoughts and ideas on UI/UX design, development, and AI from Denny Pratama.';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

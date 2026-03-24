@@ -204,7 +204,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
       const recaptcha_token = await new Promise((resolve, reject) => {
         if (typeof grecaptcha === 'undefined') { reject(new Error('reCAPTCHA not loaded')); return; }
         grecaptcha.ready(() =>
-          grecaptcha.execute('YOUR_SITE_KEY', { action: 'contact' }).then(resolve).catch(reject)
+          grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'contact' }).then(resolve).catch(reject)
         );
       });
 

@@ -1,4 +1,9 @@
-<?php $title = 'Post — Denny Pratama'; ?>
+<?php
+/* Title/description are overridden via JS once post data loads,
+   but these defaults ensure a valid fallback for crawlers. */
+$title       = 'Post — Denny Pratama';
+$description = 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
