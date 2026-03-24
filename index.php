@@ -11,6 +11,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
 <?php include 'partials/nav.php'; ?>
 
+<main>
   <!-- ══════════════════════════════════════
        HERO
   ══════════════════════════════════════ -->
@@ -379,6 +380,8 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       </div>
     </div>
   </section>
+
+</main>
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>

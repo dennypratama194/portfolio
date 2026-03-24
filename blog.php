@@ -11,6 +11,7 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
 
 <?php include 'partials/nav.php'; ?>
 
+<main>
   <!-- ── BLOG HERO ── -->
   <section class="blog-hero">
     <div class="blog-hero-eyebrow">Blog</div>
@@ -90,6 +91,8 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
           '<div class="blog-empty">Could not load posts. Please try again later.</div>';
       });
   </script>
+</main>
+
   <script src="/script.js?v=3" defer></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
   <!-- ── START A PROJECT MODAL ── -->
-  <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true" inert>
     <div class="pmodal-inner">
       <div class="pmodal-header">
         <img class="pmodal-logo" src="/assets/logo.png" alt="Denny Pratama"/>

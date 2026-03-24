@@ -13,6 +13,7 @@ $description = 'Read the latest articles on UI/UX design, development, and AI by
 
 <?php include 'partials/nav.php'; ?>
 
+<main>
   <!-- ── POST CONTENT (populated by JS) ── -->
   <article id="post-root">
     <div class="post-hero" style="display:flex;align-items:center;gap:8px;padding-top:200px;">
@@ -21,6 +22,7 @@ $description = 'Read the latest articles on UI/UX design, development, and AI by
       <span class="blog-loading-dot"></span>
     </div>
   </article>
+</main>
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>

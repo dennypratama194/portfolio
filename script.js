@@ -168,6 +168,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
 
   function openModal() {
     loadRecaptcha();
+    modal.removeAttribute('inert');
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -179,6 +180,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   function closeModal() {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
+    modal.setAttribute('inert', '');
     document.body.classList.remove('modal-open');
   }
   function shake(el) {
