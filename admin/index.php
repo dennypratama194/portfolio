@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 $posts = $pdo->query(
-    'SELECT id, title, slug, is_published, published_at, created_at FROM posts ORDER BY created_at DESC'
+    'SELECT id, title, slug, is_published, published_at, scheduled_at, created_at FROM posts ORDER BY created_at DESC'
 )->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -89,8 +89,9 @@ $posts = $pdo->query(
       display: inline-block; font-size: 10px; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 3px 8px;
     }
-    .badge-pub  { background: rgba(232,50,10,0.15); color: #E8320A; }
-    .badge-draft { background: rgba(236,234,226,0.07); color: rgba(236,234,226,0.4); }
+    .badge-pub      { background: rgba(232,50,10,0.15); color: #E8320A; }
+    .badge-draft    { background: rgba(236,234,226,0.07); color: rgba(236,234,226,0.4); }
+    .badge-scheduled { background: rgba(255,180,0,0.12); color: #f5a623; }
     .action-link {
       font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
       color: rgba(236,234,226,0.35); text-decoration: none; margin-right: 16px;
@@ -145,11 +146,21 @@ $posts = $pdo->query(
           <td>
             <?php if ($p['is_published']): ?>
               <span class="badge badge-pub">Published</span>
+            <?php elseif (!empty($p['scheduled_at'])): ?>
+              <span class="badge badge-scheduled">Scheduled</span>
             <?php else: ?>
               <span class="badge badge-draft">Draft</span>
             <?php endif; ?>
           </td>
-          <td><?= $p['published_at'] ? date('d M Y', strtotime($p['published_at'])) : '—' ?></td>
+          <td>
+            <?php if ($p['is_published'] && $p['published_at']): ?>
+              <?= date('d M Y', strtotime($p['published_at'])) ?>
+            <?php elseif (!empty($p['scheduled_at'])): ?>
+              <?= date('d M Y, H:i', strtotime($p['scheduled_at'])) ?>
+            <?php else: ?>
+              —
+            <?php endif; ?>
+          </td>
           <td>
             <a class="action-link" href="edit.php?id=<?= $p['id'] ?>">Edit</a>
             <form method="POST" action="index.php" style="display:inline"

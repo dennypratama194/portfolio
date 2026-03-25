@@ -13,9 +13,10 @@ if (!$slug) {
 }
 
 $stmt = $pdo->prepare(
-    'SELECT title, slug, excerpt, featured_image, body, published_at, category
+    'SELECT title, slug, excerpt, featured_image, body, published_at, scheduled_at, category
      FROM posts
-     WHERE slug = ? AND is_published = 1
+     WHERE slug = ?
+       AND (is_published = 1 OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW()))
      LIMIT 1'
 );
 $stmt->execute([$slug]);

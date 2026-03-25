@@ -4,7 +4,7 @@ if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
-$post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>''];
+$post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>'','scheduled_at'=>null,'published_at'=>null];
 $errors = [];
 
 /* ── Load existing post for edit ── */
@@ -17,17 +17,41 @@ if ($id) {
 
 /* ── Handle form submit ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title       = trim($_POST['title']       ?? '');
-    $slug        = trim($_POST['slug']        ?? '');
-    $excerpt     = trim($_POST['excerpt']     ?? '');
-    $body        = $_POST['body']             ?? '';
-    $category    = trim($_POST['category']    ?? '');
-    $is_pub      = isset($_POST['is_published']) ? 1 : 0;
-    $keep_img    = $post['featured_image'];   /* existing image filename */
+    $title             = trim($_POST['title']       ?? '');
+    $slug              = trim($_POST['slug']        ?? '');
+    $excerpt           = trim($_POST['excerpt']     ?? '');
+    $body              = $_POST['body']             ?? '';
+    $category          = trim($_POST['category']    ?? '');
+    $publish_mode      = $_POST['publish_mode']     ?? 'draft'; // 'draft' | 'schedule' | 'publish'
+    $scheduled_at_raw  = trim($_POST['scheduled_at'] ?? '');
+    $keep_img          = $post['featured_image'];   /* existing image filename */
+
+    /* Resolve publish state */
+    if ($publish_mode === 'publish') {
+        $is_pub           = 1;
+        $new_scheduled_at = null;
+        $pub_at           = $post['published_at'] ?: date('Y-m-d H:i:s');
+    } elseif ($publish_mode === 'schedule' && $scheduled_at_raw) {
+        $is_pub           = 0;
+        $new_scheduled_at = date('Y-m-d H:i:s', strtotime($scheduled_at_raw));
+        $pub_at           = null;
+        if (!$new_scheduled_at || $new_scheduled_at === '1970-01-01 00:00:00') {
+            $errors[] = 'Invalid scheduled date/time.';
+            $new_scheduled_at = null;
+        }
+    } elseif ($publish_mode === 'schedule' && !$scheduled_at_raw) {
+        $errors[] = 'Please pick a date and time to schedule this post.';
+        $is_pub = 0; $new_scheduled_at = null; $pub_at = null;
+    } else {
+        $is_pub           = 0;
+        $new_scheduled_at = null;
+        $pub_at           = null;
+    }
 
     /* Basic validation */
     if (!$title) $errors[] = 'Title is required.';
     if (!$slug)  $errors[] = 'Slug is required.';
+
 
     /* Slug unique check */
     if ($slug) {
@@ -69,20 +93,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $pub_at = $is_pub ? ($post['published_at'] ?? date('Y-m-d H:i:s')) : null;
-        if ($is_pub && !$post['published_at']) $pub_at = date('Y-m-d H:i:s');
-
         try {
             if ($id) {
                 $stmt = $pdo->prepare(
-                    'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, category=?, is_published=?, published_at=? WHERE id=?'
+                    'UPDATE posts SET title=?, slug=?, excerpt=?, body=?, featured_image=?, category=?, is_published=?, published_at=?, scheduled_at=? WHERE id=?'
                 );
-                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $id]);
+                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $new_scheduled_at, $id]);
             } else {
                 $stmt = $pdo->prepare(
-                    'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at) VALUES (?,?,?,?,?,?,?,?)'
+                    'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at, scheduled_at) VALUES (?,?,?,?,?,?,?,?,?)'
                 );
-                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at]);
+                $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $new_scheduled_at]);
             }
             header('Location: index.php');
             exit;
@@ -96,13 +117,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     /* Re-populate form values on error */
-    $post['title']       = $title;
-    $post['slug']        = $slug;
-    $post['excerpt']     = $excerpt;
-    $post['body']        = $body;
-    $post['category']    = $category;
+    $post['title']        = $title;
+    $post['slug']         = $slug;
+    $post['excerpt']      = $excerpt;
+    $post['body']         = $body;
+    $post['category']     = $category;
     $post['is_published'] = $is_pub;
+    $post['scheduled_at'] = $new_scheduled_at ?? null;
 }
+
+/* ── Derive display mode ── */
+if ($post['is_published']) {
+    $display_mode = 'publish';
+} elseif (!empty($post['scheduled_at'])) {
+    $display_mode = 'schedule';
+} else {
+    $display_mode = 'draft';
+}
+$sched_val = !empty($post['scheduled_at'])
+    ? date('Y-m-d\TH:i', strtotime($post['scheduled_at']))
+    : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -194,16 +228,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .ql-snow .ql-picker { color: rgba(236,234,226,0.5); }
     .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
 
-    /* ── Publish row ── */
-    .publish-row {
-      display: flex; align-items: center; gap: 16px;
-      margin-bottom: 32px;
+    /* ── Publish mode ── */
+    .publish-options { display: flex; gap: 8px; margin-bottom: 12px; }
+    .radio-option {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
+      cursor: pointer; font-size: 13px; color: rgba(236,234,226,0.55);
+      transition: border-color 0.2s, color 0.2s; user-select: none;
     }
-    .toggle-label {
-      display: flex; align-items: center; gap: 10px;
-      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.7);
+    .radio-option:has(input:checked) {
+      border-color: #E8320A; color: #ECEAE2;
     }
-    input[type=checkbox] { width: 18px; height: 18px; accent-color: #E8320A; cursor: pointer; }
+    .radio-option input[type=radio] { accent-color: #E8320A; cursor: pointer; }
+    input[type=datetime-local] {
+      width: 100%; background: rgba(236,234,226,0.05);
+      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      padding: 11px 14px; outline: none; transition: border-color 0.2s;
+      color-scheme: dark;
+    }
+    input[type=datetime-local]:focus { border-color: #E8320A; }
+    .schedule-hint { font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 6px; }
 
     /* ── Preview image ── */
     .img-preview { margin-top: 12px; max-width: 240px; max-height: 160px; object-fit: cover; opacity: 0.8; }
@@ -307,12 +352,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="body" id="body-input"/>
       </div>
 
-      <div class="publish-row">
-        <label class="toggle-label">
-          <input type="checkbox" name="is_published" value="1"
-                 <?= $post['is_published'] ? 'checked' : '' ?>/>
-          Publish (uncheck to save as draft)
-        </label>
+      <div class="field">
+        <label>Visibility</label>
+        <div class="publish-options">
+          <label class="radio-option">
+            <input type="radio" name="publish_mode" value="draft"
+                   <?= $display_mode === 'draft' ? 'checked' : '' ?>>
+            Draft
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="publish_mode" value="schedule"
+                   <?= $display_mode === 'schedule' ? 'checked' : '' ?>>
+            Schedule
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="publish_mode" value="publish"
+                   <?= $display_mode === 'publish' ? 'checked' : '' ?>>
+            Publish Now
+          </label>
+        </div>
+        <div id="schedule-picker" style="<?= $display_mode === 'schedule' ? '' : 'display:none' ?>">
+          <input type="datetime-local" name="scheduled_at" id="scheduled_at"
+                 value="<?= htmlspecialchars($sched_val) ?>"/>
+          <div class="schedule-hint">Post will go live automatically at the scheduled time.</div>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -355,6 +418,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .replace(/\s+/g, '-');
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
+
+    /* ── Toggle schedule date picker ── */
+    document.querySelectorAll('input[name=publish_mode]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('schedule-picker').style.display =
+          radio.value === 'schedule' ? 'block' : 'none';
+      });
+    });
 
     /* ── Copy Quill HTML to hidden input before submit ── */
     document.querySelector('form').addEventListener('submit', () => {

@@ -5,10 +5,11 @@ header('Access-Control-Allow-Origin: *');
 require __DIR__ . '/db.php';
 
 $stmt = $pdo->query(
-    'SELECT title, slug, excerpt, featured_image, published_at, category
+    'SELECT title, slug, excerpt, featured_image, published_at, scheduled_at, category
      FROM posts
      WHERE is_published = 1
-     ORDER BY published_at DESC'
+        OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW())
+     ORDER BY COALESCE(published_at, scheduled_at) DESC'
 );
 
 $posts = $stmt->fetchAll();
