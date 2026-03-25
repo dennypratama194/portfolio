@@ -62,6 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /* ── Image upload ── */
     $new_img = $keep_img;
+
+    /* Handle explicit remove */
+    if (($_POST['remove_image'] ?? '0') === '1' && empty($_FILES['featured_image']['name'])) {
+        if ($keep_img && file_exists(__DIR__ . '/uploads/' . $keep_img)) {
+            unlink(__DIR__ . '/uploads/' . $keep_img);
+        }
+        $new_img = '';
+    }
+
     if (!empty($_FILES['featured_image']['name'])) {
         $file    = $_FILES['featured_image'];
         $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
@@ -250,8 +259,32 @@ $sched_val = !empty($post['scheduled_at'])
     input[type=datetime-local]:focus { border-color: #E8320A; }
     .schedule-hint { font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 6px; }
 
-    /* ── Preview image ── */
-    .img-preview { margin-top: 12px; max-width: 240px; max-height: 160px; object-fit: cover; opacity: 0.8; }
+    /* ── Drag-and-drop image zone ── */
+    .drop-zone {
+      border: 2px dashed rgba(236,234,226,0.15); padding: 36px 24px;
+      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: #E8320A; background: rgba(232,50,10,0.04);
+    }
+    .drop-zone input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .drop-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.35; line-height: 1; }
+    .drop-text { font-size: 13px; color: rgba(236,234,226,0.4); }
+    .drop-text span { color: #E8320A; }
+    .drop-filename { font-size: 12px; color: rgba(236,234,226,0.5); margin-top: 6px; }
+    .img-preview {
+      display: block; width: 100%; max-height: 220px; object-fit: cover;
+      margin-top: 12px; opacity: 0.85;
+    }
+    .img-remove {
+      display: inline-block; margin-top: 8px; font-size: 11px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(232,50,10,0.6); cursor: pointer;
+      background: none; border: none; font-family: inherit; transition: color 0.2s;
+    }
+    .img-remove:hover { color: #E8320A; }
 
     /* ── Errors ── */
     .errors { background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.3); padding: 16px 20px; margin-bottom: 28px; }
@@ -336,11 +369,23 @@ $sched_val = !empty($post['scheduled_at'])
 
       <div class="field">
         <label>Featured Image</label>
-        <input type="file" name="featured_image" accept="image/*"/>
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" name="featured_image" id="img-input" accept="image/*"/>
+          <div id="drop-prompt">
+            <div class="drop-icon">⬆</div>
+            <div class="drop-text">Drag &amp; drop image here, or <span>browse</span></div>
+            <div class="drop-filename" id="drop-filename"></div>
+          </div>
+        </div>
         <?php if ($post['featured_image']): ?>
-          <img class="img-preview"
+          <img class="img-preview" id="img-preview"
                src="uploads/<?= htmlspecialchars($post['featured_image']) ?>"
                alt="Current featured image"/>
+          <button type="button" class="img-remove" id="img-remove">Remove image</button>
+          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
+        <?php else: ?>
+          <img class="img-preview" id="img-preview" src="" alt="" style="display:none"/>
+          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
         <?php endif; ?>
       </div>
 
@@ -418,6 +463,59 @@ $sched_val = !empty($post['scheduled_at'])
         .replace(/\s+/g, '-');
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
+
+    /* ── Drag-and-drop image upload ── */
+    const dropZone  = document.getElementById('drop-zone');
+    const imgInput  = document.getElementById('img-input');
+    const imgPreview = document.getElementById('img-preview');
+    const dropFilename = document.getElementById('drop-filename');
+    const imgRemove = document.getElementById('img-remove');
+    const removeFlag = document.getElementById('remove-image-flag');
+
+    function showPreview(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      dropFilename.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = e => {
+        imgPreview.src = e.target.result;
+        imgPreview.style.display = 'block';
+        if (imgRemove) imgRemove.style.display = 'inline-block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    imgInput.addEventListener('change', () => {
+      if (imgInput.files[0]) showPreview(imgInput.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        /* Transfer dropped file to the real input */
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        imgInput.files = dt.files;
+        showPreview(file);
+      }
+    });
+
+    if (imgRemove) {
+      imgRemove.addEventListener('click', () => {
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+        imgInput.value = '';
+        dropFilename.textContent = '';
+        removeFlag.value = '1';
+        imgRemove.style.display = 'none';
+      });
+    }
 
     /* ── Toggle schedule date picker ── */
     document.querySelectorAll('input[name=publish_mode]').forEach(radio => {
