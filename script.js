@@ -293,21 +293,33 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }());
 
-  // ── 2. WORK CARDS SCROLL REVEAL ─────────────────────────────────────────────
+  // ── 2. WORK — GSAP HORIZONTAL SCROLL (desktop) / drag scroll (mobile) ───────
   (function () {
     if (typeof ScrollTrigger === 'undefined') return;
-    const cards = document.querySelectorAll('#work .project-panel');
-    if (!cards.length) return;
-    gsap.from(cards, {
-      y: 50,
-      opacity: 0,
-      stagger: 0.15,
-      duration: 0.8,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '#work',
-        start: 'top 85%',
-      },
+    const outer = document.getElementById('hscroll');
+    const track = outer && outer.querySelector('.hscroll-track');
+    if (!outer || !track) return;
+
+    gsap.matchMedia().add('(min-width: 768px)', function () {
+      // Take over from the CSS overflow scroll
+      outer.style.overflow = 'hidden';
+
+      // Update hint label to reflect the new interaction
+      const hintLabel = document.querySelector('.drag-hint');
+      if (hintLabel) hintLabel.innerHTML = '<span class="drag-hint-arrow">→</span> Scroll to explore';
+
+      gsap.to(track, {
+        x: function () { return -(track.scrollWidth - window.innerWidth); },
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#work',
+          pin: true,
+          scrub: 1,
+          start: 'top top',
+          end: function () { return '+=' + (track.scrollWidth - window.innerWidth); },
+          invalidateOnRefresh: true,
+        },
+      });
     });
   }());
 

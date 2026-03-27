@@ -386,6 +386,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=4" defer></script>
+  <script src="/script.js?v=5" defer></script>
 </body>
 </html>
