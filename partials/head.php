@@ -50,3 +50,7 @@
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="stylesheet" href="/style.css?v=16"/>
+
+  <!-- GSAP + ScrollTrigger via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>

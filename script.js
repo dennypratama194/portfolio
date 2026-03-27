@@ -243,3 +243,124 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
   });
 })();
+
+// === GSAP ANIMATIONS ===
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof gsap === 'undefined') return;
+  if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+
+  // ── 1. HERO TEXT REVEAL ──────────────────────────────────────────────────────
+  (function () {
+    const heroLine1   = document.querySelector('.hero-line-1');
+    const heroOutline = document.querySelector('.hero-line-2 .outline-word');
+    const heroDesc    = document.querySelector('.hero-desc');
+    const heroCtas    = document.querySelector('.hero-ctas');
+
+    // Split .hero-line-1 text into individual word <span>s
+    if (heroLine1) {
+      const words = heroLine1.textContent.trim().split(/\s+/);
+      heroLine1.innerHTML = words
+        .map(w => '<span class="gsap-word" style="display:inline-block">' + w + '</span>')
+        .join(' ');
+    }
+
+    // Collect headline word elements: split words + the outline word as one unit
+    const wordEls = [];
+    if (heroLine1)   wordEls.push(...heroLine1.querySelectorAll('.gsap-word'));
+    if (heroOutline) wordEls.push(heroOutline);
+
+    if (wordEls.length) {
+      gsap.from(wordEls, {
+        y: 60,
+        opacity: 0,
+        stagger: 0.12,
+        duration: 0.9,
+        ease: 'power3.out',
+      });
+    }
+
+    // Subheadline + CTAs reveal after headline words finish
+    const followEls = [heroDesc, heroCtas].filter(Boolean);
+    if (followEls.length) {
+      gsap.from(followEls, {
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: wordEls.length * 0.12 + 0.3,
+      });
+    }
+  }());
+
+  // ── 2. WORK CARDS SCROLL REVEAL ─────────────────────────────────────────────
+  (function () {
+    if (typeof ScrollTrigger === 'undefined') return;
+    const cards = document.querySelectorAll('#work .project-panel');
+    if (!cards.length) return;
+    gsap.from(cards, {
+      y: 50,
+      opacity: 0,
+      stagger: 0.15,
+      duration: 0.8,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: '#work',
+        start: 'top 85%',
+      },
+    });
+  }());
+
+  // ── 3. STATS COUNTER ────────────────────────────────────────────────────────
+  (function () {
+    if (typeof ScrollTrigger === 'undefined') return;
+    document.querySelectorAll('.stat-num').forEach(function (el) {
+      // The number is in the first text node; the suffix (+ or ×) is in a child <span>
+      const textNode = el.firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+      const target = parseInt(textNode.textContent.trim(), 10);
+      if (isNaN(target)) return; // skip ∞ and any non-numeric cells
+
+      textNode.textContent = '0';
+      const proxy = { val: 0 };
+      gsap.to(proxy, {
+        val: target,
+        duration: 1.5,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '#about',
+          start: 'top 80%',
+          once: true,
+        },
+        onUpdate: function () {
+          textNode.textContent = Math.round(proxy.val);
+        },
+      });
+    });
+  }());
+
+  // ── 4. SKILLS TICKER — GSAP infinite loop ───────────────────────────────────
+  (function () {
+    const track = document.querySelector('.ticker-track');
+    if (!track) return;
+
+    // Disable the existing CSS keyframe animation
+    track.style.animation = 'none';
+    track.style.transform = 'translateX(0)';
+
+    // Drive the loop with GSAP: content is already duplicated in HTML,
+    // so moving -50% lands exactly at the start of the second copy → seamless
+    const tween = gsap.to(track, {
+      x: '-50%',
+      duration: 20,
+      repeat: -1,
+      ease: 'none',
+    });
+
+    const wrap = document.querySelector('.ticker-wrap');
+    if (wrap) {
+      wrap.addEventListener('mouseenter', function () { tween.pause(); });
+      wrap.addEventListener('mouseleave', function () { tween.resume(); });
+    }
+  }());
+});
