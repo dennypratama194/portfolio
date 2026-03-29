@@ -7,10 +7,25 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-/* ── Parse input ── */
 $input = json_decode(file_get_contents('php://input'), true);
-$page  = $input['page'] ?? '';
-$slug  = isset($input['slug']) ? trim((string)$input['slug']) : null;
+
+/* ── "end" call: save duration for an existing view ── */
+if (isset($input['action']) && $input['action'] === 'end') {
+    $view_id  = isset($input['view_id'])  ? (int)$input['view_id']  : 0;
+    $duration = isset($input['duration']) ? (int)$input['duration'] : 0;
+
+    if ($view_id > 0 && $duration > 0 && $duration < 86400) {
+        require __DIR__ . '/db.php';
+        $pdo->prepare('UPDATE page_views SET time_on_page = ? WHERE id = ? AND time_on_page IS NULL')
+            ->execute([$duration, $view_id]);
+    }
+    echo json_encode(['ok' => true]);
+    exit;
+}
+
+/* ── "start" call: record a page view ── */
+$page = $input['page'] ?? '';
+$slug = isset($input['slug']) ? trim((string)$input['slug']) : null;
 
 if (!in_array($page, ['home', 'blog', 'post'], true)) {
     echo json_encode(['ok' => false]);
@@ -32,7 +47,7 @@ foreach ($bots as $b) {
     }
 }
 
-/* ── IP hash (pepper keeps hashes irreversible even if DB is dumped) ── */
+/* ── IP hash ── */
 $ip = $_SERVER['HTTP_X_FORWARDED_FOR']
     ?? $_SERVER['HTTP_CF_CONNECTING_IP']
     ?? $_SERVER['REMOTE_ADDR']
@@ -40,9 +55,9 @@ $ip = $_SERVER['HTTP_X_FORWARDED_FOR']
 $ip      = trim(explode(',', $ip)[0]);
 $ip_hash = hash('sha256', $ip . 'dp-portfolio-pepper-2026');
 
-/* ── Rate-limit: skip if same view within 30 min ── */
 require __DIR__ . '/db.php';
 
+/* ── Rate-limit: skip if same view within 30 min ── */
 $cutoff = date('Y-m-d H:i:s', time() - 1800);
 
 if ($slug) {
@@ -64,7 +79,7 @@ if ($chk->fetchColumn() > 0) {
     exit;
 }
 
-/* ── Insert ── */
+/* ── Insert and return view_id ── */
 $referrer = substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500) ?: null;
 
 try {
@@ -73,7 +88,7 @@ try {
          VALUES (?, ?, ?, ?, NOW())'
     )->execute([$page, $slug, $ip_hash, $referrer]);
 
-    echo json_encode(['ok' => true]);
+    echo json_encode(['ok' => true, 'view_id' => (int)$pdo->lastInsertId()]);
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(['ok' => false]);

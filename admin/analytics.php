@@ -10,12 +10,23 @@ $views_week      = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARW
 $views_month     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
 $unique_visitors = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views')->fetchColumn();
 
-/* ── Avg views per day ── */
-$active_days = (int)$pdo->query('SELECT COUNT(DISTINCT DATE(viewed_at)) FROM page_views')->fetchColumn();
-$avg_per_day = $active_days > 0 ? round($total_views / $active_days, 1) : 0;
+/* ── Avg session duration ── */
+$avg_duration_sec = (int)$pdo->query(
+    'SELECT COALESCE(AVG(time_on_page), 0) FROM page_views WHERE time_on_page IS NOT NULL'
+)->fetchColumn();
 
-/* ── Avg pages per visitor ── */
-$avg_per_visitor = $unique_visitors > 0 ? round($total_views / $unique_visitors, 1) : 0;
+function fmt_duration($secs) {
+    if ($secs <= 0) return '—';
+    $m = floor($secs / 60);
+    $s = $secs % 60;
+    return $m > 0 ? "{$m}m {$s}s" : "{$s}s";
+}
+
+/* ── Avg duration per page type ── */
+$dur_rows = $pdo->query(
+    "SELECT page_type, COALESCE(AVG(time_on_page),0) AS avg_sec
+     FROM page_views WHERE time_on_page IS NOT NULL GROUP BY page_type"
+)->fetchAll(PDO::FETCH_KEY_PAIR);
 
 /* ── Returning vs new visitors ── */
 $returning = (int)$pdo->query(
@@ -272,17 +283,17 @@ $max_views = max($chart_data) ?: 1;
       </div>
     </div>
 
-    <!-- ── Row 2: Avg stats ── -->
+    <!-- ── Row 2: Session + visitor stats ── -->
     <div class="stats-grid-2">
       <div class="stat-card">
-        <div class="stat-label">Avg Views / Day</div>
-        <div class="stat-value"><?= number_format($avg_per_day, 1) ?></div>
-        <div class="stat-sub">over <?= $active_days ?> active day<?= $active_days !== 1 ? 's' : '' ?></div>
+        <div class="stat-label">Avg Session Duration</div>
+        <div class="stat-value"><?= fmt_duration($avg_duration_sec) ?></div>
+        <div class="stat-sub">across all pages</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg Pages / Visitor</div>
-        <div class="stat-value"><?= number_format($avg_per_visitor, 1) ?></div>
-        <div class="stat-sub">pages per session</div>
+        <div class="stat-label">Avg Time on Posts</div>
+        <div class="stat-value"><?= fmt_duration((int)($dur_rows['post'] ?? 0)) ?></div>
+        <div class="stat-sub">blog post pages</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Returning Visitors</div>
