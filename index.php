@@ -387,5 +387,12 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/footer.php'; ?>
 
   <script src="/script.js?v=5" defer></script>
+  <script>
+    (function(){
+      var p = JSON.stringify({page:'home',slug:null});
+      if(navigator.sendBeacon){navigator.sendBeacon('/api/track.php',new Blob([p],{type:'application/json'}));}
+      else{fetch('/api/track.php',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:p}).catch(function(){});}
+    })();
+  </script>
 </body>
 </html>

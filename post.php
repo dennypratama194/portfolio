@@ -70,7 +70,14 @@ $description = 'Read the latest articles on UI/UX design, development, and AI by
         if (!r.ok) throw new Error(r.status);
         return r.json();
       })
-      .then(data => { if (data) renderPost(data); })
+      .then(data => {
+        if (data) {
+          renderPost(data);
+          var p = JSON.stringify({page:'post',slug:slug});
+          if(navigator.sendBeacon){navigator.sendBeacon('/api/track.php',new Blob([p],{type:'application/json'}));}
+          else{fetch('/api/track.php',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:p}).catch(function(){});}
+        }
+      })
       .catch(() => {
         document.getElementById('post-root').innerHTML = `
           <div class="post-hero" style="padding-top:200px;">

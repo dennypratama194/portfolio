@@ -83,6 +83,12 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
       });
     });
 
+    (function(){
+      var p = JSON.stringify({page:'blog',slug:null});
+      if(navigator.sendBeacon){navigator.sendBeacon('/api/track.php',new Blob([p],{type:'application/json'}));}
+      else{fetch('/api/track.php',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:p}).catch(function(){});}
+    })();
+
     fetch('/api/posts.php')
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(data => { allPosts = data; renderCards(allPosts); })
