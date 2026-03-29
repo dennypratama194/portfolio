@@ -30,8 +30,11 @@ $posts = $pdo->query(
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin — Posts</title>
+  <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+  <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="theme.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
@@ -108,13 +111,14 @@ $posts = $pdo->query(
   <aside class="sidebar">
     <div class="sidebar-logo">DP — Admin</div>
     <nav class="sidebar-nav">
+      <a class="sidebar-link" href="analytics.php">Dashboard</a>
       <a class="sidebar-link active" href="index.php">Posts</a>
       <a class="sidebar-link" href="edit.php">New Post</a>
       <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="analytics.php">Analytics</a>
       <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
     </nav>
     <div class="sidebar-bottom">
+      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
       <a class="sidebar-logout" href="logout.php">Sign out</a>
     </div>
   </aside>
@@ -179,5 +183,21 @@ $posts = $pdo->query(
     <?php endif; ?>
   </main>
 
+  <script>
+    (function(){
+      var btn = document.getElementById('theme-toggle');
+      function update(){
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? '◑ Light mode' : '◐ Dark mode';
+      }
+      update();
+      btn.addEventListener('click', function(){
+        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('admin-theme', next);
+        update();
+      });
+    })();
+  </script>
 </body>
 </html>
