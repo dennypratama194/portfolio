@@ -4,20 +4,50 @@ if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
 
 /* ── Stat cards ── */
-$total_views    = (int)$pdo->query('SELECT COUNT(*) FROM page_views')->fetchColumn();
-$views_today    = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
-$views_week     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARWEEK(viewed_at,1) = YEARWEEK(NOW(),1)')->fetchColumn();
-$views_month    = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
+$total_views     = (int)$pdo->query('SELECT COUNT(*) FROM page_views')->fetchColumn();
+$views_today     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
+$views_week      = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARWEEK(viewed_at,1) = YEARWEEK(NOW(),1)')->fetchColumn();
+$views_month     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
 $unique_visitors = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views')->fetchColumn();
 
-/* ── Breakdown by page type ── */
-$home_views = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE page_type='home'")->fetchColumn();
-$blog_views = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE page_type='blog'")->fetchColumn();
-$post_views = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE page_type='post'")->fetchColumn();
+/* ── Avg views per day ── */
+$active_days = (int)$pdo->query('SELECT COUNT(DISTINCT DATE(viewed_at)) FROM page_views')->fetchColumn();
+$avg_per_day = $active_days > 0 ? round($total_views / $active_days, 1) : 0;
 
-/* ── Top 5 posts ── */
+/* ── Avg pages per visitor ── */
+$avg_per_visitor = $unique_visitors > 0 ? round($total_views / $unique_visitors, 1) : 0;
+
+/* ── Returning vs new visitors ── */
+$returning = (int)$pdo->query(
+    'SELECT COUNT(*) FROM (
+        SELECT ip_hash FROM page_views
+        GROUP BY ip_hash
+        HAVING COUNT(DISTINCT DATE(viewed_at)) > 1
+    ) t'
+)->fetchColumn();
+$new_visitors = $unique_visitors - $returning;
+
+/* ── Per-page breakdown (views + unique visitors) ── */
+$breakdown = $pdo->query(
+    "SELECT page_type,
+            COUNT(*) AS views,
+            COUNT(DISTINCT ip_hash) AS unique_v
+     FROM page_views
+     GROUP BY page_type"
+)->fetchAll(PDO::FETCH_UNIQUE);
+// $breakdown['home']['views'], $breakdown['blog']['views'], etc.
+$home_views   = (int)($breakdown['home']['views']   ?? 0);
+$home_uniq    = (int)($breakdown['home']['unique_v'] ?? 0);
+$blog_views   = (int)($breakdown['blog']['views']   ?? 0);
+$blog_uniq    = (int)($breakdown['blog']['unique_v'] ?? 0);
+$post_views   = (int)($breakdown['post']['views']   ?? 0);
+$post_uniq    = (int)($breakdown['post']['unique_v'] ?? 0);
+
+/* ── Top 5 posts (views + unique visitors) ── */
 $top_posts = $pdo->query(
-    "SELECT pv.post_slug, p.title, COUNT(*) AS view_count
+    "SELECT pv.post_slug, p.title,
+            COUNT(*) AS view_count,
+            COUNT(DISTINCT pv.ip_hash) AS unique_count
      FROM page_views pv
      LEFT JOIN posts p ON p.slug = pv.post_slug
      WHERE pv.page_type = 'post' AND pv.post_slug IS NOT NULL
@@ -82,7 +112,11 @@ $max_views = max($chart_data) ?: 1;
 
     /* ── Stat cards ── */
     .stats-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr);
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin-bottom: 16px;
+    }
+    .stats-grid-2 {
+      display: grid; grid-template-columns: repeat(4, 1fr);
       gap: 16px; margin-bottom: 40px;
     }
     .stat-card {
@@ -98,6 +132,9 @@ $max_views = max($chart_data) ?: 1;
       font-size: 30px; font-weight: 600; letter-spacing: -0.03em; color: #ECEAE2;
     }
     .stat-value.accent { color: #E8320A; }
+    .stat-sub {
+      font-size: 11px; color: rgba(236,234,226,0.25); margin-top: 6px;
+    }
 
     /* ── Section heading ── */
     .section-heading {
@@ -105,6 +142,21 @@ $max_views = max($chart_data) ?: 1;
       color: rgba(236,234,226,0.3); margin-bottom: 16px;
       padding-bottom: 12px; border-bottom: 1px solid rgba(236,234,226,0.07);
     }
+
+    /* ── Visitor split ── */
+    .visitor-split {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 16px; margin-bottom: 40px;
+    }
+    .vsplit-card {
+      background: rgba(236,234,226,0.03);
+      border: 1px solid rgba(236,234,226,0.07);
+      padding: 24px; display: flex; align-items: center; gap: 20px;
+    }
+    .vsplit-icon { font-size: 24px; opacity: 0.4; }
+    .vsplit-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(236,234,226,0.3); margin-bottom: 6px; }
+    .vsplit-value { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
+    .vsplit-pct { font-size: 11px; color: rgba(236,234,226,0.25); margin-top: 4px; }
 
     /* ── Breakdown ── */
     .breakdown-grid {
@@ -114,10 +166,17 @@ $max_views = max($chart_data) ?: 1;
     .breakdown-card {
       background: rgba(236,234,226,0.03);
       border: 1px solid rgba(236,234,226,0.07);
-      padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px;
     }
-    .breakdown-name { font-size: 13px; color: rgba(236,234,226,0.5); }
-    .breakdown-count { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+    .breakdown-name {
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(236,234,226,0.35); margin-bottom: 16px;
+    }
+    .breakdown-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+    .breakdown-metric { font-size: 11px; color: rgba(236,234,226,0.35); }
+    .breakdown-num { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    .breakdown-num.dim { font-size: 16px; color: rgba(236,234,226,0.5); }
+    .breakdown-divider { border: none; border-top: 1px solid rgba(236,234,226,0.05); margin: 12px 0; }
 
     /* ── Table ── */
     table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
@@ -132,13 +191,14 @@ $max_views = max($chart_data) ?: 1;
       font-size: 14px; color: rgba(236,234,226,0.8); vertical-align: middle;
     }
     tr:hover td { background: rgba(236,234,226,0.02); }
-    .rank { color: rgba(236,234,226,0.25); font-size: 13px; }
+    .rank { color: rgba(236,234,226,0.25); font-size: 13px; width: 32px; }
     .post-title-cell { color: #ECEAE2; font-weight: 500; }
     .post-slug-cell { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 2px; }
     .view-bar-wrap { display: flex; align-items: center; gap: 12px; }
-    .view-bar-bg { flex: 1; height: 3px; background: rgba(236,234,226,0.07); }
+    .view-bar-bg { flex: 1; height: 3px; background: rgba(236,234,226,0.07); max-width: 160px; }
     .view-bar-fill { height: 100%; background: #E8320A; }
-    .view-count { font-size: 13px; color: rgba(236,234,226,0.5); min-width: 36px; text-align: right; }
+    .view-count { font-size: 13px; color: rgba(236,234,226,0.8); min-width: 28px; text-align: right; font-weight: 500; }
+    .uniq-count { font-size: 12px; color: rgba(236,234,226,0.35); min-width: 52px; }
 
     /* ── Bar chart ── */
     .chart-wrap {
@@ -184,44 +244,51 @@ $max_views = max($chart_data) ?: 1;
       <h1>Analytics</h1>
     </div>
 
-    <!-- ── Stat cards ── -->
+    <!-- ── Row 1: Core stats ── -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Total Views</div>
         <div class="stat-value"><?= number_format($total_views) ?></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Today</div>
-        <div class="stat-value accent"><?= number_format($views_today) ?></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">This Week</div>
-        <div class="stat-value"><?= number_format($views_week) ?></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">This Month</div>
-        <div class="stat-value"><?= number_format($views_month) ?></div>
+        <div class="stat-sub">all time</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Unique Visitors</div>
         <div class="stat-value"><?= number_format($unique_visitors) ?></div>
+        <div class="stat-sub">all time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value accent"><?= number_format($views_today) ?></div>
+        <div class="stat-sub">views</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Month</div>
+        <div class="stat-value"><?= number_format($views_month) ?></div>
+        <div class="stat-sub"><?= number_format($views_week) ?> this week</div>
       </div>
     </div>
 
-    <!-- ── Breakdown ── -->
-    <div class="section-heading">By Page</div>
-    <div class="breakdown-grid">
-      <div class="breakdown-card">
-        <span class="breakdown-name">Homepage</span>
-        <span class="breakdown-count"><?= number_format($home_views) ?></span>
+    <!-- ── Row 2: Avg stats ── -->
+    <div class="stats-grid-2">
+      <div class="stat-card">
+        <div class="stat-label">Avg Views / Day</div>
+        <div class="stat-value"><?= number_format($avg_per_day, 1) ?></div>
+        <div class="stat-sub">over <?= $active_days ?> active day<?= $active_days !== 1 ? 's' : '' ?></div>
       </div>
-      <div class="breakdown-card">
-        <span class="breakdown-name">Blog Listing</span>
-        <span class="breakdown-count"><?= number_format($blog_views) ?></span>
+      <div class="stat-card">
+        <div class="stat-label">Avg Pages / Visitor</div>
+        <div class="stat-value"><?= number_format($avg_per_visitor, 1) ?></div>
+        <div class="stat-sub">pages per session</div>
       </div>
-      <div class="breakdown-card">
-        <span class="breakdown-name">Blog Posts</span>
-        <span class="breakdown-count"><?= number_format($post_views) ?></span>
+      <div class="stat-card">
+        <div class="stat-label">Returning Visitors</div>
+        <div class="stat-value"><?= number_format($returning) ?></div>
+        <div class="stat-sub"><?= $unique_visitors > 0 ? round($returning / $unique_visitors * 100) : 0 ?>% of total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">New Visitors</div>
+        <div class="stat-value"><?= number_format($new_visitors) ?></div>
+        <div class="stat-sub"><?= $unique_visitors > 0 ? round($new_visitors / $unique_visitors * 100) : 0 ?>% of total</div>
       </div>
     </div>
 
@@ -233,13 +300,39 @@ $max_views = max($chart_data) ?: 1;
           <?php $pct = round($views / $max_views * 100); ?>
           <div class="chart-col">
             <div class="chart-bar-wrap">
-              <div class="chart-bar" style="height:<?= $pct ?>%"></div>
+              <div class="chart-bar" style="height:<?= $pct ?>%" title="<?= $views ?> views"></div>
             </div>
             <div class="chart-label"><?= date('d/m', strtotime($day)) ?></div>
             <div class="chart-value"><?= $views ?: '' ?></div>
           </div>
         <?php endforeach; ?>
       </div>
+    </div>
+
+    <!-- ── Per-page breakdown ── -->
+    <div class="section-heading">By Page</div>
+    <div class="breakdown-grid">
+      <?php
+        $pages = [
+          ['name' => 'Homepage',     'views' => $home_views, 'uniq' => $home_uniq],
+          ['name' => 'Blog Listing', 'views' => $blog_views, 'uniq' => $blog_uniq],
+          ['name' => 'Blog Posts',   'views' => $post_views, 'uniq' => $post_uniq],
+        ];
+      ?>
+      <?php foreach ($pages as $pg): ?>
+      <div class="breakdown-card">
+        <div class="breakdown-name"><?= $pg['name'] ?></div>
+        <div class="breakdown-row">
+          <span class="breakdown-metric">Views</span>
+          <span class="breakdown-num"><?= number_format($pg['views']) ?></span>
+        </div>
+        <hr class="breakdown-divider"/>
+        <div class="breakdown-row">
+          <span class="breakdown-metric">Unique visitors</span>
+          <span class="breakdown-num dim"><?= number_format($pg['uniq']) ?></span>
+        </div>
+      </div>
+      <?php endforeach; ?>
     </div>
 
     <!-- ── Top posts ── -->
@@ -254,6 +347,7 @@ $max_views = max($chart_data) ?: 1;
             <th>#</th>
             <th>Post</th>
             <th>Views</th>
+            <th>Unique Visitors</th>
           </tr>
         </thead>
         <tbody>
@@ -272,6 +366,7 @@ $max_views = max($chart_data) ?: 1;
                 <span class="view-count"><?= number_format($row['view_count']) ?></span>
               </div>
             </td>
+            <td class="uniq-count"><?= number_format($row['unique_count']) ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>
