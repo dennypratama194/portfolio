@@ -3,6 +3,7 @@
    but these defaults ensure a valid fallback for crawlers. */
 $title       = 'Post — Denny Pratama';
 $description = 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
+$canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=' . urlencode($_GET['slug']) : '');
 ?>
 <!DOCTYPE html>
 <html lang="en">

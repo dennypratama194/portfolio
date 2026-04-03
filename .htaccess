@@ -6,6 +6,10 @@ RewriteEngine On
 RewriteCond %{THE_REQUEST} /index\.html[\s?] [NC]
 RewriteRule ^index\.html$ / [R=301,L]
 
+# Redirect /*.php → clean URL (prevents duplicate content)
+RewriteCond %{THE_REQUEST} \s/([^.?]+)\.php[?\s] [NC]
+RewriteRule ^[^.?]+\.php$ /%1 [R=301,L]
+
 # Try .php first (e.g. /blog → blog.php, /post → post.php)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

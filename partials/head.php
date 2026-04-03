@@ -13,7 +13,7 @@
   <meta name="twitter:card" content="summary_large_image"/>
 
   <!-- Canonical -->
-  <link rel="canonical" href="https://dennypratama.com<?= htmlspecialchars(strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>"/>
+  <link rel="canonical" href="<?= htmlspecialchars($canonical ?? 'https://dennypratama.com' . strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>"/>
 
   <!-- JSON-LD -->
   <script type="application/ld+json">
