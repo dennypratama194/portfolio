@@ -2,11 +2,8 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: https://dennypratama.com');
 
-// ── KEYS ──────────────────────────────────────────────
-define('RECAPTCHA_SECRET', '6LdhaJMsAAAAAC8O1VtRY-f7D8_PouMwpQkVaTRu');
-define('WEB3FORMS_KEY',    '89b01a8a-31ae-4672-a5de-53c2c8d834bd');
+require_once __DIR__ . '/.secrets.php';
 define('RECAPTCHA_THRESHOLD', 0.5);
-// ──────────────────────────────────────────────────────
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);

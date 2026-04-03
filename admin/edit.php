@@ -1,7 +1,11 @@
 <?php
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
+
+$_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>'','scheduled_at'=>null,'published_at'=>null];
@@ -17,6 +21,9 @@ if ($id) {
 
 /* ── Handle form submit ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
+        http_response_code(403); exit('Forbidden.');
+    }
     $title             = trim($_POST['title']       ?? '');
     $slug              = trim($_POST['slug']        ?? '');
     $excerpt           = trim($_POST['excerpt']     ?? '');
@@ -342,6 +349,7 @@ $sched_val = !empty($post['scheduled_at'])
     <?php endif; ?>
 
     <form method="POST" action="edit.php<?= $id ? '?id='.$id : '' ?>" enctype="multipart/form-data">
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
 
       <div class="field">
         <label for="title">Title</label>

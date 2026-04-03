@@ -1,0 +1,5 @@
+# Block direct HTTP access to sensitive files (dot-files and JSON config)
+<FilesMatch "(^\.|\.json$)">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

@@ -1,10 +1,17 @@
 <?php
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
 
+$_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
+
 /* ── Delete action ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
+        http_response_code(403); exit('Forbidden.');
+    }
     $id = (int)($_POST['id'] ?? 0);
     if ($id) {
         /* remove image file if exists */
@@ -171,6 +178,7 @@ $posts = $pdo->query(
             <a class="action-link" href="edit.php?id=<?= $p['id'] ?>">Edit</a>
             <form method="POST" action="index.php" style="display:inline"
                   onsubmit="return confirm('Delete this post?')">
+              <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action" value="delete"/>
               <input type="hidden" name="id" value="<?= $p['id'] ?>"/>
               <button type="submit" class="action-link action-delete"

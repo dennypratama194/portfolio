@@ -1,5 +1,7 @@
 # Prevent execution of any server-side scripts in this directory
-<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|cgi|sh)$">
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pl|py|cgi|sh|shtml)$">
+    Order allow,deny
     Deny from all
 </FilesMatch>
 Options -Indexes
+php_flag engine off

@@ -1,4 +1,6 @@
 <?php
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 require __DIR__ . '/../api/db.php';
 
@@ -12,13 +14,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = trim($_POST['username'] ?? '');
     $pass = $_POST['password'] ?? '';
 
-    if ($user === ADMIN_USER && password_verify($pass, ADMIN_PASS_HASH)) {
+    /* Brute force lockout */
+    $_SESSION['login_attempts']    ??= 0;
+    $_SESSION['login_locked_until'] ??= 0;
+
+    if (time() < $_SESSION['login_locked_until']) {
+        $mins = ceil(($_SESSION['login_locked_until'] - time()) / 60);
+        $error = "Too many failed attempts. Try again in {$mins} minute(s).";
+    } elseif ($user === ADMIN_USER && password_verify($pass, ADMIN_PASS_HASH)) {
+        $_SESSION['login_attempts']    = 0;
+        $_SESSION['login_locked_until'] = 0;
         session_regenerate_id(true);
         $_SESSION['authed'] = true;
         header('Location: index.php');
         exit;
+    } else {
+        $_SESSION['login_attempts']++;
+        if ($_SESSION['login_attempts'] >= 5) {
+            $_SESSION['login_locked_until'] = time() + 900; // 15 minutes
+            $_SESSION['login_attempts']     = 0;
+            $error = 'Too many failed attempts. Try again in 15 minutes.';
+        } else {
+            $remaining = 5 - $_SESSION['login_attempts'];
+            $error = "Invalid username or password. {$remaining} attempt(s) remaining.";
+        }
     }
-    $error = 'Invalid username or password.';
 }
 ?>
 <!DOCTYPE html>

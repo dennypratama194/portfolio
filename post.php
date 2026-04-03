@@ -38,21 +38,25 @@ $description = 'Read the latest articles on UI/UX design, development, and AI by
 
     const CAT_LABELS = { uiux: 'UI/UX', development: 'Development', ai: 'AI' };
 
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     function renderPost(post) {
-      document.title = post.title + ' — Denny Pratama';
+      document.title = escHtml(post.title) + ' — Denny Pratama';
 
       document.getElementById('post-root').innerHTML = `
         <div class="post-hero">
           <div class="post-hero-meta">
             <a class="post-hero-back" href="/blog">← Blog</a>
-            ${post.category ? `<span class="cat-badge">${CAT_LABELS[post.category] || post.category}</span>` : ''}
+            ${post.category ? `<span class="cat-badge">${escHtml(CAT_LABELS[post.category] || post.category)}</span>` : ''}
             <span>${formatDate(post.published_at)}</span>
           </div>
-          <h1 class="post-hero-title">${post.title}</h1>
+          <h1 class="post-hero-title">${escHtml(post.title)}</h1>
         </div>
 
         ${post.featured_image
-          ? `<img class="post-featured-img" src="${post.featured_image}" alt="${post.title}"/>`
+          ? `<img class="post-featured-img" src="${escHtml(post.featured_image)}" alt="${escHtml(post.title)}"/>`
           : ''
         }
 

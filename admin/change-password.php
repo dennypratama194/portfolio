@@ -1,12 +1,19 @@
 <?php
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
 require __DIR__ . '/../api/db.php';
+
+$_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 $error   = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
+        http_response_code(403); exit('Forbidden.');
+    }
     $new     = $_POST['new_password']     ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
@@ -133,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($success): ?><div class="msg-success"><?= htmlspecialchars($success) ?></div><?php endif; ?>
 
     <form method="POST" action="change-password.php">
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
       <div class="field">
         <label for="new_password">New Password</label>
         <input type="password" id="new_password" name="new_password"

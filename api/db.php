@@ -1,21 +1,18 @@
 <?php
 /* ════════════════════════════════════════
    DATABASE CONFIGURATION
-   Fill in your rumahweb.com DB credentials
-   (found in cPanel → MySQL Databases)
+   Credentials live in .secrets.php (gitignored).
+   Copy .secrets.php.example → .secrets.php on a new server.
 ════════════════════════════════════════ */
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'digh8452_portfolio');
-define('DB_USER', 'digh8452_denny');
-define('DB_PASS', 'Mycsapin87');
+require_once __DIR__ . '/.secrets.php';
 
-/* ── Admin credentials ── */
-define('ADMIN_USER', 'denny');
+/* ── Admin password hash ── */
 $_hash_file = __DIR__ . '/.admin_hash';
-define('ADMIN_PASS_HASH', file_exists($_hash_file)
-    ? trim(file_get_contents($_hash_file))
-    : '$2y$10$CFUblz69PYpZkGj7v.LnV.yOFuFa8B7Q3WVzXvkfFMatgnpdy7UHu'
-);
+if (!file_exists($_hash_file)) {
+    http_response_code(503);
+    die(json_encode(['error' => 'Admin not configured. Run setup first.']));
+}
+define('ADMIN_PASS_HASH', trim(file_get_contents($_hash_file)));
 unset($_hash_file);
 
 /* ── DB connection ── */

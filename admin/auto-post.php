@@ -1,6 +1,10 @@
 <?php
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+
+$_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 $config_file = __DIR__ . '/../api/.auto_post_config.json';
 $config = file_exists($config_file)
@@ -11,6 +15,9 @@ $saved = false;
 
 /* ── Save settings ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
+        http_response_code(403); exit('Forbidden.');
+    }
     $action = $_POST['action'] ?? 'save';
 
     if ($action === 'regenerate_token') {
@@ -249,6 +256,7 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
         <div class="toggle-sub">When enabled, the cron job will generate and publish a post automatically.</div>
       </div>
       <form method="POST" id="toggle-form">
+        <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
         <label class="toggle-switch" title="<?= $enabled ? 'Enabled' : 'Disabled' ?>">
           <input type="checkbox" name="enabled" <?= $enabled ? 'checked' : '' ?>
                  onchange="document.getElementById('toggle-form').submit()"/>
@@ -262,6 +270,7 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
     <!-- ── Settings form ── -->
     <div class="section-heading">API Keys</div>
     <form method="POST">
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
       <input type="hidden" name="action" value="save"/>
 
       <div class="field">
@@ -346,6 +355,7 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
     <!-- ── Regenerate token ── -->
     <form method="POST" style="margin-bottom:40px"
           onsubmit="return confirm('This will invalidate your current cron URL. Update it in cPanel after.')">
+      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
       <input type="hidden" name="action" value="regenerate_token"/>
       <button type="submit" class="btn-secondary">Regenerate secret token</button>
     </form>

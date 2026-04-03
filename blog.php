@@ -41,6 +41,10 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
   <script>
     const CAT_LABELS = { uiux: 'UI/UX', development: 'Development', ai: 'AI' };
 
+    function escHtml(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     function formatDate(iso) {
       if (!iso) return '';
       return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -57,13 +61,13 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
       grid.innerHTML = posts.map(post => `
         <a class="blog-card" href="/post?slug=${encodeURIComponent(post.slug)}">
           ${post.featured_image
-            ? `<img class="blog-card-img" src="${post.featured_image}" alt="${post.title}" loading="lazy"/>`
+            ? `<img class="blog-card-img" src="${escHtml(post.featured_image)}" alt="${escHtml(post.title)}" loading="lazy"/>`
             : `<div class="blog-card-img"></div>`
           }
-          ${post.category ? `<span class="blog-card-cat">${CAT_LABELS[post.category] || post.category}</span>` : ''}
+          ${post.category ? `<span class="blog-card-cat">${escHtml(CAT_LABELS[post.category] || post.category)}</span>` : ''}
           <div class="blog-card-meta">${formatDate(post.published_at)}</div>
-          <div class="blog-card-title">${post.title}</div>
-          ${post.excerpt ? `<div class="blog-card-excerpt">${post.excerpt}</div>` : ''}
+          <div class="blog-card-title">${escHtml(post.title)}</div>
+          ${post.excerpt ? `<div class="blog-card-excerpt">${escHtml(post.excerpt)}</div>` : ''}
           <div class="blog-card-readmore">Read &rarr;</div>
         </a>
       `).join('');
