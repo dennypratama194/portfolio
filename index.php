@@ -133,9 +133,28 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
           </div>
         </a>
 
+        <a class="project-panel" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
+          <div class="proj-head">
+            <div class="proj-idx">03 — 2026</div>
+            <div class="proj-name">Brenom Systems</div>
+          </div>
+          <div class="proj-visual vis-dash">
+            <div class="vh-sidebar"></div>
+            <div class="vh-chart"></div>
+            <div class="vh-dot"></div>
+          </div>
+          <div class="proj-foot">
+            <div class="proj-tags">
+              <span class="ptag">Web Design</span>
+              <span class="ptag">Web Development</span>
+            </div>
+            <span class="proj-year">2025</span>
+          </div>
+        </a>
+
         <a class="project-panel" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
-            <div class="proj-idx">03 — Ongoing</div>
+            <div class="proj-idx">04 — Ongoing</div>
             <div class="proj-name">Digital Revo</div>
           </div>
           <div class="proj-visual vis-dev">
@@ -155,7 +174,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
         <a class="project-panel" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
           <div class="proj-head">
-            <div class="proj-idx">04 — 2025</div>
+            <div class="proj-idx">05 — 2025</div>
             <div class="proj-name">MoRe</div>
           </div>
           <div class="proj-visual vis-dash">
