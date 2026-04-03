@@ -332,8 +332,10 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
       </div>
 
       <div class="hint" style="margin-top:16px">
-        In cPanel → Cron Jobs, set the command to:<br>
-        <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>"</code>
+        In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
+        <code style="color:rgba(236,234,226,0.6)">php /home/digh8452/public_html/dennypratama.com/api/auto-post.php <?= htmlspecialchars($token) ?></code><br><br>
+        Or via wget (two requests, each under 30s):<br>
+        <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
       </div>
 
       <?php if ($last_run): ?>
@@ -411,30 +413,54 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
       });
     }
 
-    /* ── Run Now ── */
+    /* ── Run Now (two-phase) ── */
     var runBtn    = document.getElementById('run-btn');
     var runStatus = document.getElementById('run-status');
+    var TOKEN     = '<?= addslashes($token) ?>';
+
     if (runBtn) {
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         runStatus.className = 'run-status';
-        runStatus.textContent = 'Running… this may take 20–30 seconds.';
-        fetch('<?= '/api/auto-post.php?token=' . urlencode($token) ?>')
+        runStatus.textContent = 'Phase 1 — Generating content with Claude…';
+
+        /* Phase 1: Claude generates post */
+        fetch('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
           .then(function(r){ return r.json(); })
-          .then(function(d){
-            if (d.ok) {
-              runStatus.className = 'run-status ok';
-              runStatus.textContent = '✓ Published: "' + d.title + '"';
-              setTimeout(function(){ location.reload(); }, 2000);
-            } else {
+          .then(function(d1){
+            if (!d1.ok) {
               runStatus.className = 'run-status err';
-              runStatus.textContent = '✗ ' + (d.error || 'Unknown error');
+              runStatus.textContent = '✗ Phase 1 failed: ' + (d1.error || 'Unknown error');
               runBtn.disabled = false;
+              return;
             }
+
+            runStatus.textContent = 'Phase 2 — Generating featured image with DALL-E…';
+
+            /* Phase 2: DALL-E generates image */
+            var p2url = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN)
+              + '&phase=2'
+              + '&post_id=' + d1.post_id
+              + '&image_prompt=' + encodeURIComponent(d1.image_prompt || '');
+
+            fetch(p2url)
+              .then(function(r){ return r.json(); })
+              .then(function(d2){
+                runStatus.className = 'run-status ok';
+                runStatus.textContent = '✓ Published: "' + d1.title + '"'
+                  + (d2.image ? ' (with image)' : ' (no image)');
+                setTimeout(function(){ location.reload(); }, 2500);
+              })
+              .catch(function(){
+                /* Phase 2 failed but post was already created in phase 1 */
+                runStatus.className = 'run-status ok';
+                runStatus.textContent = '✓ Published: "' + d1.title + '" (image generation failed)';
+                setTimeout(function(){ location.reload(); }, 2500);
+              });
           })
           .catch(function(){
             runStatus.className = 'run-status err';
-            runStatus.textContent = '✗ Request failed.';
+            runStatus.textContent = '✗ Request failed. Check your API keys and enable status.';
             runBtn.disabled = false;
           });
       });
