@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
+<<<<<<< HEAD
       "Bash(find c:UsersADMINportfolio -name .gitignore -o -name *.md)"
+=======
+      "Bash(node -e \":*)",
+      "Bash(node build.js)",
+      "Bash(rm build.js)",
+      "Bash(cp \"wordsburg.png\" \"client-wordsburg.png\")",
+      "Bash(cp \"Xertra logo.png\" \"client-xertra.png\")",
+      "Bash(cp \"Group 15972.png\" \"client-ispapp.png\")",
+      "Bash(cp \"Group 16010.png\" \"client-socialbee.png\")",
+      "Bash(cp \"Group 3257.png\" \"client-mariwisata.png\")"
+>>>>>>> 509c88019b4db28d026c69340464207923600834
     ]
   }
 }
