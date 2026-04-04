@@ -12,9 +12,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/nav.php'; ?>
 
 <main>
-  <!-- ══════════════════════════════════════
-       HERO
-  ══════════════════════════════════════ -->
   <section id="hero">
     <div class="hero-overline">
       <div class="hero-overline-dot"></div>
@@ -55,7 +52,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ── TICKER ── -->
   <div class="ticker-wrap">
     <div class="ticker-track">
       <span class="ticker-item">UI/UX Design<span class="ticker-sep">◆</span></span>
@@ -78,9 +74,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       WORK — HORIZONTAL SCROLL
-  ══════════════════════════════════════ -->
   <section id="work">
     <div class="work-header">
       <div class="section-meta" style="margin-bottom:0;">
@@ -199,9 +192,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════
-       ABOUT / MANIFESTO
-  ══════════════════════════════════════ -->
   <section id="about">
     <div class="about-grid">
 
@@ -282,9 +272,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════
-       APPROACH
-  ══════════════════════════════════════ -->
   <section id="approach">
     <h2 class="sr-only">My Process</h2>
     <div class="approach-eyebrow">03 — Process</div>
@@ -312,9 +299,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════
-       CLIENTS
-  ══════════════════════════════════════ -->
   <section id="clients">
     <div class="clients-header">
       <h2 class="sr-only">Clients</h2>
@@ -355,9 +339,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════
-       BLOG PREVIEW
-  ══════════════════════════════════════ -->
   <section id="blog-preview">
     <div class="bp-header">
       <div class="bp-eyebrow">05 — Writing</div>
@@ -374,9 +355,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════
-       CTA
-  ══════════════════════════════════════ -->
   <section id="cta">
     <div class="cta-bg-type">Let's go.</div>
     <div class="cta-inner">
@@ -405,7 +383,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=5" defer></script>
+  <script src="/script.js?v=6" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

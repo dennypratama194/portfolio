@@ -242,11 +242,10 @@ $max_views = max($chart_data) ?: 1;
 <body>
 
   <aside class="sidebar">
-    <div class="sidebar-logo">DP — Admin</div>
+    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
     <nav class="sidebar-nav">
       <a class="sidebar-link active" href="analytics.php">Dashboard</a>
       <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link" href="edit.php">New Post</a>
       <a class="sidebar-link" href="auto-post.php">Auto Post</a>
       <a class="sidebar-link" href="change-password.php">Change Password</a>
       <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>

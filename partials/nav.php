@@ -1,8 +1,6 @@
-  <!-- ── CUSTOM CURSOR ── -->
   <div id="cursor-ring"></div>
   <div id="cursor-dot"></div>
 
-  <!-- ── NAV ── -->
   <nav>
     <a class="nav-logo" href="/">
       <img src="/assets/logo.png" alt="Denny Pratama" class="nav-logo-img" fetchpriority="high" loading="eager"/>

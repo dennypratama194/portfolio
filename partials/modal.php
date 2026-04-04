@@ -1,4 +1,3 @@
-  <!-- ── START A PROJECT MODAL ── -->
   <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true" inert>
     <div class="pmodal-inner">
       <div class="pmodal-header">

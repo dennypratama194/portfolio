@@ -1007,11 +1007,11 @@
       font-size: 18px; letter-spacing: -0.02em;
       color: rgba(236,234,226,0.4);
     }
-    .footer-copy { font-size: 12px; color: rgba(236,234,226,0.2); letter-spacing: 0.04em; }
+    .footer-copy { font-size: 12px; color: rgba(236,234,226,0.45); letter-spacing: 0.04em; }
     .footer-socials { display: flex; gap: 28px; }
     .footer-socials a {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
+      color: rgba(236,234,226,0.5); text-decoration: none; transition: color 0.2s;
     }
     .footer-socials a:hover { color: rgba(236,234,226,0.7); }
 
@@ -1097,7 +1097,7 @@
       transition: border-color 0.25s;
     }
     .pm-input::placeholder { color: rgba(236,234,226,0.2); }
-    .pm-input:focus { border-bottom-color: var(--red); }
+    .pm-input:focus { border-bottom-color: var(--red); box-shadow: 0 2px 0 0 var(--red); }
     .pm-textarea { resize: none; height: 110px; line-height: 1.7; }
 
     .pm-btn-send {
@@ -1516,6 +1516,25 @@
     .post-body ul, .post-body ol { padding-left: 24px; margin-bottom: 28px; }
     .post-body li  { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--ink-2); margin-bottom: 6px; }
     .post-body img { width: 100%; height: auto; display: block; margin: 40px 0; border: 1px solid var(--border); }
+
+    .post-cta {
+      margin: 0 var(--pad-x) 0;
+      padding: 48px 56px;
+      background: var(--ink);
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      flex-wrap: wrap;
+    }
+    .post-cta-label {
+      font-size: 20px; font-weight: 500; color: var(--paper);
+      letter-spacing: -0.01em; margin: 0;
+    }
+    .post-cta-btn {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--paper); background: var(--red);
+      padding: 14px 28px; text-decoration: none;
+      transition: opacity 0.2s; white-space: nowrap;
+    }
+    .post-cta-btn:hover { opacity: 0.85; }
 
     .post-footer {
       padding: 64px var(--pad-x); border-top: 1px solid var(--border);

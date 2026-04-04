@@ -63,6 +63,11 @@ $canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=
 
         <div class="post-body">${post.body || ''}</div>
 
+        <div class="post-cta">
+          <p class="post-cta-label">Enjoyed this? Let's build something.</p>
+          <a class="post-cta-btn js-open-modal" href="#">Start a project →</a>
+        </div>
+
         <div class="post-footer">
           <a class="post-footer-back" href="/blog">← All posts</a>
         </div>
@@ -84,7 +89,7 @@ $canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=
           </div>`;
       });
   </script>
-  <script src="/script.js?v=3" defer></script>
+  <script src="/script.js?v=6" defer></script>
   <script>var PAGE='post',SLUG=slug;</script>
   <script src="/api/tracker.js" defer></script>
 </body>
