@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['login_locked_until'] = 0;
         session_regenerate_id(true);
         $_SESSION['authed'] = true;
+        session_write_close();
         header('Location: analytics.php');
         exit;
     } else {
