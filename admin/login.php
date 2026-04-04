@@ -5,7 +5,7 @@ session_start();
 require __DIR__ . '/../api/db.php';
 
 if (isset($_SESSION['authed']) && $_SESSION['authed'] === true) {
-    header('Location: analytics.php');
+    header('Location: /admin/analytics');
     exit;
 }
 
@@ -24,10 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($user === ADMIN_USER && password_verify($pass, ADMIN_PASS_HASH)) {
         $_SESSION['login_attempts']    = 0;
         $_SESSION['login_locked_until'] = 0;
-        session_regenerate_id(true);
         $_SESSION['authed'] = true;
         session_write_close();
-        header('Location: analytics.php');
+        header('Location: /admin/analytics');
         exit;
     } else {
         $_SESSION['login_attempts']++;
