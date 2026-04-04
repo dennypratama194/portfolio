@@ -5,7 +5,7 @@ session_start();
 require __DIR__ . '/../api/db.php';
 
 if (isset($_SESSION['authed']) && $_SESSION['authed'] === true) {
-    header('Location: index.php');
+    header('Location: analytics.php');
     exit;
 }
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['login_locked_until'] = 0;
         session_regenerate_id(true);
         $_SESSION['authed'] = true;
-        header('Location: index.php');
+        header('Location: analytics.php');
         exit;
     } else {
         $_SESSION['login_attempts']++;

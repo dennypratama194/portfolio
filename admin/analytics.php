@@ -7,7 +7,7 @@ require __DIR__ . '/../api/db.php';
 
 /* ── Stat cards ── */
 $total_views     = (int)$pdo->query('SELECT COUNT(*) FROM page_views')->fetchColumn();
-$views_today     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
+$views_today     = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
 $views_week      = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARWEEK(viewed_at,1) = YEARWEEK(NOW(),1)')->fetchColumn();
 $views_month     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
 $unique_visitors = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views')->fetchColumn();
