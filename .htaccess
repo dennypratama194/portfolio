@@ -10,6 +10,20 @@ RewriteRule ^index\.html$ / [R=301,L]
 RewriteCond %{THE_REQUEST} \s/([^.?]+)\.php[?\s] [NC]
 RewriteRule ^[^.?]+\.php$ /%1 [R=301,L]
 
+# ── Ebook platform routes ──────────────────────────────
+# /ebook/recover  → recover.php
+RewriteRule ^ebook/recover/?$ recover.php [NC,L]
+
+# /ebook/SLUG     → ebook.php?slug=SLUG  (sales page)
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/api/   [NC]
+RewriteRule ^ebook/([A-Za-z0-9_-]+)/?$ ebook.php?slug=$1 [NC,QSA,L]
+
+# /read/SLUG      → read.php?slug=SLUG  (?t=token preserved via QSA)
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/api/   [NC]
+RewriteRule ^read/([A-Za-z0-9_-]+)/?$ read.php?slug=$1 [NC,QSA,L]
+
 # Try .php first (e.g. /blog → blog.php, /post → post.php)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -324,6 +324,7 @@ $sched_val = !empty($post['scheduled_at'])
       <a class="sidebar-link" href="analytics.php">Dashboard</a>
       <a class="sidebar-link" href="index.php">Posts</a>
       <a class="sidebar-link" href="auto-post.php">Auto Post</a>
+      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
       <a class="sidebar-link" href="change-password.php">Change Password</a>
       <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
     </nav>

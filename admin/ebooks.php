@@ -14,21 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
     $id = (int)($_POST['id'] ?? 0);
     if ($id) {
-        /* remove image file if exists */
-        $row = $pdo->prepare('SELECT featured_image FROM posts WHERE id = ?');
-        $row->execute([$id]);
-        $img = $row->fetchColumn();
-        if ($img && file_exists(__DIR__ . '/uploads/' . $img)) {
-            unlink(__DIR__ . '/uploads/' . $img);
-        }
-        $pdo->prepare('DELETE FROM posts WHERE id = ?')->execute([$id]);
+        $pdo->prepare('DELETE FROM ebook_products WHERE id = ?')->execute([$id]);
     }
-    header('Location: index.php');
+    header('Location: ebooks.php');
     exit;
 }
 
-$posts = $pdo->query(
-    'SELECT id, title, slug, is_published, published_at, scheduled_at, created_at FROM posts ORDER BY created_at DESC'
+/* ── Fetch products with purchase count ── */
+$products = $pdo->query(
+    'SELECT p.*,
+            (SELECT COUNT(*) FROM ebook_purchases pu WHERE pu.product_id = p.id) AS purchase_count
+     FROM ebook_products p
+     ORDER BY p.created_at DESC'
 )->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -36,7 +33,7 @@ $posts = $pdo->query(
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin — Posts</title>
+  <title>Admin — Ebooks</title>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -93,15 +90,14 @@ $posts = $pdo->query(
       font-size: 14px; color: rgba(236,234,226,0.8); vertical-align: middle;
     }
     tr:hover td { background: rgba(236,234,226,0.02); }
-    .post-title { color: #ECEAE2; font-weight: 500; }
-    .post-slug { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 3px; }
+    .product-title { color: #ECEAE2; font-weight: 500; }
+    .product-slug { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 3px; }
     .badge {
       display: inline-block; font-size: 10px; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 3px 8px;
     }
-    .badge-pub      { background: rgba(232,50,10,0.15); color: #E8320A; }
-    .badge-draft    { background: rgba(236,234,226,0.07); color: rgba(236,234,226,0.4); }
-    .badge-scheduled { background: rgba(255,180,0,0.12); color: #f5a623; }
+    .badge-active  { background: rgba(232,50,10,0.15); color: #E8320A; }
+    .badge-draft   { background: rgba(236,234,226,0.07); color: rgba(236,234,226,0.4); }
     .action-link {
       font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
       color: rgba(236,234,226,0.35); text-decoration: none; margin-right: 16px;
@@ -111,6 +107,7 @@ $posts = $pdo->query(
     .action-delete { color: rgba(232,50,10,0.5); }
     .action-delete:hover { color: #E8320A; }
     .empty { padding: 64px 0; text-align: center; color: rgba(236,234,226,0.2); font-size: 14px; }
+    .price { font-variant-numeric: tabular-nums; }
   </style>
 </head>
 <body>
@@ -119,9 +116,9 @@ $posts = $pdo->query(
     <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
     <nav class="sidebar-nav">
       <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link active" href="index.php">Posts</a>
+      <a class="sidebar-link" href="index.php">Posts</a>
       <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
+      <a class="sidebar-link active" href="ebooks.php">Ebooks</a>
       <a class="sidebar-link" href="change-password.php">Change Password</a>
       <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
     </nav>
@@ -133,51 +130,45 @@ $posts = $pdo->query(
 
   <main class="main">
     <div class="top-bar">
-      <h1>Posts</h1>
-      <a class="btn-new" href="edit.php">+ New Post</a>
+      <h1>Ebooks</h1>
+      <a class="btn-new" href="ebook-edit.php">+ New Product</a>
     </div>
 
-    <?php if (empty($posts)): ?>
-      <div class="empty">No posts yet. <a href="edit.php" style="color:#E8320A;text-decoration:none;">Write your first one →</a></div>
+    <?php if (empty($products)): ?>
+      <div class="empty">No ebook products yet. <a href="ebook-edit.php" style="color:#E8320A;text-decoration:none;">Create your first one →</a></div>
     <?php else: ?>
     <table>
       <thead>
         <tr>
           <th>Title</th>
+          <th>Price</th>
           <th>Status</th>
-          <th>Date</th>
+          <th>Purchases</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($posts as $p): ?>
+        <?php foreach ($products as $p): ?>
         <tr>
           <td>
-            <div class="post-title"><?= htmlspecialchars($p['title']) ?></div>
-            <div class="post-slug">/<?= htmlspecialchars($p['slug']) ?></div>
+            <div class="product-title"><?= htmlspecialchars($p['title']) ?></div>
+            <div class="product-slug">/<?= htmlspecialchars($p['slug']) ?></div>
           </td>
+          <td class="price">IDR <?= number_format((int)$p['price'], 0, ',', '.') ?></td>
           <td>
-            <?php if ($p['is_published']): ?>
-              <span class="badge badge-pub">Published</span>
-            <?php elseif (!empty($p['scheduled_at'])): ?>
-              <span class="badge badge-scheduled">Scheduled</span>
+            <?php if ($p['is_active']): ?>
+              <span class="badge badge-active">Active</span>
             <?php else: ?>
-              <span class="badge badge-draft">Draft</span>
+              <span class="badge badge-draft">Inactive</span>
             <?php endif; ?>
           </td>
+          <td><?= (int)$p['purchase_count'] ?></td>
           <td>
-            <?php if ($p['is_published'] && $p['published_at']): ?>
-              <?= date('d M Y', strtotime($p['published_at'])) ?>
-            <?php elseif (!empty($p['scheduled_at'])): ?>
-              <?= date('d M Y, H:i', strtotime($p['scheduled_at'])) ?>
-            <?php else: ?>
-              —
-            <?php endif; ?>
-          </td>
-          <td>
-            <a class="action-link" href="edit.php?id=<?= $p['id'] ?>">Edit</a>
-            <form method="POST" action="index.php" style="display:inline"
-                  onsubmit="return confirm('Delete this post?')">
+            <a class="action-link" href="ebook-edit.php?id=<?= $p['id'] ?>">Edit</a>
+            <a class="action-link" href="ebook-chapters.php?product_id=<?= $p['id'] ?>">Chapters</a>
+            <a class="action-link" href="ebook-purchases.php?product_id=<?= $p['id'] ?>">Purchases</a>
+            <form method="POST" action="ebooks.php" style="display:inline"
+                  onsubmit="return confirm('Delete this product and all its chapters? This cannot be undone.')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action" value="delete"/>
               <input type="hidden" name="id" value="<?= $p['id'] ?>"/>
