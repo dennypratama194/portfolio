@@ -9,6 +9,7 @@
       <a class="nav-link" href="/#work">Work</a>
       <a class="nav-link" href="/#about">About</a>
       <a class="nav-link" href="/blog">Blog</a>
+      <a class="nav-link" href="/ebooks">Ebooks</a>
       <a class="nav-link" href="/#cta">Contact</a>
       <a class="nav-cta js-open-modal" href="#">Available →</a>
     </div>
@@ -20,6 +21,7 @@
     <a class="nav-mobile-link" href="/#work">Work</a>
     <a class="nav-mobile-link" href="/#about">About</a>
     <a class="nav-mobile-link" href="/blog">Blog</a>
+    <a class="nav-mobile-link" href="/ebooks">Ebooks</a>
     <a class="nav-mobile-link" href="/#cta">Contact</a>
     <a class="nav-mobile-cta js-open-modal" href="#">Start a project →</a>
   </div>
