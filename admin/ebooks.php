@@ -167,6 +167,7 @@ $products = $pdo->query(
             <a class="action-link" href="ebook-edit.php?id=<?= $p['id'] ?>">Edit</a>
             <a class="action-link" href="ebook-chapters.php?product_id=<?= $p['id'] ?>">Chapters</a>
             <a class="action-link" href="ebook-purchases.php?product_id=<?= $p['id'] ?>">Purchases</a>
+            <a class="action-link" href="/ebook/<?= rawurlencode($p['slug']) ?>" target="_blank">View →</a>
             <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this product and all its chapters? This cannot be undone.')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
