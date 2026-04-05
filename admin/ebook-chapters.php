@@ -394,7 +394,7 @@ if ($chapter_id && !$edit_chapter) {
                 <div class="chapter-controls">
                   <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="up" title="Move up">↑</button>
                   <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="down" title="Move down">↓</button>
-                  <form method="POST" action="ebook-chapters.php?product_id=<?= $product_id ?>"
+                  <form method="POST" action="?product_id=<?= $product_id ?>"
                         style="display:inline" onsubmit="return confirm('Delete this chapter? This cannot be undone.')">
                     <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
                     <input type="hidden" name="action" value="delete_chapter"/>
@@ -408,7 +408,7 @@ if ($chapter_id && !$edit_chapter) {
         </div>
 
         <div class="panel-list-footer">
-          <form method="POST" action="ebook-chapters.php?product_id=<?= $product_id ?>">
+          <form method="POST" action="?product_id=<?= $product_id ?>">
             <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
             <input type="hidden" name="action" value="add_chapter"/>
             <button type="submit" class="btn-add-chapter">+ Add Chapter</button>
@@ -435,7 +435,7 @@ if ($chapter_id && !$edit_chapter) {
             <?php endif; ?>
 
             <form method="POST"
-                  action="ebook-chapters.php?product_id=<?= $product_id ?>&chapter_id=<?= $chapter_id ?>">
+                  action="?product_id=<?= $product_id ?>&chapter_id=<?= $chapter_id ?>">
               <input type="hidden" name="csrf"       value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action"     value="save_chapter"/>
               <input type="hidden" name="chapter_id" value="<?= $chapter_id ?>"/>
