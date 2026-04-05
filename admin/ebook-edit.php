@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </ul>
     <?php endif; ?>
 
-    <form method="POST" action="ebook-edit.php<?= $id ? '?id='.$id : '' ?>" enctype="multipart/form-data">
+    <form method="POST" action="<?= $id ? '?id='.$id : '' ?>" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
 
       <div class="field">
