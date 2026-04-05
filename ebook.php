@@ -360,7 +360,7 @@ $jsonld = json_encode([
         <?php endif; ?>
       </div>
 
-      <form class="eb-form" method="POST" action="/api/ebook-checkout.php">
+      <form class="eb-form" method="POST" action="/api/ebook-checkout">
         <input type="hidden" name="product_slug" value="<?= htmlspecialchars($slug) ?>"/>
         <input class="eb-email" type="email" name="email"
                placeholder="Your email address" required
@@ -534,7 +534,7 @@ $jsonld = json_encode([
       One payment, permanent access. No subscriptions, no DRM, no expiry.
     </p>
 
-    <form class="eb-form" method="POST" action="/api/ebook-checkout.php">
+    <form class="eb-form" method="POST" action="/api/ebook-checkout">
       <input type="hidden" name="product_slug" value="<?= htmlspecialchars($slug) ?>"/>
       <input class="eb-email" type="email" name="email"
              placeholder="Your email address" required
