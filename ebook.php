@@ -19,8 +19,7 @@ $product = $stmt->fetch();
 
 if (!$product) {
     http_response_code(404);
-    include __DIR__ . '/404.php';
-    exit;
+    exit('Ebook not found.');
 }
 
 /* ── Load published chapters ── */
