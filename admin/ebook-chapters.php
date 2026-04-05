@@ -2,19 +2,19 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
-if (!$product_id) { header('Location: ebooks.php'); exit; }
+if (!$product_id) { header('Location: /admin/ebooks'); exit; }
 
 /* ── Load product ── */
 $stmt = $pdo->prepare('SELECT * FROM ebook_products WHERE id = ?');
 $stmt->execute([$product_id]);
 $product = $stmt->fetch();
-if (!$product) { header('Location: ebooks.php'); exit; }
+if (!$product) { header('Location: /admin/ebooks'); exit; }
 
 $chapter_id   = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : null;
 $errors       = [];
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ins = $pdo->prepare('INSERT INTO ebook_chapters (product_id, title, slug, sort_order) VALUES (?, ?, ?, ?)');
         $ins->execute([$product_id, 'Untitled Chapter', $new_slug, $next_order]);
         $new_id = (int)$pdo->lastInsertId();
-        header("Location: ebook-chapters.php?product_id=$product_id&chapter_id=$new_id");
+        header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$new_id");
         exit;
     }
 
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->prepare('DELETE FROM ebook_chapters WHERE id = ? AND product_id = ?')
                 ->execute([$del_id, $product_id]);
         }
-        header("Location: ebook-chapters.php?product_id=$product_id");
+        header("Location: /admin/ebook-chapters?product_id=$product_id");
         exit;
     }
 
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors) && $cid) {
             $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, body=?, is_published=? WHERE id=? AND product_id=?')
                 ->execute([$title, $slug, $body, $is_published, $cid, $product_id]);
-            header("Location: ebook-chapters.php?product_id=$product_id&chapter_id=$cid");
+            header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$cid");
             exit;
         }
 

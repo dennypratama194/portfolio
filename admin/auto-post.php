@@ -2,7 +2,7 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
     $saved = true;
-    header('Location: auto-post.php?saved=1');
+    header('Location: /admin/auto-post?saved=1');
     exit;
 }
 

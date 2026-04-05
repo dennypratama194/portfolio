@@ -2,7 +2,7 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         $pdo->prepare('DELETE FROM posts WHERE id = ?')->execute([$id]);
     }
-    header('Location: index.php');
+    header('Location: /admin/index');
     exit;
 }
 
@@ -176,7 +176,7 @@ $posts = $pdo->query(
           </td>
           <td>
             <a class="action-link" href="edit.php?id=<?= $p['id'] ?>">Edit</a>
-            <form method="POST" action="index.php" style="display:inline"
+            <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this post?')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action" value="delete"/>

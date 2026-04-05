@@ -2,7 +2,7 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if ($id) {
         $pdo->prepare('DELETE FROM ebook_products WHERE id = ?')->execute([$id]);
     }
-    header('Location: ebooks.php');
+    header('Location: /admin/ebooks');
     exit;
 }
 
@@ -167,7 +167,7 @@ $products = $pdo->query(
             <a class="action-link" href="ebook-edit.php?id=<?= $p['id'] ?>">Edit</a>
             <a class="action-link" href="ebook-chapters.php?product_id=<?= $p['id'] ?>">Chapters</a>
             <a class="action-link" href="ebook-purchases.php?product_id=<?= $p['id'] ?>">Purchases</a>
-            <form method="POST" action="ebooks.php" style="display:inline"
+            <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this product and all its chapters? This cannot be undone.')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action" value="delete"/>

@@ -2,7 +2,7 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
                 $stmt->execute([$title, $slug, $excerpt, $body, $new_img, $category, $is_pub, $pub_at, $new_scheduled_at]);
             }
-            header('Location: index.php');
+            header('Location: /admin/index');
             exit;
         } catch (PDOException $e) {
             if (str_contains($e->getMessage(), 'category')) {

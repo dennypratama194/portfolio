@@ -2,7 +2,7 @@
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 session_start();
-if (!isset($_SESSION['authed'])) { header('Location: login.php'); exit; }
+if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
@@ -16,7 +16,7 @@ if ($product_id) {
     $stmt = $pdo->prepare('SELECT id, title FROM ebook_products WHERE id = ?');
     $stmt->execute([$product_id]);
     $product = $stmt->fetch();
-    if (!$product) { header('Location: ebooks.php'); exit; }
+    if (!$product) { header('Location: /admin/ebooks'); exit; }
 }
 
 /* ── Build WHERE conditions ── */
@@ -216,7 +216,7 @@ $purchases = $list_stmt->fetchAll();
     </div>
 
     <!-- ── Search ── -->
-    <form class="search-bar" method="GET" action="ebook-purchases.php">
+    <form class="search-bar" method="GET" action="">
       <?php if ($product_id): ?>
         <input type="hidden" name="product_id" value="<?= $product_id ?>"/>
       <?php endif; ?>

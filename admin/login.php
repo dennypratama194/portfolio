@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($error): ?>
       <div class="error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
-    <form method="POST" action="login.php">
+    <form method="POST" action="">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" autocomplete="username" required/>
       <label for="password">Password</label>
