@@ -80,6 +80,7 @@ $jsonld = json_encode([
 
   /* Banner */
   .eb-banner {
+    margin-top: var(--nav-h, 72px);
     padding: 14px var(--pad-x);
     font-size: 14px; line-height: 1.5;
     display: flex; align-items: center; justify-content: center;
