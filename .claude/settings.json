@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/ebook*)",
+      "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/*mail*)",
+      "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/*webhook*)"
+    ]
+  }
+}
