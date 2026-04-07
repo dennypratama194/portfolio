@@ -79,10 +79,21 @@ $description = 'Lost your ebook access link? Enter your email and we\'ll resend 
 <?php include 'partials/footer.php'; ?>
 
 <style>
-.recover-section {
-  min-height: calc(100vh - var(--nav-h, 72px) - 240px);
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
   display: flex;
   align-items: center;
+}
+
+.recover-section {
+  width: 100%;
+  display: flex;
   justify-content: center;
   padding: 80px 24px;
 }
@@ -133,7 +144,7 @@ $description = 'Lost your ebook access link? Enter your email and we\'ll resend 
   font-size: 15px;
   font-family: inherit;
   color: var(--fg);
-  background: transparent;
+  background: #FFFFFF;
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
   outline: none;
   transition: border-color 0.2s;

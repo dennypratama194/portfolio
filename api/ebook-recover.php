@@ -203,12 +203,19 @@ curl_setopt_array($ch, [
         'Authorization: Bearer ' . RESEND_API_KEY,
     ],
 ]);
-curl_exec($ch);
-$email_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curl_err   = curl_errno($ch);
+$resend_body = curl_exec($ch);
+$email_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curl_err    = curl_errno($ch);
 curl_close($ch);
 
 if ($curl_err || $email_code < 200 || $email_code >= 300) {
+    /* Log the failure for server-side debugging */
+    $log_dir = __DIR__ . '/logs';
+    if (!is_dir($log_dir)) { mkdir($log_dir, 0755, true); }
+    $log_entry = date('c') . ' | http=' . $email_code . ' | curl_err=' . $curl_err
+               . ' | resend=' . $resend_body . PHP_EOL;
+    file_put_contents($log_dir . '/resend-errors.log', $log_entry, FILE_APPEND | LOCK_EX);
+
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Failed to send email. Please try again.']);
     exit;
