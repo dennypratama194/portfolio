@@ -105,8 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors) && $cid) {
-            $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, excerpt=?, body=?, is_published=? WHERE id=? AND product_id=?')
-                ->execute([$title, $slug, $excerpt, $body, $is_published, $cid, $product_id]);
+            /* Try with excerpt first; fall back if column doesn't exist yet (run migrations/002_chapter_excerpt.sql) */
+            try {
+                $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, excerpt=?, body=?, is_published=? WHERE id=? AND product_id=?')
+                    ->execute([$title, $slug, $excerpt, $body, $is_published, $cid, $product_id]);
+            } catch (\PDOException $e) {
+                $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, body=?, is_published=? WHERE id=? AND product_id=?')
+                    ->execute([$title, $slug, $body, $is_published, $cid, $product_id]);
+            }
             header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$cid");
             exit;
         }
@@ -133,7 +139,7 @@ $chapters = $ch_list_stmt->fetchAll();
 
 /* ── Load selected chapter for editor ── */
 if ($chapter_id && !$edit_chapter) {
-    $ch_stmt = $pdo->prepare('SELECT id, title, slug, excerpt, body, sort_order, is_published FROM ebook_chapters WHERE id = ? AND product_id = ?');
+    $ch_stmt = $pdo->prepare('SELECT * FROM ebook_chapters WHERE id = ? AND product_id = ?');
     $ch_stmt->execute([$chapter_id, $product_id]);
     $found = $ch_stmt->fetch();
     if ($found) {

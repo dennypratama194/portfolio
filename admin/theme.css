@@ -17,6 +17,7 @@
 ════════════════════════════════ */
 
 /* Base */
+[data-theme="light"] html,
 [data-theme="light"] body          { background: #F4F3EF; color: #1C1B18; }
 
 /* Sidebar */
@@ -178,3 +179,12 @@
 [data-theme="light"] .placeholder-msg  { color: rgba(28,27,24,0.2); }
 [data-theme="light"] .editor-title     { color: rgba(28,27,24,0.45); }
 [data-theme="light"] .editor-title span { color: #1C1B18; }
+[data-theme="light"] .btn-del-ch        { color: rgba(232,50,10,0.4); }
+[data-theme="light"] .btn-del-ch:hover  { color: #E8320A; }
+[data-theme="light"] .btn-add-chapter {
+  background: rgba(232,50,10,0.07);
+  border-color: rgba(232,50,10,0.2);
+}
+[data-theme="light"] .panel-editor      { background: #F4F3EF; }
+[data-theme="light"] .toggle-option     { border-color: rgba(28,27,24,0.12); color: rgba(28,27,24,0.55); }
+[data-theme="light"] .app-wrap          { background: #F4F3EF; }
