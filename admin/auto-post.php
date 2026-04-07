@@ -54,7 +54,8 @@ $enabled  = $config['enabled']  ?? false;
 $model    = $config['model']    ?? 'claude-haiku-4-5-20251001';
 $has_ant  = !empty($config['anthropic_api_key']);
 $has_oai  = !empty($config['openai_api_key']);
-$cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialchars($token);
+$site_host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'dennypratama.com');
+$cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -342,7 +343,7 @@ $cron_url = 'https://dennypratama.com/api/auto-post.php?token=' . htmlspecialcha
 
       <div class="hint" style="margin-top:16px">
         In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
-        <code style="color:rgba(236,234,226,0.6)">php /home/digh8452/public_html/dennypratama.com/api/auto-post.php <?= htmlspecialchars($token) ?></code><br><br>
+        <code style="color:rgba(236,234,226,0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
         Or via wget (two requests, each under 30s):<br>
         <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
       </div>

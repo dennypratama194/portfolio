@@ -510,14 +510,42 @@ if ($chapter_id && !$edit_chapter) {
     theme: 'snow',
     placeholder: 'Write chapter content here...',
     modules: {
-      toolbar: [
-        [{ header: [2, 3, false] }],
-        ['bold', 'italic', 'underline'],
-        ['blockquote', 'code-block'],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link', 'image'],
-        ['clean']
-      ]
+      toolbar: {
+        container: [
+          [{ header: [2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          ['blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image'],
+          ['clean']
+        ],
+        handlers: {
+          image: function () {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+            input.addEventListener('change', function () {
+              var file = input.files[0];
+              if (!file) return;
+              var fd = new FormData();
+              fd.append('image', file);
+              fetch('upload-image.php', { method: 'POST', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                  if (data.url) {
+                    var range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', data.url);
+                    quill.setSelection(range.index + 1);
+                  } else {
+                    alert('Image upload failed: ' + (data.error || 'unknown error'));
+                  }
+                })
+                .catch(function () { alert('Image upload failed.'); });
+            });
+          }
+        }
+      }
     }
   });
 
