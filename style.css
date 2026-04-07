@@ -98,6 +98,10 @@
       height: 28px;
       width: auto;
       display: block;
+      transition: filter 0.3s;
+    }
+    body.nav-on-dark .nav-logo-img {
+      filter: invert(1);
     }
     .nav-right { display: flex; align-items: center; gap: 40px; }
 

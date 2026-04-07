@@ -27,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title       = trim($_POST['title']       ?? '');
     $slug        = trim($_POST['slug']        ?? '');
+    $slug        = strtolower($slug);
+    $slug        = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+    $slug        = trim(preg_replace('/[\s-]+/', '-', $slug), '-');
     $price       = (int)($_POST['price']      ?? 0);
     $description = trim($_POST['description'] ?? '');
     $tagline     = trim($_POST['tagline']     ?? '');

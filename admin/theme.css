@@ -38,15 +38,25 @@
 
 /* Form inputs */
 [data-theme="light"] input[type=text],
+[data-theme="light"] input[type=number],
 [data-theme="light"] input[type=password],
 [data-theme="light"] input[type=file],
 [data-theme="light"] input[type=datetime-local],
 [data-theme="light"] textarea      { background: #fff; border-color: rgba(28,27,24,0.12); color: #1C1B18; }
 [data-theme="light"] input:focus,
 [data-theme="light"] input[type=text]:focus,
+[data-theme="light"] input[type=number]:focus,
 [data-theme="light"] textarea:focus { border-color: #E8320A; }
 [data-theme="light"] select        { background: #fff; border-color: rgba(28,27,24,0.12); color: #1C1B18; }
 [data-theme="light"] select option { background: #fff; color: #1C1B18; }
+[data-theme="light"] .price-prefix { color: rgba(28,27,24,0.4); }
+[data-theme="light"] .field-hint   { color: rgba(28,27,24,0.35); }
+
+/* Visibility toggle */
+[data-theme="light"] .toggle-option {
+  border-color: rgba(28,27,24,0.12);
+  color: rgba(28,27,24,0.55);
+}
 
 /* Drop zone */
 [data-theme="light"] .drop-zone   { border-color: rgba(28,27,24,0.15); }
@@ -117,3 +127,54 @@
 [data-theme="light"] .view-bar-bg     { background: rgba(28,27,24,0.08); }
 [data-theme="light"] .view-count      { color: rgba(28,27,24,0.8); }
 [data-theme="light"] .uniq-count      { color: rgba(28,27,24,0.4); }
+
+/* ── Ebooks list ── */
+[data-theme="light"] .product-title   { color: #1C1B18; }
+[data-theme="light"] .product-slug    { color: rgba(28,27,24,0.3); }
+
+/* ── Purchases page ── */
+[data-theme="light"] .revenue-stat {
+  border-color: rgba(28,27,24,0.1);
+  color: rgba(28,27,24,0.45);
+}
+[data-theme="light"] .revenue-stat strong { color: #1C1B18; }
+[data-theme="light"] .revenue-count       { color: rgba(28,27,24,0.3); }
+[data-theme="light"] .search-input {
+  background: #fff;
+  border-color: rgba(28,27,24,0.12);
+  color: #1C1B18;
+}
+[data-theme="light"] .search-input::placeholder { color: rgba(28,27,24,0.25); }
+[data-theme="light"] .btn-search {
+  background: rgba(28,27,24,0.05);
+  border-color: rgba(28,27,24,0.12);
+  color: rgba(28,27,24,0.55);
+}
+[data-theme="light"] .btn-search:hover { background: rgba(28,27,24,0.09); color: #1C1B18; }
+[data-theme="light"] .btn-clear        { color: rgba(28,27,24,0.3); }
+[data-theme="light"] .btn-clear:hover  { color: #1C1B18; }
+[data-theme="light"] .email-cell       { color: #1C1B18; }
+[data-theme="light"] .product-cell     { color: rgba(28,27,24,0.5); }
+[data-theme="light"] .token-cell       { color: rgba(28,27,24,0.35); }
+[data-theme="light"] .chapter-cell     { color: rgba(28,27,24,0.45); }
+[data-theme="light"] .btn-resend       { color: rgba(28,27,24,0.35); }
+[data-theme="light"] .btn-resend:hover { color: #1C1B18; }
+[data-theme="light"] .btn-resend:disabled { color: rgba(28,27,24,0.15); }
+
+/* ── Chapters page ── */
+[data-theme="light"] .top-bar          { border-bottom-color: rgba(28,27,24,0.08); }
+[data-theme="light"] .top-bar h1       { color: rgba(28,27,24,0.65); }
+[data-theme="light"] .panel-list       { border-right-color: rgba(28,27,24,0.08); }
+[data-theme="light"] .panel-list-header { color: rgba(28,27,24,0.35); }
+[data-theme="light"] .chapter-item     { border-bottom-color: rgba(28,27,24,0.05); }
+[data-theme="light"] .chapter-item:hover  { background: rgba(28,27,24,0.03); }
+[data-theme="light"] .chapter-item.active { background: rgba(28,27,24,0.06); }
+[data-theme="light"] .chapter-num      { color: rgba(28,27,24,0.25); }
+[data-theme="light"] .chapter-title-text { color: rgba(28,27,24,0.7); }
+[data-theme="light"] .chapter-item.active .chapter-title-text { color: #1C1B18; }
+[data-theme="light"] .pub-dot          { background: rgba(28,27,24,0.15); }
+[data-theme="light"] .btn-order        { color: rgba(28,27,24,0.25); }
+[data-theme="light"] .btn-order:hover  { color: rgba(28,27,24,0.65); }
+[data-theme="light"] .placeholder-msg  { color: rgba(28,27,24,0.2); }
+[data-theme="light"] .editor-title     { color: rgba(28,27,24,0.45); }
+[data-theme="light"] .editor-title span { color: #1C1B18; }

@@ -37,9 +37,19 @@ if (burger) {
 
 /* ── NAV SCROLL BLUR ── */
 const navEl = document.querySelector('nav');
-window.addEventListener('scroll', () => {
+const navDarkEls = document.querySelectorAll('#cta, footer');
+function updateNavDark() {
   navEl.classList.toggle('scrolled', window.scrollY > 40);
-}, { passive: true });
+  const navH = navEl.offsetHeight;
+  let onDark = false;
+  navDarkEls.forEach(el => {
+    const r = el.getBoundingClientRect();
+    if (r.top < navH && r.bottom > 0) onDark = true;
+  });
+  document.body.classList.toggle('nav-on-dark', onDark);
+}
+window.addEventListener('scroll', updateNavDark, { passive: true });
+updateNavDark();
 
 /* ── SCROLL FADE BOTTOM THEME ── */
 const fadEl = document.querySelector('.scroll-fade-bottom');
