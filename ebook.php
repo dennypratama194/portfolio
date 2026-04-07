@@ -24,7 +24,7 @@ if (!$product) {
 
 /* ── Load published chapters ── */
 $ch_stmt = $pdo->prepare(
-    'SELECT sort_order, title FROM ebook_chapters
+    'SELECT sort_order, title, excerpt FROM ebook_chapters
      WHERE product_id = ? AND is_published = 1
      ORDER BY sort_order ASC'
 );
@@ -188,17 +188,25 @@ $jsonld = json_encode([
   }
 
   /* ── Chapters ── */
-  .eb-chapter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 48px; }
+  .eb-chapter-grid { margin-top: 48px; }
   .eb-chapter-item {
-    display: flex; align-items: baseline; gap: 16px;
-    padding: 18px 0; border-top: 1px solid var(--border);
-    font-size: 15px; color: var(--ink-2); line-height: 1.4;
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr;
+    gap: 0;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    align-items: start;
   }
-  .eb-chapter-item:nth-child(odd)  { padding-right: 48px; }
-  .eb-chapter-item:nth-child(even) { padding-left: 48px; border-left: 1px solid var(--border); }
   .eb-ch-num {
     font-size: 11px; letter-spacing: 0.08em; color: var(--ink-3);
-    flex-shrink: 0; width: 28px;
+    padding-top: 3px;
+  }
+  .eb-ch-title {
+    font-size: 15px; font-weight: 500; color: var(--ink);
+    line-height: 1.4; padding-right: 48px;
+  }
+  .eb-ch-excerpt {
+    font-size: 14px; color: var(--ink-3); line-height: 1.6;
   }
 
   /* ── Author ── */
@@ -296,9 +304,9 @@ $jsonld = json_encode([
     }
     .eb-cover-wrap { order: -1; }
     .eb-cover, .eb-cover-placeholder { width: 100%; max-width: 260px; margin: 0 auto; }
-    .eb-chapter-grid { grid-template-columns: 1fr; }
-    .eb-chapter-item:nth-child(even) { padding-left: 0; border-left: none; }
-    .eb-chapter-item:nth-child(odd)  { padding-right: 0; }
+    .eb-chapter-item { grid-template-columns: 48px 1fr; }
+    .eb-ch-title { padding-right: 0; }
+    .eb-ch-excerpt { grid-column: 2; }
     .eb-author-grid { grid-template-columns: 1fr; }
     .eb-stats-grid  { grid-template-columns: repeat(2, 1fr); }
     .eb-form { flex-wrap: wrap; }
@@ -404,7 +412,12 @@ $jsonld = json_encode([
       <?php foreach ($chapters as $ch): ?>
         <div class="eb-chapter-item">
           <span class="eb-ch-num"><?= str_pad((int)$ch['sort_order'], 2, '0', STR_PAD_LEFT) ?></span>
-          <?= htmlspecialchars($ch['title']) ?>
+          <div class="eb-ch-title"><?= htmlspecialchars($ch['title']) ?></div>
+          <?php if (!empty($ch['excerpt'])): ?>
+            <div class="eb-ch-excerpt"><?= htmlspecialchars($ch['excerpt']) ?></div>
+          <?php else: ?>
+            <div></div>
+          <?php endif; ?>
         </div>
       <?php endforeach; ?>
     </div>

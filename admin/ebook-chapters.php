@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cid          = (int)($_POST['chapter_id'] ?? 0);
         $title        = trim($_POST['title']        ?? '');
         $slug         = trim($_POST['slug']         ?? '');
+        $excerpt      = trim($_POST['excerpt']      ?? '');
         $body         = $_POST['body']              ?? '';
         $is_published = isset($_POST['is_published']) ? 1 : 0;
 
@@ -104,8 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors) && $cid) {
-            $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, body=?, is_published=? WHERE id=? AND product_id=?')
-                ->execute([$title, $slug, $body, $is_published, $cid, $product_id]);
+            $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, excerpt=?, body=?, is_published=? WHERE id=? AND product_id=?')
+                ->execute([$title, $slug, $excerpt, $body, $is_published, $cid, $product_id]);
             header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$cid");
             exit;
         }
@@ -116,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'id'           => $cid,
             'title'        => $title,
             'slug'         => $slug,
+            'excerpt'      => $excerpt,
             'body'         => $body,
             'is_published' => $is_published,
         ];
@@ -131,7 +133,7 @@ $chapters = $ch_list_stmt->fetchAll();
 
 /* ── Load selected chapter for editor ── */
 if ($chapter_id && !$edit_chapter) {
-    $ch_stmt = $pdo->prepare('SELECT * FROM ebook_chapters WHERE id = ? AND product_id = ?');
+    $ch_stmt = $pdo->prepare('SELECT id, title, slug, excerpt, body, sort_order, is_published FROM ebook_chapters WHERE id = ? AND product_id = ?');
     $ch_stmt->execute([$chapter_id, $product_id]);
     $found = $ch_stmt->fetch();
     if ($found) {
@@ -455,6 +457,13 @@ if ($chapter_id && !$edit_chapter) {
               </div>
 
               <div class="field">
+                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
+                <input type="text" id="excerpt" name="excerpt"
+                       value="<?= htmlspecialchars($edit_chapter['excerpt'] ?? '') ?>"
+                       placeholder="What readers will learn in this chapter…"/>
+              </div>
+
+              <div class="field">
                 <label>Content</label>
                 <div id="quill-editor"><?= $edit_chapter['body'] ?></div>
                 <input type="hidden" name="body" id="body-input"/>
@@ -507,9 +516,9 @@ if ($chapter_id && !$edit_chapter) {
   });
 
   /* ── Auto-generate slug from title ── */
-  var titleEl   = document.getElementById('title');
-  var slugEl    = document.getElementById('slug');
-  var slugEdited = true; /* always treat as edited — slug already exists */
+  var titleEl    = document.getElementById('title');
+  var slugEl     = document.getElementById('slug');
+  var slugEdited = false; /* follows title until user manually edits slug */
 
   titleEl.addEventListener('input', function () {
     if (slugEdited) return;
