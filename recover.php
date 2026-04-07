@@ -262,7 +262,7 @@ $description = 'Lost your ebook access link? Enter your email and we\'ll resend 
     setLoading(true);
 
     try {
-      const res  = await fetch('/api/ebook-recover.php', {
+      const res  = await fetch('/api/ebook-recover', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email }),
