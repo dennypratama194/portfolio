@@ -7,6 +7,22 @@ require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
+/* ── Delete purchase ── */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
+    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
+        http_response_code(403); exit('Forbidden.');
+    }
+    $del_id = (int)($_POST['purchase_id'] ?? 0);
+    if ($del_id) {
+        $pdo->prepare('DELETE FROM ebook_purchases WHERE id = ?')->execute([$del_id]);
+    }
+    $redir = 'ebook-purchases.php';
+    if (!empty($_POST['product_id'])) $redir .= '?product_id=' . (int)$_POST['product_id'];
+    if (!empty($_POST['q']))          $redir .= (str_contains($redir, '?') ? '&' : '?') . 'q=' . urlencode($_POST['q']);
+    header('Location: /admin/' . $redir);
+    exit;
+}
+
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : null;
 $q          = trim($_GET['q'] ?? '');
 $product    = null;
@@ -167,6 +183,12 @@ $purchases = $list_stmt->fetchAll();
     }
     .btn-resend:hover { color: #ECEAE2; }
     .btn-resend:disabled { color: rgba(236,234,226,0.15); cursor: default; }
+    .btn-delete {
+      background: none; border: none; cursor: pointer; padding: 0;
+      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: rgba(232,50,10,0.4); transition: color 0.2s;
+    }
+    .btn-delete:hover { color: #E8320A; }
 
     .empty { padding: 64px 0; text-align: center; color: rgba(236,234,226,0.2); font-size: 14px; }
 
@@ -259,12 +281,25 @@ $purchases = $list_stmt->fetchAll();
           <td class="chapter-cell">
             <?= $pu['last_read_chapter'] !== null ? 'Ch. ' . (int)$pu['last_read_chapter'] : '—' ?>
           </td>
-          <td>
+          <td style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
             <button class="btn-resend"
                     data-email="<?= htmlspecialchars($pu['email']) ?>"
                     data-product="<?= (int)$pu['product_id'] ?>">
               Resend Link
             </button>
+            <form method="POST" action=""
+                  onsubmit="return confirm('Remove purchase for <?= htmlspecialchars(addslashes($pu['email'])) ?>? This revokes their access.')">
+              <input type="hidden" name="csrf"        value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
+              <input type="hidden" name="action"      value="delete"/>
+              <input type="hidden" name="purchase_id" value="<?= (int)$pu['id'] ?>"/>
+              <?php if ($product_id): ?>
+                <input type="hidden" name="product_id" value="<?= $product_id ?>"/>
+              <?php endif; ?>
+              <?php if ($q !== ''): ?>
+                <input type="hidden" name="q" value="<?= htmlspecialchars($q) ?>"/>
+              <?php endif; ?>
+              <button type="submit" class="btn-delete">Remove</button>
+            </form>
           </td>
         </tr>
         <?php endforeach; ?>

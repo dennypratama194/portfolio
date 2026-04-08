@@ -39,7 +39,7 @@ $products = $pdo->query(
     <a class="eb-list-card" href="/ebook/<?= rawurlencode($p['slug']) ?>">
       <div class="eb-list-cover">
         <?php if ($p['cover_image']): ?>
-          <img src="<?= htmlspecialchars($p['cover_image']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" loading="lazy"/>
+          <img src="/admin/uploads/<?= htmlspecialchars($p['cover_image']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" loading="lazy"/>
         <?php else: ?>
           <div class="eb-list-cover-placeholder">
             <span><?= htmlspecialchars(mb_substr($p['title'], 0, 1)) ?></span>

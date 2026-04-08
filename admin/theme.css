@@ -165,6 +165,8 @@
 [data-theme="light"] .btn-resend       { color: rgba(28,27,24,0.35); }
 [data-theme="light"] .btn-resend:hover { color: #1C1B18; }
 [data-theme="light"] .btn-resend:disabled { color: rgba(28,27,24,0.15); }
+[data-theme="light"] .btn-delete       { color: rgba(232,50,10,0.5); }
+[data-theme="light"] .btn-delete:hover { color: #E8320A; }
 
 /* ── Chapters page ── */
 [data-theme="light"] .top-bar          { border-bottom-color: rgba(28,27,24,0.08); }
