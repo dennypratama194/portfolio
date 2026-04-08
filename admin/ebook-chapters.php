@@ -347,13 +347,30 @@ if ($chapter_id && !$edit_chapter) {
       margin-bottom: 28px; color: rgba(236,234,226,0.5);
     }
     .editor-title span { color: #ECEAE2; }
+
+    @media (max-width: 768px) {
+      html, body { overflow: auto; }
+      .app-wrap { flex-direction: column; height: auto; min-height: 100vh; padding-top: 56px; }
+      .sidebar { display: none; }
+      .main-wrap { overflow: visible; }
+      .panels { flex-direction: column; overflow: visible; height: auto; }
+      .panel-list { width: 100%; border-right: none; border-bottom: 1px solid rgba(236,234,226,0.07); max-height: 280px; overflow-y: auto; }
+      .panel-content { overflow: visible; }
+      .top-bar { padding: 16px 20px; }
+    }
   </style>
 </head>
 <body>
 <div class="app-wrap">
 
+  <div class="mobile-topbar">
+    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
+    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
   <!-- ── Admin nav sidebar ── -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
     <nav class="sidebar-nav">
       <a class="sidebar-link" href="analytics.php">Dashboard</a>
@@ -596,21 +613,7 @@ if ($chapter_id && !$edit_chapter) {
     });
   });
 
-  /* ── Theme toggle ── */
-  (function () {
-    var btn = document.getElementById('theme-toggle');
-    function update() {
-      var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      btn.textContent = dark ? '◑ Light mode' : '◐ Dark mode';
-    }
-    update();
-    btn.addEventListener('click', function () {
-      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('admin-theme', next);
-      update();
-    });
-  }());
 </script>
+<script src="admin.js"></script>
 </body>
 </html>
