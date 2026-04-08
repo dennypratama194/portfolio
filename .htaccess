@@ -11,6 +11,9 @@ RewriteCond %{REQUEST_URI} !^/api/ [NC]
 RewriteCond %{THE_REQUEST} \s/([^.?]+)\.php[?\s] [NC]
 RewriteRule ^[^.?]+\.php$ /%1 [R=301,L]
 
+# ── My Library ─────────────────────────────────────────
+RewriteRule ^my-library/?$ my-library.php [NC,L]
+
 # ── Ebook platform routes ──────────────────────────────
 # /ebook/recover  → recover.php
 RewriteRule ^ebook/recover/?$ recover.php [NC,L]

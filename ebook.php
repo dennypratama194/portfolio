@@ -326,7 +326,8 @@ $jsonld = json_encode([
 <!-- ── Status banners ── -->
 <?php if ($purchased): ?>
   <div class="eb-banner eb-banner-ok">
-    ✓ &nbsp;Payment confirmed! <strong>Check your email</strong> for the access link.
+    ✓ &nbsp;Payment confirmed! Check your email for the access link — or
+    <a href="/my-library">view your library →</a>
   </div>
 <?php elseif ($owned): ?>
   <div class="eb-banner eb-banner-own">
@@ -379,6 +380,7 @@ $jsonld = json_encode([
         </button>
       </form>
       <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
+      <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:var(--red);text-decoration:none;font-weight:500">View your library →</a></p>
     </div>
 
     <div class="eb-cover-wrap">
@@ -558,6 +560,7 @@ $jsonld = json_encode([
       </button>
     </form>
     <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
+    <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:rgba(236,234,226,0.55);text-decoration:none;font-weight:500">View your library →</a></p>
     <p class="eb-price"><?= $price_fmt ?> · One-time payment</p>
   </section>
 
