@@ -54,11 +54,14 @@
   .mobile-topbar { display: flex; }
 
   .sidebar {
-    position: fixed; top: 0; left: -260px; bottom: 0; width: 240px;
+    position: fixed !important;
+    top: 0 !important; left: -260px !important; bottom: 0 !important;
+    width: 240px !important; height: 100% !important;
     z-index: 160; transition: left 0.25s ease;
     padding-top: 72px;
+    overflow-y: auto;
   }
-  .sidebar.open { left: 0; }
+  .sidebar.open { left: 0 !important; }
 
   .main {
     margin-left: 0 !important;
