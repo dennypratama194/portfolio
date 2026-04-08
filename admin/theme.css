@@ -16,6 +16,93 @@
 .theme-toggle:hover { color: #ECEAE2; border-color: rgba(236,234,226,0.25); }
 
 /* ════════════════════════════════
+   RESPONSIVE — Mobile admin
+════════════════════════════════ */
+
+/* Mobile top bar */
+.mobile-topbar {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 56px; padding: 0 20px;
+  background: #0D0C09;
+  border-bottom: 1px solid rgba(236,234,226,0.08);
+  align-items: center; justify-content: space-between;
+}
+.mobile-topbar-logo img { height: 24px; width: auto; opacity: 0.85; display: block; }
+.mobile-burger {
+  background: none; border: none; cursor: pointer;
+  padding: 8px; color: rgba(236,234,226,0.7);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.mobile-burger span {
+  display: block; width: 22px; height: 1.5px;
+  background: currentColor; transition: transform 0.2s, opacity 0.2s;
+}
+.mobile-burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.mobile-burger.open span:nth-child(2) { opacity: 0; }
+.mobile-burger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Sidebar overlay on mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 150;
+  background: rgba(0,0,0,0.5);
+}
+.sidebar-overlay.visible { display: block; }
+
+@media (max-width: 768px) {
+  .mobile-topbar { display: flex; }
+
+  .sidebar {
+    position: fixed; top: 0; left: -260px; bottom: 0; width: 240px;
+    z-index: 160; transition: left 0.25s ease;
+    padding-top: 72px;
+  }
+  .sidebar.open { left: 0; }
+
+  .main {
+    margin-left: 0 !important;
+    padding: 72px 20px 60px !important;
+  }
+
+  /* Stack stat grids to 2 columns on mobile */
+  .stats-grid,
+  .stats-grid-2 { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Stack breakdown cards */
+  .breakdown-grid { grid-template-columns: 1fr !important; }
+
+  /* Make tables scrollable */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Top bar */
+  .top-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+  /* Btn row */
+  .btn-row { flex-wrap: wrap; }
+
+  /* Cron box code wrap */
+  .cron-url { word-break: break-all; font-size: 11px; }
+
+  /* Edit page fields full width */
+  .field { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid,
+  .stats-grid-2 { grid-template-columns: 1fr !important; }
+
+  .stat-value { font-size: 24px !important; }
+}
+
+/* Light mode topbar */
+[data-theme="light"] .mobile-topbar {
+  background: #ECEAE4;
+  border-bottom-color: rgba(28,27,24,0.08);
+}
+[data-theme="light"] .mobile-burger { color: rgba(28,27,24,0.6); }
+
+/* ════════════════════════════════
    LIGHT MODE OVERRIDES
    Applied when <html data-theme="light">
 ════════════════════════════════ */

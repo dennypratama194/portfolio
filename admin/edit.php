@@ -318,7 +318,13 @@ $sched_val = !empty($post['scheduled_at'])
 </head>
 <body>
 
-  <aside class="sidebar">
+  <div class="mobile-topbar">
+    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
+    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
     <nav class="sidebar-nav">
       <a class="sidebar-link" href="analytics.php">Dashboard</a>
@@ -544,22 +550,8 @@ $sched_val = !empty($post['scheduled_at'])
       document.getElementById('body-input').value = quill.root.innerHTML;
     });
 
-    /* ── Theme toggle ── */
-    (function(){
-      var btn = document.getElementById('theme-toggle');
-      function update(){
-        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-        btn.textContent = dark ? '◑ Light mode' : '◐ Dark mode';
-      }
-      update();
-      btn.addEventListener('click', function(){
-        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('admin-theme', next);
-        update();
-      });
-    })();
   </script>
+  <script src="admin.js"></script>
 
 </body>
 </html>
