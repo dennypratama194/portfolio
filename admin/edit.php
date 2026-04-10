@@ -168,63 +168,11 @@ $sched_val = !empty($post['scheduled_at'])
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover { color: #ECEAE2; }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
-    /* ── Main ── */
-    .main { margin-left: 220px; padding: 48px 48px 80px; max-width: 900px; }
-    .top-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
-    .back-link {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .back-link:hover { color: #ECEAE2; }
-    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-
-    /* ── Form ── */
+    .main { max-width: 900px; }
+    .top-bar { justify-content: flex-start; gap: 16px; }
     .field { margin-bottom: 28px; }
-    label {
-      display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); margin-bottom: 8px;
-    }
-    select {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 15px;
-      padding: 12px 14px; outline: none; transition: border-color 0.2s;
-      appearance: none; cursor: pointer;
-    }
-    select:focus { border-color: #E8320A; }
-    select option { background: #1a1917; }
-    input[type=text], input[type=file], textarea {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 15px;
-      padding: 12px 14px; outline: none; transition: border-color 0.2s;
-    }
-    input[type=text]:focus, textarea:focus { border-color: #E8320A; }
-    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-    input[type=file] { cursor: pointer; padding: 10px 14px; }
+    textarea { min-height: 80px; }
+    select { font-size: 15px; }
 
     /* Quill editor styling to match dark theme */
     .ql-toolbar.ql-snow {
@@ -296,24 +244,6 @@ $sched_val = !empty($post['scheduled_at'])
     }
     .img-remove:hover { color: #E8320A; }
 
-    /* ── Errors ── */
-    .errors { background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.3); padding: 16px 20px; margin-bottom: 28px; }
-    .errors li { font-size: 13px; color: #E8320A; list-style: none; margin-bottom: 4px; }
-
-    /* ── Buttons ── */
-    .btn-row { display: flex; gap: 16px; align-items: center; }
-    .btn-save {
-      background: #E8320A; color: #ECEAE2; border: none;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 12px 28px; cursor: pointer; transition: opacity 0.2s;
-    }
-    .btn-save:hover { opacity: 0.85; }
-    .btn-cancel {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .btn-cancel:hover { color: #ECEAE2; }
   </style>
 </head>
 <body>

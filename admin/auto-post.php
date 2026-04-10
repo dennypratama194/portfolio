@@ -69,58 +69,8 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover, .sidebar-link.active { color: #ECEAE2; }
-    .sidebar-link.active { background: rgba(236,234,226,0.05); }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
-    .main { margin-left: 220px; padding: 48px 48px 80px; max-width: 760px; }
-    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
-    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-
-    .section-heading {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); margin-bottom: 16px;
-      padding-bottom: 12px; border-bottom: 1px solid rgba(236,234,226,0.07);
-    }
-
-    .field { margin-bottom: 24px; }
-    label {
-      display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); margin-bottom: 8px;
-    }
-    input[type=text], input[type=password] {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 14px;
-      padding: 11px 14px; outline: none; transition: border-color 0.2s;
-    }
-    input[type=text]:focus, input[type=password]:focus { border-color: #E8320A; }
-    select {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 14px;
-      padding: 11px 14px; outline: none; appearance: none; cursor: pointer;
-    }
-    select option { background: #1a1917; }
+    .main { max-width: 760px; }
+    input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
 
     .toggle-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -146,7 +96,6 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       transform: translateX(20px); background: #E8320A;
     }
 
-    .hint { font-size: 11px; color: rgba(236,234,226,0.25); margin-top: 6px; }
     .key-set { font-size: 11px; color: #E8320A; margin-top: 6px; }
 
     .cron-box {
@@ -184,13 +133,6 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     .run-status.ok  { color: #4ade80; }
     .run-status.err { color: #E8320A; }
 
-    .btn-save {
-      background: #E8320A; color: #ECEAE2; border: none;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 12px 28px; cursor: pointer; transition: opacity 0.2s;
-    }
-    .btn-save:hover { opacity: 0.85; }
     .btn-secondary {
       font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
       color: rgba(236,234,226,0.35); background: none;
@@ -199,27 +141,18 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       transition: color 0.2s, border-color 0.2s;
     }
     .btn-secondary:hover { color: #ECEAE2; border-color: rgba(236,234,226,0.25); }
-    .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 32px; }
+    .btn-row { gap: 12px; margin-top: 32px; }
 
     .saved-banner {
       background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
       padding: 12px 18px; font-size: 13px; color: #4ade80; margin-bottom: 28px;
     }
 
-    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-    th {
-      text-align: left; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); font-weight: 500;
-      padding: 0 16px 14px 0; border-bottom: 1px solid rgba(236,234,226,0.07);
-    }
-    td {
-      padding: 14px 16px 14px 0;
-      border-bottom: 1px solid rgba(236,234,226,0.05);
-      font-size: 13px; color: rgba(236,234,226,0.7);
-    }
+    table { margin-bottom: 40px; }
+    td { padding: 14px 16px 14px 0; font-size: 13px; color: rgba(236,234,226,0.7); }
     .post-title-link { color: #ECEAE2; text-decoration: none; font-weight: 500; }
     .post-title-link:hover { color: #E8320A; }
-    .empty { color: rgba(236,234,226,0.2); font-size: 13px; padding: 24px 0; }
+    .empty { font-size: 13px; padding: 24px 0; }
     .last-run { font-size: 12px; color: rgba(236,234,226,0.3); }
   </style>
 </head>

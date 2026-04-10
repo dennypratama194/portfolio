@@ -84,42 +84,8 @@ $purchases = $list_stmt->fetchAll();
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover, .sidebar-link.active { color: #ECEAE2; }
-    .sidebar-link.active { background: rgba(236,234,226,0.05); }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
-    /* ── Main ── */
-    .main { margin-left: 220px; padding: 48px 48px 80px; }
-
-    /* ── Top bar ── */
-    .top-bar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 24px; }
+    .top-bar { align-items: flex-start; margin-bottom: 32px; gap: 24px; }
     .top-bar-left { display: flex; flex-direction: column; gap: 6px; }
-    .back-link {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .back-link:hover { color: #ECEAE2; }
-    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
 
     /* ── Revenue stat ── */
     .revenue-stat {
@@ -155,19 +121,7 @@ $purchases = $list_stmt->fetchAll();
     }
     .btn-clear:hover { color: #ECEAE2; }
 
-    /* ── Table ── */
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      text-align: left; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); font-weight: 500;
-      padding: 0 16px 16px 0; border-bottom: 1px solid rgba(236,234,226,0.07);
-    }
-    td {
-      padding: 16px 16px 16px 0;
-      border-bottom: 1px solid rgba(236,234,226,0.05);
-      font-size: 14px; color: rgba(236,234,226,0.7); vertical-align: middle;
-    }
-    tr:hover td { background: rgba(236,234,226,0.02); }
+    td { color: rgba(236,234,226,0.7); }
     .email-cell { color: #ECEAE2; font-weight: 500; }
     .product-cell { font-size: 13px; color: rgba(236,234,226,0.45); }
     .token-cell {

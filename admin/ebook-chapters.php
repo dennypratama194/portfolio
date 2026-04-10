@@ -164,52 +164,20 @@ if ($chapter_id && !$edit_chapter) {
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
   <?php endif; ?>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%; overflow: hidden;
-      background: #0D0C09; color: #ECEAE2;
-      font-family: 'Inter', sans-serif;
-    }
+    html, body { height: 100%; overflow: hidden; }
 
     /* ── App shell ── */
     .app-wrap { display: flex; height: 100vh; }
 
-    /* ── Sidebar ── */
-    .sidebar {
-      width: 220px; flex-shrink: 0; height: 100vh; overflow-y: auto;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover, .sidebar-link.active { color: #ECEAE2; }
-    .sidebar-link.active { background: rgba(236,234,226,0.05); }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
     /* ── Main wrap ── */
     .main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* ── Top bar ── */
+    /* ── Top bar (override: no margin, has border, smaller h1) ── */
     .top-bar {
-      flex-shrink: 0; padding: 20px 32px;
+      flex-shrink: 0; margin-bottom: 0; padding: 20px 32px;
       border-bottom: 1px solid rgba(236,234,226,0.07);
-      display: flex; align-items: center; gap: 16px;
     }
-    .back-link {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .back-link:hover { color: #ECEAE2; }
-    .top-bar h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: rgba(236,234,226,0.7); }
+    .top-bar h1 { font-size: 16px; letter-spacing: -0.01em; color: rgba(236,234,226,0.7); }
 
     /* ── Two-panel row ── */
     .panels { flex: 1; display: flex; overflow: hidden; }
@@ -324,23 +292,7 @@ if ($chapter_id && !$edit_chapter) {
     .toggle-option:has(input:checked) { border-color: #E8320A; color: #ECEAE2; }
     .toggle-option input[type=checkbox] { accent-color: #E8320A; cursor: pointer; width: 15px; height: 15px; }
 
-    /* ── Errors ── */
-    .errors {
-      background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.3);
-      padding: 14px 18px; margin-bottom: 24px; list-style: none;
-    }
-    .errors li { font-size: 13px; color: #E8320A; margin-bottom: 4px; }
-    .errors li:last-child { margin-bottom: 0; }
-
-    /* ── Save button ── */
-    .btn-row { display: flex; gap: 16px; align-items: center; margin-top: 8px; }
-    .btn-save {
-      background: #E8320A; color: #ECEAE2; border: none;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 12px 28px; cursor: pointer; transition: opacity 0.2s;
-    }
-    .btn-save:hover { opacity: 0.85; }
+    .btn-row { margin-top: 8px; }
 
     .editor-title {
       font-size: 18px; font-weight: 600; letter-spacing: -0.01em;

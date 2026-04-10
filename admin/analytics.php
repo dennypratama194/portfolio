@@ -97,35 +97,6 @@ $max_views = max($chart_data) ?: 1;
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover, .sidebar-link.active { color: #ECEAE2; }
-    .sidebar-link.active { background: rgba(236,234,226,0.05); }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
-    /* ── Main ── */
-    .main { margin-left: 220px; padding: 48px 48px 80px; }
-    .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
-    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-
     /* ── Stat cards ── */
     .stats-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
@@ -194,19 +165,8 @@ $max_views = max($chart_data) ?: 1;
     .breakdown-num.dim { font-size: 16px; color: rgba(236,234,226,0.5); }
     .breakdown-divider { border: none; border-top: 1px solid rgba(236,234,226,0.05); margin: 12px 0; }
 
-    /* ── Table ── */
-    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-    th {
-      text-align: left; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); font-weight: 500;
-      padding: 0 16px 14px 0; border-bottom: 1px solid rgba(236,234,226,0.07);
-    }
-    td {
-      padding: 16px 16px 16px 0;
-      border-bottom: 1px solid rgba(236,234,226,0.05);
-      font-size: 14px; color: rgba(236,234,226,0.8); vertical-align: middle;
-    }
-    tr:hover td { background: rgba(236,234,226,0.02); }
+    /* ── Top posts table ── */
+    table { margin-bottom: 40px; }
     .rank { color: rgba(236,234,226,0.25); font-size: 13px; width: 32px; }
     .post-title-cell { color: #ECEAE2; font-weight: 500; }
     .post-slug-cell { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 2px; }
