@@ -7,7 +7,17 @@
       "Bash(git fetch:*)",
       "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/ebook*)",
       "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/*mail*)",
-      "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/*webhook*)"
+      "Bash(ls /c/Users/ADMIN/portfolio/portfolio/api/*webhook*)",
+      "Bash(grep -r \"img src=\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -n \"Duplicate\\\\|dead\\\\|unused\\\\|//.*TODO\\\\|//.*FIXME\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -rn \"Duplicate\\\\|<!-- duplicate\\\\|TODO\\\\|FIXME\\\\|debug\\\\|console\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -n \"?v=\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -rn \"target=\\\\\"_blank\\\\\"\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -c \"<h1>\" /c/Users/ADMIN/portfolio/portfolio/*.php)",
+      "Bash(grep -E '\\\\.php$')",
+      "Bash(sed 's/class=\"//')",
+      "Bash(sed 's/\"//')",
+      "Read(//c/Users/ADMIN/.claude/projects/c--Users-ADMIN-portfolio/memory/**)"
     ]
   }
 }
