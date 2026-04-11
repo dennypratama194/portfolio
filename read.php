@@ -261,7 +261,7 @@ $page_title = htmlspecialchars($chapter['title'])
       -webkit-user-select: none;
     }
     .read-body p   { margin-bottom: 1em; }
-    .read-body p:has(> br:only-child) { margin-bottom: 0.25em; }
+    .read-body p:has(> br:only-child) { margin-bottom: 8px; line-height: 0; }
     .read-body h2  {
       font-family: 'Instrument Serif', serif; font-weight: 400;
       font-size: 1.9rem; line-height: 1.2; letter-spacing: -0.02em;

@@ -16,6 +16,13 @@
 - Multiples of 4px only: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128px
 - Use `--pad-x` and `--pad-x-sm` for horizontal page padding
 - No arbitrary values like `margin: 13px` or `padding: 22px`
+- line-height as a spacing unit must also resolve to a 4px-grid value (e.g. at 18px font: `line-height: 0` = 0px, not 0.75 = 13.5px)
+
+## Mobile
+- Every desktop CSS change must be checked for mobile impact
+- Breakpoints: 375 / 768 / 1024 / 1440px
+- If a desktop rule changes layout, spacing, or typography — add or verify a `@media (max-width: 768px)` override exists
+- Never ship a desktop-only fix without confirming mobile renders correctly
 
 ## Naming
 - kebab-case, component-prefix: `.blog-card`, `.hero-title`, `.post-cta`, `.stat-cell`
