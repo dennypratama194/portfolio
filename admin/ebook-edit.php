@@ -4,6 +4,7 @@ ini_set('session.cookie_samesite', 'Lax');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
+require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
@@ -61,10 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($_FILES['cover_image']['name'])) {
         $file    = $_FILES['cover_image'];
-        $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        $mime    = mime_content_type($file['tmp_name']);
-
-        if (!in_array($mime, $allowed)) {
+        if (!isAllowedImage($file['tmp_name'])) {
             $errors[] = 'Cover image must be JPG, PNG, WebP or GIF.';
         } elseif ($file['size'] > 5 * 1024 * 1024) {
             $errors[] = 'Cover image must be under 5 MB.';
@@ -121,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title><?= $id ? 'Edit Ebook' : 'New Ebook' ?> — Admin</title>
+  <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>

@@ -74,3 +74,4 @@ portfolio/
 | `echo $_GET['x']` directly | `echo escHtml($_GET['x'])` |
 | `git add .` blindly | Stage specific files |
 | `console.log()` in production JS | Remove before committing |
+| Add `Co-Authored-By: Claude ...` in commits | Plain commit message only — no attribution footer |
