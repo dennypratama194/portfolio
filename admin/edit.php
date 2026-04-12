@@ -164,157 +164,10 @@ $sched_val = !empty($post['scheduled_at'])
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css"/>
+  <link rel="stylesheet" href="/admin/admin.css"/>
+  <link rel="stylesheet" href="/admin/theme.css"/>
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0D0C09; color: #ECEAE2; font-family: 'Inter', sans-serif; min-height: 100vh; }
-
-    /* ── Sidebar ── */
-    .sidebar {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
-      border-right: 1px solid rgba(236,234,226,0.07);
-      padding: 32px 24px; display: flex; flex-direction: column; gap: 32px;
-    }
-    .sidebar-logo { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(236,234,226,0.4); }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-link {
-      font-size: 13px; color: rgba(236,234,226,0.5); text-decoration: none;
-      padding: 8px 12px; transition: color 0.2s;
-    }
-    .sidebar-link:hover { color: #ECEAE2; }
-    .sidebar-bottom { margin-top: auto; }
-    .sidebar-logout {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; transition: color 0.2s;
-    }
-    .sidebar-logout:hover { color: #E8320A; }
-
-    /* ── Main ── */
-    .main { margin-left: 220px; padding: 48px 48px 80px; max-width: 900px; }
-    .top-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; }
-    .back-link {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .back-link:hover { color: #ECEAE2; }
-    h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-
-    /* ── Form ── */
-    .field { margin-bottom: 28px; }
-    label {
-      display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); margin-bottom: 8px;
-    }
-    select {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 15px;
-      padding: 12px 14px; outline: none; transition: border-color 0.2s;
-      appearance: none; cursor: pointer;
-    }
-    select:focus { border-color: #E8320A; }
-    select option { background: #1a1917; }
-    input[type=text], input[type=file], textarea {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 15px;
-      padding: 12px 14px; outline: none; transition: border-color 0.2s;
-    }
-    input[type=text]:focus, textarea:focus { border-color: #E8320A; }
-    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-    input[type=file] { cursor: pointer; padding: 10px 14px; }
-
-    /* Quill editor styling to match dark theme */
-    .ql-toolbar.ql-snow {
-      background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1) !important;
-      border-bottom: none !important;
-    }
-    .ql-container.ql-snow {
-      border: 1px solid rgba(236,234,226,0.1) !important;
-      background: rgba(236,234,226,0.03);
-    }
-    .ql-editor {
-      color: #ECEAE2; font-family: 'Inter', sans-serif;
-      font-size: 16px; line-height: 1.75; min-height: 320px;
-    }
-    .ql-editor p { margin-bottom: 0; }
-    .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }
-    .ql-snow .ql-stroke { stroke: rgba(236,234,226,0.5); }
-    .ql-snow .ql-fill { fill: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker { color: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
-
-    /* ── Publish mode ── */
-    .publish-options { display: flex; gap: 8px; margin-bottom: 12px; }
-    .radio-option {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 13px; color: rgba(236,234,226,0.55);
-      transition: border-color 0.2s, color 0.2s; user-select: none;
-    }
-    .radio-option:has(input:checked) {
-      border-color: #E8320A; color: #ECEAE2;
-    }
-    .radio-option input[type=radio] { accent-color: #E8320A; cursor: pointer; }
-    input[type=datetime-local] {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 14px;
-      padding: 11px 14px; outline: none; transition: border-color 0.2s;
-      color-scheme: dark;
-    }
-    input[type=datetime-local]:focus { border-color: #E8320A; }
-    .schedule-hint { font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 6px; }
-
-    /* ── Drag-and-drop image zone ── */
-    .drop-zone {
-      border: 2px dashed rgba(236,234,226,0.15); padding: 36px 24px;
-      text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
-      position: relative;
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: #E8320A; background: rgba(232,50,10,0.04);
-    }
-    .drop-zone input[type=file] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-    }
-    .drop-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.35; line-height: 1; }
-    .drop-text { font-size: 13px; color: rgba(236,234,226,0.4); }
-    .drop-text span { color: #E8320A; }
-    .drop-filename { font-size: 12px; color: rgba(236,234,226,0.5); margin-top: 6px; }
-    .img-preview {
-      display: block; width: 100%; max-height: 220px; object-fit: cover;
-      margin-top: 12px; opacity: 0.85;
-    }
-    .img-remove {
-      display: inline-block; margin-top: 8px; font-size: 11px; letter-spacing: 0.08em;
-      text-transform: uppercase; color: rgba(232,50,10,0.6); cursor: pointer;
-      background: none; border: none; font-family: inherit; transition: color 0.2s;
-    }
-    .img-remove:hover { color: #E8320A; }
-
-    /* ── Errors ── */
-    .errors { background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.3); padding: 16px 20px; margin-bottom: 28px; }
-    .errors li { font-size: 13px; color: #E8320A; list-style: none; margin-bottom: 4px; }
-
-    /* ── Buttons ── */
-    .btn-row { display: flex; gap: 16px; align-items: center; }
-    .btn-save {
-      background: #E8320A; color: #ECEAE2; border: none;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 12px 28px; cursor: pointer; transition: opacity 0.2s;
-    }
-    .btn-save:hover { opacity: 0.85; }
-    .btn-cancel {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
-    }
-    .btn-cancel:hover { color: #ECEAE2; }
-  </style>
 </head>
 <body>
 
@@ -333,8 +186,8 @@ $sched_val = !empty($post['scheduled_at'])
     </div>
   </aside>
 
-  <main class="main">
-    <div class="top-bar">
+  <main class="main main--wide">
+    <div class="top-bar top-bar--gap">
       <a class="back-link" href="index.php">← Posts</a>
       <h1><?= $id ? 'Edit Post' : 'New Post' ?></h1>
     </div>
