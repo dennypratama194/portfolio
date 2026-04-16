@@ -171,7 +171,7 @@ if ($chapter_id && !$edit_chapter) {
     .app-wrap { display: flex; height: 100vh; }
 
     /* ── Main wrap ── */
-    .main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+    .main-wrap { margin-left: 220px; flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
     /* ── Top bar (override: no margin, has border, smaller h1) ── */
     .top-bar {
@@ -305,7 +305,7 @@ if ($chapter_id && !$edit_chapter) {
       html, body { overflow: auto; }
       .app-wrap { flex-direction: column; height: auto; min-height: 100vh; padding-top: 56px; }
       .sidebar { display: none; }
-      .main-wrap { overflow: visible; }
+      .main-wrap { margin-left: 0; overflow: visible; }
       .panels { flex-direction: column; overflow: visible; height: auto; }
       .panel-list { width: 100%; border-right: none; border-bottom: 1px solid rgba(236,234,226,0.07); max-height: 280px; overflow-y: auto; }
       .panel-content { overflow: visible; }
