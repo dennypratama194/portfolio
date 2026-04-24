@@ -189,7 +189,7 @@ $products = $pdo->query(
 }
 </style>
 
-  <script src="/script.js?v=6" defer></script>
+  <script src="/script.js?v=7" defer></script>
   <script>var PAGE='ebooks',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

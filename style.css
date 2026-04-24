@@ -118,7 +118,7 @@
                   background 0.3s ease;
     }
     /* Morph to X */
-    body.nav-open .nav-burger span           { background: var(--paper); }
+    body.nav-open .nav-burger span              { background: var(--paper); }
     body.nav-open .nav-burger span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
     body.nav-open .nav-burger span:nth-child(2) { transform: scaleX(0); opacity: 0; }
     body.nav-open .nav-burger span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
@@ -130,33 +130,62 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       box-shadow: none !important;
-      mix-blend-mode: normal;
     }
     body.nav-open .nav-logo-img { filter: invert(1); }
     body.nav-open { overflow: hidden; }
 
-    /* ── Full-screen overlay ── */
+    /* Cursor on dark overlay */
+    body.nav-open #cursor-ring {
+      mix-blend-mode: normal;
+      border-color: rgba(236,234,226,0.5);
+      background: transparent;
+    }
+    body.nav-open #cursor-dot { background: var(--paper); }
+    body.nav-open.cursor-hover #cursor-ring { background: var(--red); border-color: var(--red); }
+
+    /* ── Full-screen overlay — circle bursts from burger ── */
     .nav-overlay {
       position: fixed; inset: 0; z-index: 199;
       background: var(--ink);
-      clip-path: inset(0 0 100% 0);
-      transition: clip-path 0.75s cubic-bezier(0.76,0,0.24,1);
-      display: flex; align-items: center;
-      padding: clamp(80px,14vh,140px) var(--pad-x) clamp(48px,8vh,80px);
+      clip-path: circle(0% at calc(100% - 48px) 36px);
+      transition: clip-path 0.9s cubic-bezier(0.76,0,0.24,1);
+      display: flex; flex-direction: column;
+      padding: 80px var(--pad-x) 56px;
       pointer-events: none;
     }
     body.nav-open .nav-overlay {
-      clip-path: inset(0 0 0% 0);
+      clip-path: circle(170% at calc(100% - 48px) 36px);
       pointer-events: auto;
     }
 
+    /* ── Close button inside overlay ── */
+    .nav-close {
+      position: absolute;
+      top: 28px; right: var(--pad-x);
+      background: none; border: none; cursor: none;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s 0.3s;
+      z-index: 1;
+    }
+    body.nav-open .nav-close { opacity: 1; }
+    .nav-close span {
+      display: block; width: 22px; height: 1.5px;
+      background: rgba(236,234,226,0.6);
+      position: absolute;
+      transform-origin: center;
+      transition: background 0.2s;
+    }
+    .nav-close span:nth-child(1) { transform: rotate(45deg); }
+    .nav-close span:nth-child(2) { transform: rotate(-45deg); }
+    .nav-close:hover span { background: var(--paper); }
+
     .nav-overlay-inner {
-      width: 100%;
+      width: 100%; height: 100%;
       display: flex; flex-direction: column;
     }
-    .nav-overlay-links {
-      display: flex; flex-direction: column;
-    }
+    .nav-overlay-links { display: flex; flex-direction: column; flex: 1; }
 
     /* ── Overlay nav links ── */
     .nav-overlay-link {
@@ -164,7 +193,7 @@
       text-decoration: none;
       font-family: 'Instrument Serif', serif;
       font-style: italic;
-      font-size: clamp(40px, 7vw, 88px);
+      font-size: clamp(36px, 6.5vw, 84px);
       font-weight: 400;
       letter-spacing: -0.02em;
       line-height: 1.1;
@@ -172,18 +201,18 @@
       padding: 8px 0;
       border-bottom: 1px solid rgba(236,234,226,0.07);
       opacity: 0;
-      transform: translateY(48px);
+      transform: translateY(40px);
       transition: opacity 0.5s, transform 0.6s cubic-bezier(0.23,1,0.32,1), color 0.2s;
     }
     .nav-overlay-links .nav-overlay-link:last-child { border-bottom: none; }
     .nav-overlay-link:hover { color: var(--red); }
 
-    /* Stagger in */
-    body.nav-open .nav-overlay-link:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.18s; }
-    body.nav-open .nav-overlay-link:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.24s; }
-    body.nav-open .nav-overlay-link:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.30s; }
-    body.nav-open .nav-overlay-link:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.36s; }
-    body.nav-open .nav-overlay-link:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.42s; }
+    /* Stagger in (delayed after circle opens ~0.3s) */
+    body.nav-open .nav-overlay-link:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.28s; }
+    body.nav-open .nav-overlay-link:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.34s; }
+    body.nav-open .nav-overlay-link:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.40s; }
+    body.nav-open .nav-overlay-link:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.46s; }
+    body.nav-open .nav-overlay-link:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.52s; }
 
     .nav-overlay-num {
       font-family: 'Inter', sans-serif;
@@ -194,21 +223,28 @@
       min-width: 28px;
     }
 
-    /* ── Overlay CTA ── */
+    /* ── Overlay footer + CTA ── */
+    .nav-overlay-footer {
+      padding-top: 32px;
+      border-top: 1px solid rgba(236,234,226,0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s, transform 0.6s cubic-bezier(0.23,1,0.32,1);
+    }
+    body.nav-open .nav-overlay-footer { opacity: 1; transform: translateY(0); transition-delay: 0.60s; }
+
     .nav-overlay-cta {
       display: inline-block;
-      margin-top: 36px;
-      font-size: 12px; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--red); text-decoration: none;
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.4s, transform 0.4s cubic-bezier(0.23,1,0.32,1), color 0.2s;
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(28px, 4vw, 56px);
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: var(--paper);
+      text-decoration: none;
+      transition: color 0.25s;
     }
-    body.nav-open .nav-overlay-cta {
-      opacity: 1; transform: translateY(0); transition-delay: 0.48s;
-    }
-    .nav-overlay-cta:hover { color: var(--paper); }
+    .nav-overlay-cta:hover { color: var(--red); }
 
     /* ═══════════════════════════════════════
        HERO

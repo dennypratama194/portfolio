@@ -36,6 +36,8 @@ if (burger && navOverlay) {
   burger.addEventListener('click', () => {
     document.body.classList.contains('nav-open') ? closeNav() : openNav();
   });
+  const navClose = document.getElementById('nav-close');
+  if (navClose) navClose.addEventListener('click', closeNav);
   document.querySelectorAll('.nav-overlay-link, .nav-overlay-cta').forEach(link => {
     link.addEventListener('click', closeNav);
   });
