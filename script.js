@@ -17,21 +17,30 @@ document.querySelectorAll('a, button, .project-panel, .cap-item, .stat-cell').fo
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
 });
 
-/* ── MOBILE NAV BURGER ── */
+/* ── NAV BURGER / OVERLAY ── */
 const burger     = document.getElementById('nav-burger');
-const navMobile  = document.getElementById('nav-mobile');
-if (burger) {
-  burger.addEventListener('click', () => document.body.classList.toggle('nav-open'));
-  /* Close menu when a link is clicked */
-  document.querySelectorAll('.nav-mobile-link, .nav-mobile-cta').forEach(link => {
-    link.addEventListener('click', () => document.body.classList.remove('nav-open'));
+const navOverlay = document.getElementById('nav-overlay');
+if (burger && navOverlay) {
+  function openNav() {
+    document.body.classList.add('nav-open');
+    burger.setAttribute('aria-expanded', 'true');
+    navOverlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNav() {
+    document.body.classList.remove('nav-open');
+    burger.setAttribute('aria-expanded', 'false');
+    navOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', () => {
+    document.body.classList.contains('nav-open') ? closeNav() : openNav();
   });
-  /* Close on outside click */
-  document.addEventListener('click', e => {
-    if (document.body.classList.contains('nav-open') &&
-        !burger.contains(e.target) && !navMobile.contains(e.target)) {
-      document.body.classList.remove('nav-open');
-    }
+  document.querySelectorAll('.nav-overlay-link, .nav-overlay-cta').forEach(link => {
+    link.addEventListener('click', closeNav);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav();
   });
 }
 
