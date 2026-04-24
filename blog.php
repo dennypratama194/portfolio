@@ -97,7 +97,7 @@ $description = 'Thoughts and ideas on UI/UX design, development, and AI from Den
   </script>
 </main>
 
-  <script src="/script.js?v=8" defer></script>
+  <script src="/script.js?v=9" defer></script>
   <script>var PAGE='blog',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

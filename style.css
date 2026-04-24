@@ -130,6 +130,8 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       box-shadow: none !important;
+      mix-blend-mode: normal !important;
+      z-index: 203 !important;
     }
     body.nav-open .nav-logo-img { filter: invert(1); }
     body.nav-open { overflow: hidden; }
@@ -166,11 +168,11 @@
       background: none; border: none; cursor: none;
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0;
+      opacity: 0; pointer-events: none;
       transition: opacity 0.3s 0.3s;
-      z-index: 1;
+      z-index: 10;
     }
-    body.nav-open .nav-close { opacity: 1; }
+    body.nav-open .nav-close { opacity: 1; pointer-events: auto; }
     .nav-close span {
       display: block; width: 22px; height: 1.5px;
       background: rgba(236,234,226,0.6);
@@ -204,8 +206,13 @@
     .nav-overlay-links .nav-overlay-link:last-child { border-bottom: none; }
     .nav-overlay-link:hover { color: var(--red); }
 
-    /* Shown state — delay is injected via JS inline style for stagger */
+    /* Shown state — CSS-only stagger, no JS inline required */
     body.nav-open .nav-overlay-link { opacity: 1; transform: translateY(0); }
+    body.nav-open .nav-overlay-link:nth-child(1) { transition-delay: 0.28s; }
+    body.nav-open .nav-overlay-link:nth-child(2) { transition-delay: 0.34s; }
+    body.nav-open .nav-overlay-link:nth-child(3) { transition-delay: 0.40s; }
+    body.nav-open .nav-overlay-link:nth-child(4) { transition-delay: 0.46s; }
+    body.nav-open .nav-overlay-link:nth-child(5) { transition-delay: 0.52s; }
 
     .nav-overlay-num {
       font-family: 'Inter', sans-serif;
@@ -224,7 +231,7 @@
       transform: translateY(20px);
       transition: opacity 0.5s, transform 0.6s cubic-bezier(0.23,1,0.32,1);
     }
-    body.nav-open .nav-overlay-footer { opacity: 1; transform: translateY(0); }
+    body.nav-open .nav-overlay-footer { opacity: 1; transform: translateY(0); transition-delay: 0.60s; }
 
     .nav-overlay-cta {
       display: inline-block;
