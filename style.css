@@ -145,7 +145,7 @@
 
     /* ── Full-screen overlay — circle bursts from burger ── */
     .nav-overlay {
-      position: fixed; inset: 0; z-index: 199;
+      position: fixed; inset: 0; z-index: 202;
       background: var(--ink);
       clip-path: circle(0% at calc(100% - 48px) 36px);
       transition: clip-path 0.9s cubic-bezier(0.76,0,0.24,1);
@@ -204,12 +204,8 @@
     .nav-overlay-links .nav-overlay-link:last-child { border-bottom: none; }
     .nav-overlay-link:hover { color: var(--red); }
 
-    /* Stagger in (delayed after circle opens ~0.3s) */
-    body.nav-open .nav-overlay-link:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.28s; }
-    body.nav-open .nav-overlay-link:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.34s; }
-    body.nav-open .nav-overlay-link:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.40s; }
-    body.nav-open .nav-overlay-link:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.46s; }
-    body.nav-open .nav-overlay-link:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:0.52s; }
+    /* Shown state — delay is injected via JS inline style for stagger */
+    body.nav-open .nav-overlay-link { opacity: 1; transform: translateY(0); }
 
     .nav-overlay-num {
       font-family: 'Inter', sans-serif;
@@ -228,7 +224,7 @@
       transform: translateY(20px);
       transition: opacity 0.5s, transform 0.6s cubic-bezier(0.23,1,0.32,1);
     }
-    body.nav-open .nav-overlay-footer { opacity: 1; transform: translateY(0); transition-delay: 0.60s; }
+    body.nav-open .nav-overlay-footer { opacity: 1; transform: translateY(0); }
 
     .nav-overlay-cta {
       display: inline-block;

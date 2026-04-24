@@ -21,27 +21,41 @@ document.querySelectorAll('a, button, .project-panel, .cap-item, .stat-cell').fo
 const burger     = document.getElementById('nav-burger');
 const navOverlay = document.getElementById('nav-overlay');
 if (burger && navOverlay) {
+  const overlayLinks  = navOverlay.querySelectorAll('.nav-overlay-link');
+  const overlayFooter = navOverlay.querySelector('.nav-overlay-footer');
+
   function openNav() {
+    /* Inject stagger delays before class fires transitions */
+    overlayLinks.forEach(function(link, i) {
+      link.style.transitionDelay = (0.28 + i * 0.06) + 's';
+    });
+    if (overlayFooter) overlayFooter.style.transitionDelay = '0.60s';
+
     document.body.classList.add('nav-open');
     burger.setAttribute('aria-expanded', 'true');
     navOverlay.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
   }
   function closeNav() {
+    /* Remove delays so close is instant */
+    overlayLinks.forEach(function(link) { link.style.transitionDelay = '0s'; });
+    if (overlayFooter) overlayFooter.style.transitionDelay = '0s';
+
     document.body.classList.remove('nav-open');
     burger.setAttribute('aria-expanded', 'false');
     navOverlay.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   }
-  burger.addEventListener('click', () => {
+  burger.addEventListener('click', function() {
     document.body.classList.contains('nav-open') ? closeNav() : openNav();
   });
   const navClose = document.getElementById('nav-close');
   if (navClose) navClose.addEventListener('click', closeNav);
-  document.querySelectorAll('.nav-overlay-link, .nav-overlay-cta').forEach(link => {
-    link.addEventListener('click', closeNav);
+  overlayLinks.forEach(function(link) { link.addEventListener('click', closeNav); });
+  navOverlay.querySelectorAll('.nav-overlay-cta').forEach(function(cta) {
+    cta.addEventListener('click', closeNav);
   });
-  document.addEventListener('keydown', e => {
+  document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav();
   });
 }
