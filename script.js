@@ -24,13 +24,20 @@ if (burger && navOverlay) {
   const overlayLinks = navOverlay.querySelectorAll('.nav-overlay-link');
   const overlayCtas  = navOverlay.querySelectorAll('.nav-overlay-cta');
 
+  let scrollLockY = 0;
   function openNav() {
+    scrollLockY = window.scrollY;
     document.body.classList.add('nav-open');
+    document.documentElement.classList.add('nav-open');
+    document.body.style.top = -scrollLockY + 'px';
     burger.setAttribute('aria-expanded', 'true');
     navOverlay.setAttribute('aria-hidden', 'false');
   }
   function closeNav() {
     document.body.classList.remove('nav-open');
+    document.documentElement.classList.remove('nav-open');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollLockY);
     burger.setAttribute('aria-expanded', 'false');
     navOverlay.setAttribute('aria-hidden', 'true');
   }
