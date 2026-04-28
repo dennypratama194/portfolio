@@ -22,7 +22,6 @@ const burger     = document.getElementById('nav-burger');
 const navOverlay = document.getElementById('nav-overlay');
 if (burger && navOverlay) {
   const overlayLinks = navOverlay.querySelectorAll('.nav-overlay-link');
-  const navClose     = document.getElementById('nav-close');
   const overlayCtas  = navOverlay.querySelectorAll('.nav-overlay-cta');
 
   function openNav() {
@@ -39,7 +38,6 @@ if (burger && navOverlay) {
   burger.addEventListener('click', function() {
     document.body.classList.contains('nav-open') ? closeNav() : openNav();
   });
-  if (navClose) navClose.addEventListener('click', closeNav);
   overlayLinks.forEach(function(link) { link.addEventListener('click', closeNav); });
   overlayCtas.forEach(function(cta) { cta.addEventListener('click', closeNav); });
   document.addEventListener('keydown', function(e) {

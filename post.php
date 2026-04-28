@@ -89,7 +89,7 @@ $canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=
           </div>`;
       });
   </script>
-  <script src="/script.js?v=9" defer></script>
+  <script src="/script.js?v=10" defer></script>
   <script>var PAGE='post',SLUG=slug;</script>
   <script src="/api/tracker.js" defer></script>
 </body>
