@@ -569,7 +569,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=10" defer></script>
+<script src="/script.js?v=11" defer></script>
 <script>
   /* ── Ebook page GSAP animations ── */
   document.addEventListener('DOMContentLoaded', function () {
