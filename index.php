@@ -10,9 +10,13 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <body>
 
 <div class="preloader" id="preloader" aria-hidden="true">
-  <div class="preloader-panel preloader-panel-left"></div>
-  <div class="preloader-panel preloader-panel-right"></div>
-  <div class="preloader-count" id="preloader-count">0</div>
+  <div class="preloader-panel preloader-panel-left">
+    <div class="preloader-count" id="preloader-count">0</div>
+  </div>
+  <div class="preloader-panel preloader-panel-right">
+    <div class="preloader-label">UIUX Designer</div>
+    <div class="preloader-year">2026</div>
+  </div>
 </div>
 <script>
 (function(){

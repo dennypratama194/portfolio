@@ -1824,7 +1824,7 @@
 }
 
 /* ═══════════════════════════════════════
-   PRELOADER (homepage only — 4h cooldown)
+   PRELOADER (homepage)
 ═══════════════════════════════════════ */
 .preloader {
   position: fixed;
@@ -1837,37 +1837,53 @@
   top: 0;
   width: 50%;
   height: 100%;
-  background: var(--paper);
+  background: var(--ink);
+  color: var(--paper);
   pointer-events: auto;
+  padding: clamp(24px, 4vw, 56px);
+  display: flex;
   transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
   will-change: transform;
 }
-.preloader-panel-left  { left: 0; }
-.preloader-panel-right { right: 0; }
+.preloader-panel-left {
+  left: 0;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+.preloader-panel-right {
+  right: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
 .preloader-count {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: 'Instrument Serif', Georgia, serif;
   font-style: italic;
-  font-size: clamp(160px, 28vw, 360px);
-  line-height: 1;
-  color: var(--ink);
+  font-size: clamp(96px, 18vw, 240px);
+  line-height: 0.85;
   letter-spacing: -0.04em;
   font-feature-settings: "tnum" 1;
   font-variant-numeric: tabular-nums;
-  z-index: 1;
-  transition: opacity 0.4s ease, transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
-  will-change: opacity, transform;
+}
+.preloader-label,
+.preloader-year {
+  opacity: 0.85;
+}
+.preloader-label {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.preloader-year {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: 0.02em;
 }
 .preloader.is-revealing .preloader-panel-left  { transform: translateX(-101%); }
 .preloader.is-revealing .preloader-panel-right { transform: translateX(101%); }
-.preloader.is-revealing .preloader-count {
-  opacity: 0;
-  transform: translateY(-16px);
-}
 .preloader.is-done { display: none; }
 
 html.preload-lock,
