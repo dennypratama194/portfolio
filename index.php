@@ -16,22 +16,13 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 </div>
 <script>
 (function(){
-  var KEY = 'dp_preloader_ts';
-  var WINDOW_MS = 4 * 60 * 60 * 1000;
+  /* TODO before production: re-enable 4h cooldown via localStorage 'dp_preloader_ts' */
   var pre = document.getElementById('preloader');
   if (!pre) return;
-
-  var last = 0;
-  try { last = parseInt(localStorage.getItem(KEY) || '0', 10); } catch (e) {}
-  if (last && (Date.now() - last) < WINDOW_MS) {
-    pre.classList.add('is-done');
-    return;
-  }
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) {
     pre.classList.add('is-done');
-    try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
     return;
   }
 
@@ -49,7 +40,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       requestAnimationFrame(tick);
     } else {
       countEl.textContent = '100';
-      try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
       setTimeout(reveal, 320);
     }
   }
