@@ -1876,6 +1876,7 @@ html.preload-lock body {
   height: 100%;
 }
 
+/* TODO before production: restore prefers-reduced-motion override
 @media (prefers-reduced-motion: reduce) {
   .preloader { display: none !important; }
-}
+} */

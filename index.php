@@ -16,15 +16,9 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 </div>
 <script>
 (function(){
-  /* TODO before production: re-enable 4h cooldown via localStorage 'dp_preloader_ts' */
+  /* TODO before production: re-enable 4h cooldown + prefers-reduced-motion check */
   var pre = document.getElementById('preloader');
   if (!pre) return;
-
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) {
-    pre.classList.add('is-done');
-    return;
-  }
 
   document.documentElement.classList.add('preload-lock');
   var countEl = document.getElementById('preloader-count');
