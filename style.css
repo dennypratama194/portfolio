@@ -130,6 +130,7 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       box-shadow: none !important;
+      border: none !important;
       mix-blend-mode: normal !important;
       z-index: 203 !important;
     }
@@ -215,7 +216,6 @@
       display: flex; justify-content: space-between; align-items: flex-end;
       gap: 32px;
       padding-top: 32px;
-      border-top: 1px solid rgba(236,234,226,0.08);
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.5s, transform 0.6s cubic-bezier(0.23,1,0.32,1);
