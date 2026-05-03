@@ -1,9 +1,54 @@
 <?php
-/* Title/description are overridden via JS once post data loads,
-   but these defaults ensure a valid fallback for crawlers. */
-$title       = 'Post — Denny Pratama';
-$description = 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
-$canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=' . urlencode($_GET['slug']) : '');
+require __DIR__ . '/api/db.php';
+require __DIR__ . '/api/helpers.php';
+
+$slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
+
+if (!$slug) {
+    header('Location: /blog');
+    exit;
+}
+
+$stmt = $pdo->prepare(
+    'SELECT title, slug, excerpt, featured_image, body,
+            COALESCE(published_at, scheduled_at) AS published_at, category
+     FROM posts
+     WHERE slug = ?
+       AND (is_published = 1 OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW()))
+     LIMIT 1'
+);
+$stmt->execute([$slug]);
+$post = $stmt->fetch();
+
+if (!$post) {
+    http_response_code(404);
+    header('Location: /blog');
+    exit;
+}
+
+$featured_image_url = $post['featured_image']
+    ? 'https://dennypratama.com/admin/uploads/' . $post['featured_image']
+    : null;
+
+$cat_labels = ['uiux' => 'UI/UX', 'development' => 'Development', 'ai' => 'AI'];
+$category_label = $post['category'] ? ($cat_labels[$post['category']] ?? $post['category']) : null;
+
+$title       = $post['title'] . ' — Denny Pratama';
+$description = $post['excerpt']
+    ?: 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
+$canonical   = 'https://dennypratama.com/post?slug=' . urlencode($post['slug']);
+$og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/og-image.png';
+$og_type     = 'article';
+$jsonld      = json_encode([
+    '@context'      => 'https://schema.org',
+    '@type'         => 'BlogPosting',
+    'headline'      => $post['title'],
+    'description'   => $post['excerpt'],
+    'author'        => ['@type' => 'Person', 'name' => 'Denny Pratama'],
+    'datePublished' => $post['published_at'],
+    'url'           => $canonical,
+    'image'         => $og_image,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,12 +60,33 @@ $canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=
 <?php include 'partials/nav.php'; ?>
 
 <main>
-  <!-- ── POST CONTENT (populated by JS) ── -->
   <article id="post-root">
-    <div class="post-hero" style="display:flex;align-items:center;gap:8px;padding-top:200px;">
-      <span class="blog-loading-dot"></span>
-      <span class="blog-loading-dot"></span>
-      <span class="blog-loading-dot"></span>
+    <div class="post-hero">
+      <div class="post-hero-meta">
+        <a class="post-hero-back" href="/blog">← Blog</a>
+        <?php if ($category_label): ?>
+          <span class="cat-badge"><?= escHtml($category_label) ?></span>
+        <?php endif; ?>
+        <span><?= escHtml(formatDate($post['published_at'])) ?></span>
+      </div>
+      <h1 class="post-hero-title"><?= escHtml($post['title']) ?></h1>
+    </div>
+
+    <?php if ($featured_image_url): ?>
+      <img class="post-featured-img"
+           src="<?= escHtml($featured_image_url) ?>"
+           alt="<?= escHtml($post['title']) ?>"/>
+    <?php endif; ?>
+
+    <div class="post-body"><?= $post['body'] /* admin-only Quill HTML */ ?></div>
+
+    <div class="post-cta">
+      <p class="post-cta-label">Enjoyed this? Let's build something.</p>
+      <a class="post-cta-btn js-open-modal" href="#">Start a project →</a>
+    </div>
+
+    <div class="post-footer">
+      <a class="post-footer-back" href="/blog">← All posts</a>
     </div>
   </article>
 </main>
@@ -28,69 +94,8 @@ $canonical   = 'https://dennypratama.com/post' . (isset($_GET['slug']) ? '?slug=
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script>
-    const slug = new URLSearchParams(window.location.search).get('slug');
-    if (!slug) { window.location.replace('/blog'); }
-
-    function formatDate(iso) {
-      if (!iso) return '';
-      return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
-
-    const CAT_LABELS = { uiux: 'UI/UX', development: 'Development', ai: 'AI' };
-
-    function escHtml(s) {
-      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    function renderPost(post) {
-      document.title = escHtml(post.title) + ' — Denny Pratama';
-
-      document.getElementById('post-root').innerHTML = `
-        <div class="post-hero">
-          <div class="post-hero-meta">
-            <a class="post-hero-back" href="/blog">← Blog</a>
-            ${post.category ? `<span class="cat-badge">${escHtml(CAT_LABELS[post.category] || post.category)}</span>` : ''}
-            <span>${formatDate(post.published_at)}</span>
-          </div>
-          <h1 class="post-hero-title">${escHtml(post.title)}</h1>
-        </div>
-
-        ${post.featured_image
-          ? `<img class="post-featured-img" src="${escHtml(post.featured_image)}" alt="${escHtml(post.title)}"/>`
-          : ''
-        }
-
-        <div class="post-body">${post.body || ''}</div>
-
-        <div class="post-cta">
-          <p class="post-cta-label">Enjoyed this? Let's build something.</p>
-          <a class="post-cta-btn js-open-modal" href="#">Start a project →</a>
-        </div>
-
-        <div class="post-footer">
-          <a class="post-footer-back" href="/blog">← All posts</a>
-        </div>
-      `;
-    }
-
-    fetch('/api/post.php?slug=' + encodeURIComponent(slug))
-      .then(r => {
-        if (r.status === 404) { window.location.replace('/blog'); return null; }
-        if (!r.ok) throw new Error(r.status);
-        return r.json();
-      })
-      .then(data => { if (data) renderPost(data); })
-      .catch(() => {
-        document.getElementById('post-root').innerHTML = `
-          <div class="post-hero" style="padding-top:200px;">
-            <div class="post-hero-meta"><a class="post-hero-back" href="/blog">← Blog</a></div>
-            <h1 class="post-hero-title" style="font-size:clamp(28px,4vw,48px)">Could not load this post.</h1>
-          </div>`;
-      });
-  </script>
-  <script src="/script.js?v=11" defer></script>
-  <script>var PAGE='post',SLUG=slug;</script>
-  <script src="/api/tracker.js" defer></script>
+<script src="/script.js?v=11" defer></script>
+<script>var PAGE='post', SLUG=<?= json_encode($post['slug']) ?>;</script>
+<script src="/api/tracker.js" defer></script>
 </body>
 </html>
