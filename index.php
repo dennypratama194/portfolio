@@ -70,11 +70,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
     <div class="hero-bottom">
       <div class="hero-bottom-left">
-        <div class="hero-name-plate">
-          <span class="hero-name">Denny Pratama</span>
-          <div class="hero-name-line"></div>
-          <span class="hero-role">UI/UX · Dev · Brand · AI</span>
-        </div>
         <p class="hero-desc">
           I bridge the gap between visual craft and technical execution to build 
           digital products that look exceptional and drive measurable results.
@@ -425,7 +420,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=11" defer></script>
+  <script src="/script.js?v=12" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

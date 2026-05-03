@@ -1,3 +1,57 @@
+/* ── PAGE TRANSITION (top-to-bottom curtain) ── */
+(function () {
+  const html = document.documentElement;
+  const LEAVE_MS  = 550;
+  const REVEAL_MS = 700;
+
+  // Inbound: if arriving from a transition, slide curtain off bottom on next frame
+  if (html.classList.contains('pt-arriving')) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        html.classList.add('pt-revealing');
+        setTimeout(function () {
+          html.classList.remove('pt-arriving', 'pt-revealing');
+        }, REVEAL_MS + 50);
+      });
+    });
+  }
+
+  function shouldIntercept(a, e) {
+    if (e.defaultPrevented) return false;
+    if (e.button !== 0) return false;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+    if (a.target && a.target !== '' && a.target !== '_self') return false;
+    if (a.hasAttribute('download')) return false;
+    if (a.classList.contains('js-open-modal')) return false;
+    const href = a.getAttribute('href');
+    if (!href) return false;
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return false;
+    let url;
+    try { url = new URL(a.href, location.href); } catch (err) { return false; }
+    if (url.origin !== location.origin) return false;
+    // Same path + only a hash change → let browser handle scroll
+    if (url.pathname === location.pathname && url.search === location.search && url.hash) return false;
+    return true;
+  }
+
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a');
+    if (!a) return;
+    if (!shouldIntercept(a, e)) return;
+    e.preventDefault();
+    try { sessionStorage.setItem('pt', '1'); } catch (err) {}
+    html.classList.add('pt-leaving');
+    setTimeout(function () { window.location.href = a.href; }, LEAVE_MS);
+  });
+
+  // Restore state if user comes back via bfcache
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) {
+      html.classList.remove('pt-leaving', 'pt-arriving', 'pt-revealing');
+    }
+  });
+})();
+
 /* ── CURSOR ── */
 const ring = document.getElementById('cursor-ring');
 const dot  = document.getElementById('cursor-dot');

@@ -1,5 +1,15 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Page transition: set arriving state before paint to prevent flash -->
+  <script>
+    try {
+      if (sessionStorage.getItem('pt')) {
+        document.documentElement.classList.add('pt-arriving');
+        sessionStorage.removeItem('pt');
+      }
+    } catch (e) {}
+  </script>
   <title><?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?></title>
   <meta name="description" content="<?= htmlspecialchars($description ?? 'Denny Pratama — UI/UX Designer & Developer based in Indonesia. Building digital products where aesthetics and function refuse to compromise.') ?>"/>
 
@@ -41,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 
   <!-- Preload critical CSS -->
-  <link rel="preload" href="/style.css?v=28" as="style"/>
+  <link rel="preload" href="/style.css?v=29" as="style"/>
 
   <!-- Fonts — non-blocking via print media swap trick -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap"/>
@@ -49,7 +59,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=28"/>
+  <link rel="stylesheet" href="/style.css?v=29"/>
 
   <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

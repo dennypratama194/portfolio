@@ -122,7 +122,7 @@ $jsonld      = json_encode([
   })();
 </script>
 
-<script src="/script.js?v=11" defer></script>
+<script src="/script.js?v=12" defer></script>
 <script>var PAGE='blog', SLUG=null;</script>
 <script src="/api/tracker.js" defer></script>
 </body>
