@@ -1268,10 +1268,18 @@
       .pm-btn-send   { margin-top: 36px; padding: 15px 36px; align-self: stretch; text-align: center; justify-content: center; }
 
       /* Nav overlay — stack footer on mobile */
-      .nav-overlay { padding: 96px 24px 40px; }
-      .nav-overlay-link { grid-template-columns: 36px 1fr; padding: 12px 0; }
-      .nav-overlay-footer { flex-direction: column; align-items: flex-start; gap: 24px; }
+      .nav-overlay { padding: 88px 24px 32px; gap: 32px; }
+      .nav-overlay-links { max-width: none; align-self: stretch; }
+      .nav-overlay-link { grid-template-columns: 36px 1fr; padding: 10px 0; font-size: clamp(36px, 12vw, 56px); }
+      .nav-overlay-footer {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 24px;
+        padding-top: 24px;
+      }
       .nav-overlay-footer-right { align-items: flex-start; text-align: left; }
+      .nav-overlay-cta, .nav-overlay-email { font-size: clamp(20px, 5.5vw, 26px); }
     }
 
     /* ═══════════════════════════════════════
