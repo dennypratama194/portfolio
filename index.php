@@ -9,6 +9,63 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 </head>
 <body>
 
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-panel preloader-panel-left"></div>
+  <div class="preloader-panel preloader-panel-right"></div>
+  <div class="preloader-count" id="preloader-count">0</div>
+</div>
+<script>
+(function(){
+  var KEY = 'dp_preloader_ts';
+  var WINDOW_MS = 4 * 60 * 60 * 1000;
+  var pre = document.getElementById('preloader');
+  if (!pre) return;
+
+  var last = 0;
+  try { last = parseInt(localStorage.getItem(KEY) || '0', 10); } catch (e) {}
+  if (last && (Date.now() - last) < WINDOW_MS) {
+    pre.classList.add('is-done');
+    return;
+  }
+
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    pre.classList.add('is-done');
+    try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+    return;
+  }
+
+  document.documentElement.classList.add('preload-lock');
+  var countEl = document.getElementById('preloader-count');
+  var start = null;
+  var DURATION = 2200;
+
+  function tick(t) {
+    if (!start) start = t;
+    var p = Math.min(1, (t - start) / DURATION);
+    var eased = 1 - Math.pow(1 - p, 3);
+    countEl.textContent = Math.floor(eased * 100);
+    if (p < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      countEl.textContent = '100';
+      try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+      setTimeout(reveal, 320);
+    }
+  }
+
+  function reveal() {
+    pre.classList.add('is-revealing');
+    setTimeout(function () {
+      pre.classList.add('is-done');
+      document.documentElement.classList.remove('preload-lock');
+    }, 1250);
+  }
+
+  requestAnimationFrame(tick);
+})();
+</script>
+
 <?php include 'partials/nav.php'; ?>
 
 <main>
