@@ -21,6 +21,15 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
   var pre = document.getElementById('preloader');
   if (!pre) return;
 
+  // Only show on first homepage visit per session — skip on return navigation
+  try {
+    if (sessionStorage.getItem('preloaderSeen') === '1') {
+      pre.parentNode && pre.parentNode.removeChild(pre);
+      return;
+    }
+    sessionStorage.setItem('preloaderSeen', '1');
+  } catch (e) { /* private mode — fall through and play once */ }
+
   document.documentElement.classList.add('preload-lock');
   var countEl = document.getElementById('preloader-count');
   var start = null;
