@@ -1830,33 +1830,44 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  pointer-events: none;
-}
-.preloader-panel {
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  background: var(--ink);
+  overflow: hidden;
   color: var(--paper);
   pointer-events: auto;
-  padding: clamp(24px, 4vw, 56px);
-  display: flex;
-  transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
-  will-change: transform;
 }
-.preloader-panel-left {
-  left: 0;
-  align-items: flex-end;
-  justify-content: flex-start;
+.preloader-window {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  box-shadow: 0 0 0 200vmax var(--ink);
+  transition: width 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.3s,
+              height 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.3s;
+  will-change: width, height;
 }
-.preloader-panel-right {
-  right: 0;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
+.preloader-label,
+.preloader-count,
+.preloader-year {
+  position: absolute;
+  z-index: 1;
+  transition: opacity 0.45s ease, transform 0.55s cubic-bezier(0.77, 0, 0.175, 1);
+  will-change: opacity, transform;
+}
+.preloader-label {
+  top: clamp(24px, 4vw, 56px);
+  right: clamp(24px, 4vw, 56px);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 .preloader-count {
+  bottom: clamp(20px, 3vw, 48px);
+  left: clamp(24px, 4vw, 56px);
   font-family: 'Instrument Serif', Georgia, serif;
   font-style: italic;
   font-size: clamp(96px, 18vw, 240px);
@@ -1865,25 +1876,25 @@
   font-feature-settings: "tnum" 1;
   font-variant-numeric: tabular-nums;
 }
-.preloader-label,
 .preloader-year {
-  opacity: 0.85;
-}
-.preloader-label {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-.preloader-year {
+  bottom: clamp(24px, 4vw, 56px);
+  right: clamp(24px, 4vw, 56px);
   font-family: 'Instrument Serif', Georgia, serif;
   font-style: italic;
   font-size: 18px;
   letter-spacing: 0.02em;
+  opacity: 0.85;
 }
-.preloader.is-revealing .preloader-panel-left  { transform: translateX(-101%); }
-.preloader.is-revealing .preloader-panel-right { transform: translateX(101%); }
+.preloader.is-revealing .preloader-window {
+  width: 110vw;
+  height: 110vh;
+}
+.preloader.is-revealing .preloader-label,
+.preloader.is-revealing .preloader-count,
+.preloader.is-revealing .preloader-year {
+  opacity: 0;
+  transform: translateY(-8px);
+}
 .preloader.is-done { display: none; }
 
 html.preload-lock,
