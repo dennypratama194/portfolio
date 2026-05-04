@@ -66,7 +66,7 @@ function lerpCursor() {
   requestAnimationFrame(lerpCursor);
 }
 lerpCursor();
-document.querySelectorAll('a, button, .project-panel, .cap-item, .stat-cell').forEach(el => {
+document.querySelectorAll('a, button, .wc, .cap-item, .stat-cell').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
 });

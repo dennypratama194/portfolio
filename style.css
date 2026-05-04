@@ -495,36 +495,37 @@
       max-width: 240px; text-align: right; line-height: 1.65;
     }
 
-    /* ── Scattered work layout ── */
+    /* ── Scattered work layout — 8-col CSS grid ── */
     .work-scattered {
-      position: relative;
-      height: 840px;
-      margin-top: 0;
-      padding: 0 var(--pad-x);
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      column-gap: 1.5rem;
+      align-items: start;
+      padding: 0 var(--pad-x) 120px;
     }
 
     .wc {
-      position: absolute;
+      display: block;
       text-decoration: none;
-      display: block;
-    }
-    .wc:hover .wc-name { color: var(--red); }
-
-    .wc-idx {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 10px;
     }
 
+    /* Card container with portrait aspect */
     .wc-card {
       position: relative;
       width: 100%;
-      aspect-ratio: 3 / 4;
+      aspect-ratio: 500 / 617;
       overflow: hidden;
-      border: 1px solid var(--border);
+      transition: transform 0.6s cubic-bezier(0.23,1,0.32,1);
+    }
+    .wc:hover .wc-card { transform: scale(1.03); }
+
+    /* Bottom-fade so white text reads on any mockup */
+    .wc-card::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(13,12,9,0.6) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     /* Force vis-* to fill portrait card */
@@ -538,30 +539,36 @@
       min-height: unset;
     }
 
-    .wc-foot   { padding-top: 12px; }
+    /* Text overlay — bottom-left of card */
+    .wc-overlay {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      z-index: 2;
+    }
+    .wc-num {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(236,234,226,0.5);
+      margin-bottom: 5px;
+    }
     .wc-name {
       display: block;
       font-family: 'Instrument Serif', serif;
       font-style: italic;
-      font-size: clamp(16px, 1.6vw, 24px);
+      font-size: clamp(18px, 2.2vw, 32px);
       letter-spacing: -0.01em;
-      color: var(--ink);
-      transition: color 0.25s;
-    }
-    .wc-meta {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--ink-3);
-      margin-top: 4px;
+      line-height: 1;
+      color: var(--paper);
     }
 
-    /* ── Card positions ── */
-    .wc-1 { top: 0;     left: 19%;  width: 24%; }
-    .wc-2 { top: 290px; right: 2%;  width: 19%; }
-    .wc-3 { top: 370px; left: 43%;  width: 17%; }
-    .wc-4 { top: 460px; left: 1%;   width: 15%; }
-    .wc-5 { top: 520px; right: 23%; width: 14%; }
+    /* ── Grid positions (mirrors fluid.glass rhythm) ── */
+    .wc-1 { grid-column: 2/5; grid-row: 1; }                        /* hero — center */
+    .wc-2 { grid-column: 6/9; grid-row: 1; margin-top: 5rem; }      /* right, lower */
+    .wc-3 { grid-column: 4/7; grid-row: 2; margin-top: -9rem; }     /* center, pulled up */
+    .wc-4 { grid-column: 1/4; grid-row: 2; margin-top: 3rem; }      /* left */
+    .wc-5 { grid-column: 7/9; grid-row: 2; margin-top: 16rem; }
 
     /* ── Project visuals ── */
 
@@ -1301,13 +1308,14 @@
       .work-subtitle { text-align: left; max-width: 100%; }
       .work-title { font-size: clamp(40px, 10vw, 72px); }
       .work-scattered {
-        height: auto;
-        padding: 0 24px;
-        display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 32px 16px;
+        column-gap: 12px;
+        row-gap: 24px;
+        padding: 0 24px 64px;
       }
-      .wc { position: relative; top: auto !important; left: auto !important; right: auto !important; width: auto !important; }
+      .wc { grid-column: auto !important; grid-row: auto !important; margin-top: 0 !important; }
+      .wc-1 { grid-column: 1 / 3 !important; }
+      .wc-name { font-size: 18px; }
 
       #about { padding: 80px 24px; }
       .about-grid { gap: 40px; }

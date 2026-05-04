@@ -134,77 +134,72 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     <div class="work-scattered">
 
       <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
-        <span class="wc-idx">01 — Ongoing</span>
         <div class="wc-card">
           <div class="vis-brand">
             <div class="vb-grid"></div>
             <div class="vb-mark"></div>
             <div class="vb-pal"></div>
           </div>
-        </div>
-        <div class="wc-foot">
-          <span class="wc-name">Xertra</span>
-          <span class="wc-meta">Web Design · Branding · 2025</span>
+          <div class="wc-overlay">
+            <span class="wc-num">01</span>
+            <span class="wc-name">Xertra</span>
+          </div>
         </div>
       </a>
 
       <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
-        <span class="wc-idx">02 — Ongoing</span>
         <div class="wc-card">
           <div class="vis-uiux">
             <div class="vu-nav"></div>
             <div class="vu-card1"></div>
             <div class="vu-card2"></div>
           </div>
-        </div>
-        <div class="wc-foot">
-          <span class="wc-name">Wordsburg</span>
-          <span class="wc-meta">UI/UX · Web Design · 2025</span>
+          <div class="wc-overlay">
+            <span class="wc-num">02</span>
+            <span class="wc-name">Wordsburg</span>
+          </div>
         </div>
       </a>
 
       <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
-        <span class="wc-idx">03 — 2026</span>
         <div class="wc-card">
           <div class="vis-dash">
             <div class="vh-sidebar"></div>
             <div class="vh-chart"></div>
             <div class="vh-dot"></div>
           </div>
-        </div>
-        <div class="wc-foot">
-          <span class="wc-name">Brenom Systems</span>
-          <span class="wc-meta">Web Design · Dev · 2026</span>
+          <div class="wc-overlay">
+            <span class="wc-num">03</span>
+            <span class="wc-name">Brenom Systems</span>
+          </div>
         </div>
       </a>
 
       <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
-        <span class="wc-idx">04 — Ongoing</span>
         <div class="wc-card">
           <div class="vis-dev">
             <div class="vd-chrome"></div>
             <div class="vd-lines"></div>
             <div class="vd-cursor"></div>
           </div>
-        </div>
-        <div class="wc-foot">
-          <span class="wc-name">Digital Revo</span>
-          <span class="wc-meta">UI/UX · Web Dev · 2025</span>
+          <div class="wc-overlay">
+            <span class="wc-num">04</span>
+            <span class="wc-name">Digital Revo</span>
+          </div>
         </div>
       </a>
 
       <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
-        <span class="wc-idx">05 — 2025</span>
         <div class="wc-card">
-          <div class="vis-uiux">
-            <div class="vu-nav"></div>
-            <div class="vu-card1"></div>
-            <div class="vu-card2"></div>
+          <div class="vis-dash">
+            <div class="vh-sidebar"></div>
+            <div class="vh-chart"></div>
+            <div class="vh-dot"></div>
           </div>
-        </div>
-        <div class="wc-foot">
-          <span class="wc-name">MoRe</span>
-          <span class="wc-meta">Web Development · 2025</span>
+          <div class="wc-overlay">
+            <span class="wc-num">05</span>
+            <span class="wc-name">MoRe</span>
+          </div>
         </div>
       </a>
 
