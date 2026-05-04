@@ -649,6 +649,12 @@ $jsonld = json_encode([
       el.addEventListener('mouseenter', function () { document.body.classList.add('cursor-hover'); });
       el.addEventListener('mouseleave', function () { document.body.classList.remove('cursor-hover'); });
     });
+
+    /* Cursor turns white on dark sections — same pattern as homepage */
+    document.querySelectorAll('#eb-cta, footer').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { document.body.classList.add('on-dark'); });
+      el.addEventListener('mouseleave', function () { document.body.classList.remove('on-dark'); });
+    });
   });
 </script>
 </body>
