@@ -64,12 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       border: 1px solid rgba(236,234,226,0.08);
     }
     .login-logo {
-      font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); margin-bottom: 40px;
     }
     h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 32px; }
     label {
-      display: block; font-size: 11px; letter-spacing: 0.12em;
+      display: block; font-size: 12px; letter-spacing: 0.12em;
       text-transform: uppercase; color: rgba(236,234,226,0.4);
       margin-bottom: 8px;
     }
@@ -77,13 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1);
       color: #ECEAE2; font-family: 'Inter', sans-serif;
-      font-size: 15px; padding: 12px 14px;
+      font-size: 16px; padding: 12px 16px;
       outline: none; margin-bottom: 20px;
       transition: border-color 0.2s;
     }
     input:focus { border-color: #E8320A; }
     .error {
-      font-size: 12px; color: #E8320A;
+      font-size: 14px; color: #E8320A;
       margin-bottom: 20px; letter-spacing: 0.02em;
     }
     button {

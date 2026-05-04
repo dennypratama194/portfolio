@@ -18,6 +18,40 @@
 - No arbitrary values like `margin: 13px` or `padding: 22px`
 - line-height as a spacing unit must also resolve to a 4px-grid value (e.g. at 18px font: `line-height: 0` = 0px, not 0.75 = 13.5px)
 
+## Typography scale — strict
+Allowed `font-size` values only: **14 / 16 / 18 / 20 / 24 / 28 / 32 / 40 / 48 / 56 / 64 / 72 / 80px**
+
+Rules:
+- **No odd numbers.** Never `11`, `13`, `15`, `17`, `19`, `21`, `23`, `25`, `27`px etc.
+- **No 9, 10px.** Too small — bump to 12 (eyebrow) or 14 (anything else).
+- **Primary body / paragraph copy → 16px minimum.** 12px is way too small to read; never use it for body copy, descriptions, list text, table cells, post text, modal sub-text, or stat descriptions.
+- **Captions / disclaimers / form labels / metadata → 14px minimum.** Use sparingly; default to 16px when in doubt.
+- **22, 26, 30, 36, 44, 60px are not on the scale** — round to the nearest allowed size (22→24, 26→24, 30→32, 36→32 or 40, 44→48, 60→64).
+
+### Exception: eyebrow / tag pattern (12px allowed)
+12px is permitted **only** for short uppercase labels that meet ALL of these:
+- `text-transform: uppercase`
+- `letter-spacing: ≥ 0.06em` (intentional tracking — body copy never has this)
+- ≤ ~30 chars (eyebrow, tag, badge, kicker, button text, table header label)
+
+Anything that reads as a sentence, description, or paragraph is body text — use 16px minimum, regardless of color or weight.
+
+### Migration map (when fixing legacy code)
+| Found | Replace with |
+|---|---|
+| 9, 10, 11px | 12px (if eyebrow) else 14px |
+| 12px (body context) | 16px |
+| 12px (uppercase eyebrow ≥ 0.1em letter-spacing) | keep 12px |
+| 13px | 14px |
+| 15px | 16px |
+| 17px | 18px |
+| 19px | 20px |
+| 22px | 24px |
+| 26px | 24px or 28px (whichever fits hierarchy) |
+| 30px | 32px |
+| 44px | 48px |
+| 60px | 64px |
+
 ## Mobile
 - Every desktop CSS change must be checked for mobile impact
 - Breakpoints: 375 / 768 / 1024 / 1440px

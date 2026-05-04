@@ -121,7 +121,7 @@ main { flex: 1; display: flex; align-items: center; }
 
 .lib-card-body { flex: 1; min-width: 0; }
 .lib-card-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--ink);
@@ -131,7 +131,7 @@ main { flex: 1; display: flex; align-items: center; }
   text-overflow: ellipsis;
 }
 .lib-card-date {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--ink-3);
   letter-spacing: 0.02em;
 }
@@ -142,9 +142,9 @@ main { flex: 1; display: flex; align-items: center; }
   padding: 10px 20px;
   background: var(--ink);
   color: var(--paper);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
   transition: background 0.2s;

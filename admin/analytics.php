@@ -113,20 +113,20 @@ $max_views = max($chart_data) ?: 1;
       padding: 24px;
     }
     .stat-label {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.3); margin-bottom: 12px;
     }
     .stat-value {
-      font-size: 30px; font-weight: 600; letter-spacing: -0.03em; color: #ECEAE2;
+      font-size: 32px; font-weight: 600; letter-spacing: -0.03em; color: #ECEAE2;
     }
     .stat-value.accent { color: #E8320A; }
     .stat-sub {
-      font-size: 11px; color: rgba(236,234,226,0.25); margin-top: 6px;
+      font-size: 14px; color: rgba(236,234,226,0.25); margin-top: 8px;
     }
 
     /* ── Section heading ── */
     .section-heading {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.3); margin-bottom: 16px;
       padding-bottom: 12px; border-bottom: 1px solid rgba(236,234,226,0.07);
     }
@@ -142,9 +142,9 @@ $max_views = max($chart_data) ?: 1;
       padding: 24px; display: flex; align-items: center; gap: 20px;
     }
     .vsplit-icon { font-size: 24px; opacity: 0.4; }
-    .vsplit-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(236,234,226,0.3); margin-bottom: 6px; }
-    .vsplit-value { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; }
-    .vsplit-pct { font-size: 11px; color: rgba(236,234,226,0.25); margin-top: 4px; }
+    .vsplit-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(236,234,226,0.3); margin-bottom: 8px; }
+    .vsplit-value { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+    .vsplit-pct { font-size: 14px; color: rgba(236,234,226,0.25); margin-top: 4px; }
 
     /* ── Breakdown ── */
     .breakdown-grid {
@@ -157,25 +157,25 @@ $max_views = max($chart_data) ?: 1;
       padding: 20px 24px;
     }
     .breakdown-name {
-      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.35); margin-bottom: 16px;
     }
     .breakdown-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
-    .breakdown-metric { font-size: 11px; color: rgba(236,234,226,0.35); }
+    .breakdown-metric { font-size: 14px; color: rgba(236,234,226,0.35); }
     .breakdown-num { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
     .breakdown-num.dim { font-size: 16px; color: rgba(236,234,226,0.5); }
     .breakdown-divider { border: none; border-top: 1px solid rgba(236,234,226,0.05); margin: 12px 0; }
 
     /* ── Top posts table ── */
     table { margin-bottom: 40px; }
-    .rank { color: rgba(236,234,226,0.25); font-size: 13px; width: 32px; }
+    .rank { color: rgba(236,234,226,0.25); font-size: 14px; width: 32px; }
     .post-title-cell { color: #ECEAE2; font-weight: 500; }
-    .post-slug-cell { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 2px; }
+    .post-slug-cell { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
     .view-bar-wrap { display: flex; align-items: center; gap: 12px; }
     .view-bar-bg { flex: 1; height: 3px; background: rgba(236,234,226,0.07); max-width: 160px; }
     .view-bar-fill { height: 100%; background: #E8320A; }
-    .view-count { font-size: 13px; color: rgba(236,234,226,0.8); min-width: 28px; text-align: right; font-weight: 500; }
-    .uniq-count { font-size: 12px; color: rgba(236,234,226,0.35); min-width: 52px; }
+    .view-count { font-size: 14px; color: rgba(236,234,226,0.8); min-width: 28px; text-align: right; font-weight: 500; }
+    .uniq-count { font-size: 14px; color: rgba(236,234,226,0.35); min-width: 52px; }
 
     /* ── Bar chart ── */
     .chart-wrap {
@@ -194,8 +194,8 @@ $max_views = max($chart_data) ?: 1;
       min-height: 2px; transition: opacity 0.2s;
     }
     .chart-bar:hover { opacity: 1; }
-    .chart-label { font-size: 9px; color: rgba(236,234,226,0.25); margin-top: 8px; white-space: nowrap; }
-    .chart-value { font-size: 10px; color: rgba(236,234,226,0.35); margin-top: 2px; }
+    .chart-label { font-size: 12px; letter-spacing: 0.06em; color: rgba(236,234,226,0.25); margin-top: 8px; white-space: nowrap; }
+    .chart-value { font-size: 12px; letter-spacing: 0.06em; color: rgba(236,234,226,0.35); margin-top: 4px; }
 
     .empty { color: rgba(236,234,226,0.2); font-size: 14px; padding: 32px 0; }
   </style>

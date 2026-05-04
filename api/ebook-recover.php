@@ -88,16 +88,16 @@ foreach ($purchases as $pu) {
     $purchase_blocks .= <<<BLOCK
           <tr>
             <td style="padding:20px 40px 24px;border-bottom:1px solid #F0EEE6;">
-              <p style="margin:0 0 4px;font-size:13px;font-weight:600;letter-spacing:-0.01em;color:#0D0C09;">
+              <p style="margin:0 0 4px;font-size:16px;font-weight:600;letter-spacing:-0.01em;color:#0D0C09;">
                 {$title_safe}
               </p>
-              <p style="margin:0 0 14px;font-size:12px;color:#9E9B93;">Purchased {$date_safe}</p>
+              <p style="margin:0 0 16px;font-size:14px;color:#9E9B93;">Purchased {$date_safe}</p>
               <table cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                   <td style="background:#E8320A;">
                     <a href="{$magic_link}"
-                       style="display:inline-block;padding:11px 24px;
-                              font-size:13px;font-weight:600;letter-spacing:0.04em;
+                       style="display:inline-block;padding:12px 24px;
+                              font-size:14px;font-weight:600;letter-spacing:0.06em;
                               text-transform:uppercase;color:#FFFFFF;text-decoration:none;">
                       Read Now &rarr;
                     </a>
@@ -139,11 +139,11 @@ $html = <<<HTML
           <!-- Intro -->
           <tr>
             <td style="padding:32px 40px 24px;border-bottom:1px solid #F0EEE6;">
-              <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;
+              <h1 style="margin:0 0 12px;font-size:24px;font-weight:600;
                          letter-spacing:-0.02em;color:#0D0C09;line-height:1.25;">
                 {$heading}
               </h1>
-              <p style="margin:0;font-size:15px;color:#5A5855;line-height:1.6;">
+              <p style="margin:0;font-size:16px;color:#5A5855;line-height:1.6;">
                 We found {$count} {$plural} for <strong style="color:#0D0C09;">{$email}</strong>.
                 Each button below opens your personal copy — it's ready to read right now.
               </p>
@@ -158,7 +158,7 @@ $html = <<<HTML
                      style="width:100%;background:#F8F7F3;border-left:3px solid #E8320A;">
                 <tr>
                   <td style="padding:14px 18px;">
-                    <p style="margin:0;font-size:13px;color:#5A5855;line-height:1.55;">
+                    <p style="margin:0;font-size:14px;color:#5A5855;line-height:1.55;">
                       <strong style="color:#0D0C09;">Bookmark your links.</strong>
                       Each link is personal — keep this email somewhere safe,
                       or recover again anytime at
@@ -172,7 +172,7 @@ $html = <<<HTML
           <!-- Footer -->
           <tr>
             <td style="padding:20px 40px 32px;border-top:1px solid #F0EEE6;">
-              <p style="margin:0;font-size:11px;color:#C4C2BA;letter-spacing:0.06em;
+              <p style="margin:0;font-size:12px;color:#C4C2BA;letter-spacing:0.1em;
                         text-transform:uppercase;">&copy; Denny Pratama</p>
             </td>
           </tr>

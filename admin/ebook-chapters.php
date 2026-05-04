@@ -191,7 +191,7 @@ if ($chapter_id && !$edit_chapter) {
     }
     .panel-list-header {
       padding: 20px 20px 12px;
-      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(236,234,226,0.3); flex-shrink: 0;
     }
     .chapter-list { flex: 1; }
@@ -205,11 +205,11 @@ if ($chapter_id && !$edit_chapter) {
     .chapter-item.active { background: rgba(236,234,226,0.06); }
     .chapter-item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-decoration: none; }
     .chapter-num {
-      font-size: 10px; color: rgba(236,234,226,0.25);
-      flex-shrink: 0; width: 18px; text-align: right;
+      font-size: 12px; color: rgba(236,234,226,0.25); letter-spacing: 0.06em;
+      flex-shrink: 0; width: 20px; text-align: right;
     }
     .chapter-title-text {
-      font-size: 13px; color: rgba(236,234,226,0.75); white-space: nowrap;
+      font-size: 14px; color: rgba(236,234,226,0.75); white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
     }
     .chapter-item.active .chapter-title-text { color: #ECEAE2; }
@@ -220,8 +220,8 @@ if ($chapter_id && !$edit_chapter) {
     .pub-dot.live { background: #4caf50; }
     .chapter-controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
     .btn-order, .btn-del-ch {
-      background: none; border: none; cursor: pointer; padding: 3px 5px;
-      font-size: 11px; color: rgba(236,234,226,0.2); transition: color 0.15s;
+      background: none; border: none; cursor: pointer; padding: 4px 8px;
+      font-size: 12px; color: rgba(236,234,226,0.2); transition: color 0.15s;
       font-family: inherit; line-height: 1;
     }
     .btn-order:hover { color: rgba(236,234,226,0.7); }
@@ -251,14 +251,14 @@ if ($chapter_id && !$edit_chapter) {
     /* ── Form ── */
     .field { margin-bottom: 24px; }
     label {
-      display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      display: block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); margin-bottom: 8px;
     }
     input[type=text] {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 15px;
-      padding: 11px 14px; outline: none; transition: border-color 0.2s;
+      font-family: 'Inter', sans-serif; font-size: 16px;
+      padding: 12px 16px; outline: none; transition: border-color 0.2s;
     }
     input[type=text]:focus { border-color: #E8320A; }
 
@@ -287,7 +287,7 @@ if ($chapter_id && !$edit_chapter) {
     .toggle-option {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 13px; color: rgba(236,234,226,0.55);
+      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.55);
       transition: border-color 0.2s, color 0.2s; user-select: none;
     }
     .toggle-option:has(input:checked) { border-color: #E8320A; color: #ECEAE2; }
@@ -357,7 +357,7 @@ if ($chapter_id && !$edit_chapter) {
 
         <div class="chapter-list">
           <?php if (empty($chapters)): ?>
-            <div style="padding:24px 16px;font-size:13px;color:rgba(236,234,226,0.2);">No chapters yet.</div>
+            <div style="padding:24px 16px;font-size:14px;color:rgba(236,234,226,0.2);">No chapters yet.</div>
           <?php else: ?>
             <?php foreach ($chapters as $ch): ?>
               <?php $is_active_ch = ($chapter_id && $ch['id'] === $chapter_id); ?>
@@ -426,14 +426,14 @@ if ($chapter_id && !$edit_chapter) {
               </div>
 
               <div class="field">
-                <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+                <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
                 <input type="text" id="slug" name="slug"
                        value="<?= htmlspecialchars($edit_chapter['slug']) ?>"
                        placeholder="chapter-url-slug" required/>
               </div>
 
               <div class="field">
-                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
+                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
                 <input type="text" id="excerpt" name="excerpt"
                        value="<?= htmlspecialchars($edit_chapter['excerpt'] ?? '') ?>"
                        placeholder="What readers will learn in this chapter…"/>

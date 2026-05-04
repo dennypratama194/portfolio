@@ -79,7 +79,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       background: rgba(236,234,226,0.03); margin-bottom: 28px;
     }
     .toggle-label-text { font-size: 14px; color: rgba(236,234,226,0.8); }
-    .toggle-sub { font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 3px; }
+    .toggle-sub { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
     .toggle-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-track {
@@ -97,7 +97,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       transform: translateX(20px); background: #E8320A;
     }
 
-    .key-set { font-size: 11px; color: #E8320A; margin-top: 6px; }
+    .key-set { font-size: 14px; color: #E8320A; margin-top: 8px; }
 
     .cron-box {
       background: rgba(236,234,226,0.03); border: 1px solid rgba(236,234,226,0.08);
@@ -110,7 +110,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       border: 1px solid rgba(236,234,226,0.08);
     }
     .cron-copy {
-      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); background: none;
       border: 1px solid rgba(236,234,226,0.1);
       padding: 6px 14px; cursor: pointer; font-family: inherit;
@@ -130,12 +130,12 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     }
     .run-btn:hover { opacity: 0.85; }
     .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .run-status { font-size: 13px; color: rgba(236,234,226,0.5); display: inline-block; margin-top: 0; vertical-align: middle; }
+    .run-status { font-size: 14px; color: rgba(236,234,226,0.5); display: inline-block; margin-top: 0; vertical-align: middle; }
     .run-status.ok  { color: #4ade80; }
     .run-status.err { color: #E8320A; }
 
     .btn-secondary {
-      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.35); background: none;
       border: 1px solid rgba(236,234,226,0.1);
       padding: 8px 16px; cursor: pointer; font-family: inherit;
@@ -146,14 +146,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     .saved-banner {
       background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
-      padding: 12px 18px; font-size: 13px; color: #4ade80; margin-bottom: 28px;
+      padding: 12px 20px; font-size: 14px; color: #4ade80; margin-bottom: 28px;
     }
 
     table { margin-bottom: 40px; }
-    td { padding: 14px 16px 14px 0; font-size: 13px; color: rgba(236,234,226,0.7); }
+    td { padding: 16px 16px 16px 0; font-size: 14px; color: rgba(236,234,226,0.7); }
     .post-title-link { color: #ECEAE2; text-decoration: none; font-weight: 500; }
     .post-title-link:hover { color: #E8320A; }
-    .empty { font-size: 13px; padding: 24px 0; }
+    .empty { font-size: 14px; padding: 24px 0; }
     .last-run { font-size: 12px; color: rgba(236,234,226,0.3); }
   </style>
 </head>
@@ -258,14 +258,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
     <div class="cron-box">
       <?php if ($token): ?>
-        <label style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:8px;display:block">Your cron URL</label>
+        <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:8px;display:block">Your cron URL</label>
         <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
         <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
       <?php else: ?>
         <div class="hint">Save your settings first to generate the cron URL.</div>
       <?php endif; ?>
 
-      <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:10px">Suggested schedules</div>
+      <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:10px">Suggested schedules</div>
       <div class="cron-schedules">
         <div class="cron-row">
           <span class="cron-expr">0 8 * * 1</span>

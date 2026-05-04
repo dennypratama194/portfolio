@@ -201,7 +201,7 @@
     .nav-overlay-num {
       font-family: 'Inter', sans-serif;
       font-style: normal;
-      font-size: 11px; font-weight: 500;
+      font-size: 12px; font-weight: 500;
       letter-spacing: 0.12em;
       color: rgba(236,234,226,0.25);
       align-self: center;
@@ -228,7 +228,7 @@
     .nav-overlay-footer-right { align-items: flex-end; text-align: right; }
 
     .nav-overlay-footer-label {
-      font-size: 11px; font-weight: 500;
+      font-size: 12px; font-weight: 500;
       letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(236,234,226,0.3);
     }
@@ -438,7 +438,7 @@
       text-transform: uppercase; color: var(--ink-3);
       white-space: nowrap; flex-shrink: 0;
     }
-    .ticker-sep { color: var(--red); font-size: 7px; }
+    .ticker-sep { color: var(--red); font-size: 12px; }
     @keyframes tickerMove {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -547,7 +547,7 @@
     }
     .wc-num {
       display: block;
-      font-size: 10px;
+      font-size: 12px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: rgba(236,234,226,0.5);
@@ -866,12 +866,12 @@
     .stat-num {
       font-family: 'Instrument Serif', serif;
       font-style: italic;
-      font-size: 60px; font-weight: 400;
+      font-size: 64px; font-weight: 400;
       letter-spacing: -0.04em; line-height: 1;
       color: var(--ink); margin-bottom: 8px;
     }
     .stat-num .red { color: var(--red); }
-    .stat-desc { font-size: 12px; color: var(--ink-3); line-height: 1.6; }
+    .stat-desc { font-size: 16px; color: var(--ink-3); line-height: 1.6; }
 
     /* Bio blocks */
     .bio-block { border-top: 1px solid var(--border); padding-top: 32px; }
@@ -880,7 +880,7 @@
       color: var(--ink-3); margin-bottom: 14px;
     }
     .bio-text {
-      font-size: 17px; font-weight: 300; line-height: 1.8;
+      font-size: 18px; font-weight: 300; line-height: 1.8;
       color: var(--ink-2);
     }
     .bio-text strong { color: var(--ink); font-weight: 500; }
@@ -1030,7 +1030,7 @@
       display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
     }
     .cta-link {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.3);
       text-decoration: none; transition: color 0.2s;
     }
@@ -1053,7 +1053,7 @@
       font-size: 18px; letter-spacing: -0.02em;
       color: rgba(236,234,226,0.4);
     }
-    .footer-copy { font-size: 12px; color: rgba(236,234,226,0.45); letter-spacing: 0.04em; }
+    .footer-copy { font-size: 14px; color: rgba(236,234,226,0.45); letter-spacing: 0.04em; }
     .footer-socials { display: flex; gap: 28px; }
     .footer-socials a {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -1163,10 +1163,10 @@
       width: 56px; height: 56px; border-radius: 50%;
       border: 1.5px solid var(--red);
       display: flex; align-items: center; justify-content: center;
-      color: var(--red); font-size: 22px; margin-bottom: 32px;
+      color: var(--red); font-size: 24px; margin-bottom: 32px;
     }
     .pm-success-sub {
-      font-size: 17px; font-weight: 300; line-height: 1.75;
+      font-size: 18px; font-weight: 300; line-height: 1.75;
       color: rgba(236,234,226,0.4); max-width: 400px;
       margin-top: 24px; margin-bottom: 48px;
     }
@@ -1201,7 +1201,7 @@
     .sfb-l3 { height: 140px; backdrop-filter: blur(6px);  -webkit-backdrop-filter: blur(6px); }
     .sfb-l4 { height: 200px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
     .pm-recaptcha-note {
-      margin-top: 12px; font-size: 11px; color: rgba(236,234,226,0.25); line-height: 1.5;
+      margin-top: 12px; font-size: 14px; color: rgba(236,234,226,0.25); line-height: 1.5;
     }
     .pm-recaptcha-note a { color: rgba(236,234,226,0.35); text-decoration: underline; text-underline-offset: 2px; }
 
@@ -1290,7 +1290,7 @@
       .scroll-cue { display: none; }
       .hero-desc { font-size: 16px; max-width: 100%; }
       .hero-ctas { flex-direction: column; align-items: flex-start; gap: 14px; }
-      .btn-hero-primary { padding: 15px 28px; font-size: 12px; }
+      .btn-hero-primary { padding: 16px 28px; font-size: 14px; }
 
       .ticker-item { font-size: 12px; padding: 0 24px; }
 
@@ -1312,8 +1312,8 @@
       .about-grid { gap: 40px; }
       .manifesto-text { font-size: clamp(36px, 8vw, 64px); }
       .stats-block { grid-template-columns: 1fr 1fr; gap: 1px; }
-      .stat-cell { padding: 24px 18px; }
-      .stat-num { font-size: 44px; }
+      .stat-cell { padding: 24px 16px; }
+      .stat-num { font-size: 48px; }
 
       #approach { padding: 80px 24px 100px; }
       .approach-steps { grid-template-columns: 1fr; }
@@ -1460,14 +1460,14 @@
     }
     .tc-dark .tc-author { border-top-color: rgba(236,234,226,0.12); }
     .tc-name {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       letter-spacing: 0.04em;
       color: var(--ink);
     }
     .tc-dark .tc-name { color: var(--paper); }
     .tc-role {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--ink-3);
     }
     .tc-dark .tc-role { color: rgba(236,234,226,0.4); }
@@ -1696,7 +1696,7 @@
     /* Category badge */
     .cat-badge {
       display: inline-block;
-      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--red); border: 1px solid rgba(232,50,10,0.3);
       padding: 3px 10px; line-height: 1;
     }
@@ -1707,7 +1707,7 @@
       border-bottom: 1px solid var(--border);
     }
     .blog-filter-btn {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--ink-3); background: none; border: none; border-bottom: 2px solid transparent;
       padding: 14px 20px; cursor: pointer; transition: color 0.2s, border-color 0.2s;
       margin-bottom: -1px;
@@ -1717,7 +1717,7 @@
 
     /* Category badge on blog cards */
     .blog-card-cat {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--red); margin-bottom: 8px; display: block;
     }
 
@@ -1753,7 +1753,7 @@
 }
 .form-page-eyebrow {
   margin: 0 0 16px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -1769,7 +1769,7 @@
 }
 .form-page-sub {
   margin: 0 0 40px;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.65;
   color: var(--ink-2);
 }
@@ -1787,7 +1787,7 @@
 .form-input {
   width: 100%;
   padding: 14px 16px;
-  font-size: 15px;
+  font-size: 16px;
   font-family: inherit;
   color: var(--ink);
   background: #FFFFFF;
@@ -1808,7 +1808,7 @@
   gap: 8px;
   width: 100%;
   padding: 14px 28px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1898,7 +1898,7 @@
   top: clamp(24px, 4vw, 56px);
   right: clamp(24px, 4vw, 56px);
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;

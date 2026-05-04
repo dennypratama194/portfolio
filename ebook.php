@@ -95,7 +95,7 @@ $jsonld = json_encode([
   .eb-section { padding: clamp(80px, 10vw, 140px) var(--pad-x); }
   .eb-section + .eb-section { border-top: 1px solid var(--border); }
   .eb-eyebrow {
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--ink-3); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
   }
   .eb-eyebrow-line { flex: 1; max-width: 40px; height: 1px; background: var(--border); }
@@ -105,7 +105,7 @@ $jsonld = json_encode([
     letter-spacing: -0.02em; color: var(--ink); margin-bottom: 20px;
   }
   .eb-lead {
-    font-size: clamp(15px, 2vw, 18px); color: var(--ink-2);
+    font-size: clamp(16px, 2vw, 18px); color: var(--ink-2);
     line-height: 1.65; max-width: 560px;
   }
 
@@ -122,7 +122,7 @@ $jsonld = json_encode([
     min-height: 90vh;
   }
   .eb-hero-label {
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--red); margin-bottom: 24px;
   }
   .eb-hero-title {
@@ -137,11 +137,11 @@ $jsonld = json_encode([
   }
   .eb-price-row { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
   .eb-price {
-    font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
   }
   .eb-chapter-count {
-    font-size: 13px; color: var(--ink-3);
-    padding: 5px 12px; border: 1px solid var(--border);
+    font-size: 14px; color: var(--ink-3);
+    padding: 4px 12px; border: 1px solid var(--border);
   }
 
   /* Hero buy form */
@@ -166,7 +166,7 @@ $jsonld = json_encode([
   }
   .eb-btn-buy:hover { background: var(--red); border-color: var(--red); }
   .eb-form-note {
-    font-size: 12px; color: var(--ink-3); margin-top: 10px; line-height: 1.5;
+    font-size: 14px; color: var(--ink-3); margin-top: 12px; line-height: 1.5;
   }
 
   /* Cover image */
@@ -198,11 +198,11 @@ $jsonld = json_encode([
     align-items: start;
   }
   .eb-ch-num {
-    font-size: 11px; letter-spacing: 0.08em; color: var(--ink-3);
-    padding-top: 3px;
+    font-size: 12px; letter-spacing: 0.1em; color: var(--ink-3);
+    text-transform: uppercase; padding-top: 4px;
   }
   .eb-ch-title {
-    font-size: 15px; font-weight: 500; color: var(--ink);
+    font-size: 16px; font-weight: 500; color: var(--ink);
     line-height: 1.4; padding-right: 48px;
   }
   .eb-ch-excerpt {
@@ -230,11 +230,11 @@ $jsonld = json_encode([
     margin-bottom: 6px; color: var(--ink);
   }
   .eb-author-role {
-    font-size: 13px; color: var(--ink-3); letter-spacing: 0.06em;
+    font-size: 12px; color: var(--ink-3); letter-spacing: 0.1em;
     text-transform: uppercase; margin-bottom: 20px;
   }
   .eb-author-bio {
-    font-size: 15px; color: var(--ink-2); line-height: 1.7;
+    font-size: 16px; color: var(--ink-2); line-height: 1.7;
     max-width: 520px; margin-bottom: 32px;
   }
   .eb-stats-grid {
@@ -242,10 +242,10 @@ $jsonld = json_encode([
   }
   .eb-stat { border-top: 2px solid var(--red); padding-top: 14px; }
   .eb-stat-num {
-    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
     color: var(--ink); margin-bottom: 4px;
   }
-  .eb-stat-desc { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
+  .eb-stat-desc { font-size: 14px; color: var(--ink-3); line-height: 1.4; }
 
   /* ── Bottom CTA ── */
   #eb-cta {
@@ -290,8 +290,8 @@ $jsonld = json_encode([
   }
   details[open] .faq-icon { transform: rotate(45deg); color: var(--red); }
   .faq-body {
-    font-size: 15px; color: var(--ink-2); line-height: 1.7;
-    padding-bottom: 22px; max-width: 640px;
+    font-size: 16px; color: var(--ink-2); line-height: 1.7;
+    padding-bottom: 24px; max-width: 640px;
   }
   .faq-body a { color: var(--red); text-decoration: none; }
   .faq-body a:hover { text-decoration: underline; }

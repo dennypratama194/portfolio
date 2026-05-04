@@ -149,7 +149,7 @@ $html = <<<HTML
                          letter-spacing:-0.02em;color:#0D0C09;line-height:1.25;">
                 Your access link is ready.
               </h1>
-              <p style="margin:0 0 28px;font-size:15px;color:#5A5855;line-height:1.6;">
+              <p style="margin:0 0 28px;font-size:16px;color:#5A5855;line-height:1.6;">
                 Thanks for purchasing <strong style="color:#0D0C09;">{$title_safe}</strong>.
                 Click the button below to start reading — it opens immediately.
               </p>
@@ -172,7 +172,7 @@ $html = <<<HTML
                             margin-bottom:28px;">
                 <tr>
                   <td style="padding:14px 18px;">
-                    <p style="margin:0;font-size:13px;color:#5A5855;line-height:1.55;">
+                    <p style="margin:0;font-size:14px;color:#5A5855;line-height:1.55;">
                       <strong style="color:#0D0C09;">Bookmark that link.</strong>
                       It's your permanent access to the ebook — no account needed.
                       Keep this email or save the link somewhere safe.
@@ -180,7 +180,7 @@ $html = <<<HTML
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 28px;font-size:13px;color:#9E9B93;line-height:1.6;">
+              <p style="margin:0 0 28px;font-size:14px;color:#9E9B93;line-height:1.6;">
                 Lost this email later? Recover all your links at<br/>
                 <a href="{$recover_link}" style="color:#E8320A;text-decoration:none;">{$recover_link}</a>
               </p>
@@ -189,7 +189,7 @@ $html = <<<HTML
           <!-- Footer -->
           <tr>
             <td style="padding:20px 40px 32px;border-top:1px solid #F0EEE6;margin-top:28px;">
-              <p style="margin:0;font-size:11px;color:#C4C2BA;letter-spacing:0.06em;
+              <p style="margin:0;font-size:12px;color:#C4C2BA;letter-spacing:0.1em;
                         text-transform:uppercase;">&copy; Denny Pratama</p>
             </td>
           </tr>

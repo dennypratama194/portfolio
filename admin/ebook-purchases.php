@@ -90,13 +90,13 @@ $purchases = $list_stmt->fetchAll();
 
     /* ── Revenue stat ── */
     .revenue-stat {
-      font-size: 13px; color: rgba(236,234,226,0.4);
-      padding: 10px 18px;
+      font-size: 14px; color: rgba(236,234,226,0.4);
+      padding: 12px 20px;
       border: 1px solid rgba(236,234,226,0.08);
       text-align: right; white-space: nowrap;
     }
-    .revenue-stat strong { color: #ECEAE2; font-size: 15px; font-weight: 600; }
-    .revenue-count { display: block; font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 2px; }
+    .revenue-stat strong { color: #ECEAE2; font-size: 16px; font-weight: 600; }
+    .revenue-count { display: block; font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
 
     /* ── Search ── */
     .search-bar { display: flex; gap: 8px; margin-bottom: 32px; }
@@ -124,13 +124,13 @@ $purchases = $list_stmt->fetchAll();
 
     td { color: rgba(236,234,226,0.7); }
     .email-cell { color: #ECEAE2; font-weight: 500; }
-    .product-cell { font-size: 13px; color: rgba(236,234,226,0.45); }
+    .product-cell { font-size: 14px; color: rgba(236,234,226,0.45); }
     .token-cell {
-      font-family: monospace; font-size: 12px;
+      font-family: monospace; font-size: 14px;
       color: rgba(236,234,226,0.3); letter-spacing: 0.04em;
     }
-    .date-cell { font-size: 13px; white-space: nowrap; }
-    .chapter-cell { font-size: 13px; color: rgba(236,234,226,0.4); }
+    .date-cell { font-size: 14px; white-space: nowrap; }
+    .chapter-cell { font-size: 14px; color: rgba(236,234,226,0.4); }
     .btn-resend {
       background: none; border: none; cursor: pointer; padding: 0;
       font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 0.06em;
@@ -150,7 +150,7 @@ $purchases = $list_stmt->fetchAll();
     /* ── Toast ── */
     #toast {
       position: fixed; bottom: 32px; right: 32px;
-      padding: 12px 20px; font-size: 13px;
+      padding: 12px 20px; font-size: 14px;
       opacity: 0; pointer-events: none;
       transition: opacity 0.25s; z-index: 9999;
     }

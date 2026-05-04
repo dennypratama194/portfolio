@@ -175,8 +175,8 @@ $page_title = htmlspecialchars($chapter['title'])
     .rh-theme-btn {
       background: none; border: 1px solid var(--border);
       color: var(--text-2); cursor: pointer;
-      font-size: 12px; letter-spacing: 0.05em;
-      padding: 5px 12px; transition: border-color 0.2s, color 0.2s;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 12px; transition: border-color 0.2s, color 0.2s;
     }
     .rh-theme-btn:hover { border-color: var(--accent); color: var(--text); }
     .rh-back {
@@ -204,11 +204,11 @@ $page_title = htmlspecialchars($chapter['title'])
       border-bottom: 1px solid var(--border);
     }
     .rs-product-title {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--text-3); margin-bottom: 14px;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-3); margin-bottom: 16px;
     }
     .rs-progress-label {
-      font-size: 12px; color: var(--text-3); margin-bottom: 8px;
+      font-size: 14px; color: var(--text-3); margin-bottom: 8px;
     }
     .rs-bar {
       height: 3px; background: var(--border); border-radius: 2px; overflow: hidden;
@@ -231,8 +231,9 @@ $page_title = htmlspecialchars($chapter['title'])
       background: rgba(232,50,10,0.05);
     }
     .rs-ch-num {
-      font-size: 10px; color: var(--text-3); flex-shrink: 0;
-      width: 20px; text-align: right;
+      font-size: 12px; color: var(--text-3); flex-shrink: 0;
+      letter-spacing: 0.06em;
+      width: 24px; text-align: right;
     }
     .rs-ch-link.active .rs-ch-num { color: var(--accent); }
 
@@ -245,7 +246,7 @@ $page_title = htmlspecialchars($chapter['title'])
 
     /* ── Chapter header ──────────────────────────────────── */
     .read-chapter-label {
-      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--text-3); margin-bottom: 20px;
     }
     #read-article h1 {
@@ -315,7 +316,7 @@ $page_title = htmlspecialchars($chapter['title'])
     }
     .rnb-link:hover { color: var(--accent); }
     .rnb-link-label {
-      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--text-3); display: block; margin-bottom: 4px;
     }
     .rnb-spacer { flex: 1; }
@@ -330,13 +331,13 @@ $page_title = htmlspecialchars($chapter['title'])
       width: 48px; height: 48px; border-radius: 50%;
       background: rgba(232,50,10,0.1); color: var(--accent);
       display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin: 0 auto 20px;
+      font-size: 24px; margin: 0 auto 20px;
     }
     .rc-title {
       font-family: 'Instrument Serif', serif; font-weight: 400;
       font-size: 1.8rem; color: var(--text); margin-bottom: 12px;
     }
-    .rc-desc { font-size: 15px; color: var(--text-2); margin-bottom: 28px; }
+    .rc-desc { font-size: 16px; color: var(--text-2); margin-bottom: 28px; }
     .rc-link {
       display: inline-block; font-size: 12px; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase;

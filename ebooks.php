@@ -30,7 +30,7 @@ $products = $pdo->query(
 
   <!-- ── EBOOK GRID ── -->
   <?php if (empty($products)): ?>
-    <div class="blog-empty" style="padding:80px var(--pad-x);text-align:center;color:var(--ink-3);font-size:15px;">
+    <div class="blog-empty" style="padding:80px var(--pad-x);text-align:center;color:var(--ink-3);font-size:16px;">
       No ebooks available yet. Check back soon.
     </div>
   <?php else: ?>
@@ -122,7 +122,7 @@ $products = $pdo->query(
 }
 
 .eb-list-meta {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -160,7 +160,7 @@ $products = $pdo->query(
 }
 
 .eb-list-price {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--ink);

@@ -15,7 +15,8 @@
       "Bash(curl -s \"https://staging.dennypratama.com/style.css?v=25\")",
       "Bash(curl -s \"https://staging.dennypratama.com/style.css?v=24\")",
       "Bash(curl -sI \"https://staging.dennypratama.com/?nocache=$\\(date +%s\\)\")",
-      "Bash(curl -s \"https://staging.dennypratama.com/?bust=$\\(date +%s%N\\)\")"
+      "Bash(curl -s \"https://staging.dennypratama.com/?bust=$\\(date +%s%N\\)\")",
+      "Bash(sort -t: -k2 -rn)"
     ]
   }
 }

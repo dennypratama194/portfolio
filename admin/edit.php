@@ -171,7 +171,7 @@ $sched_val = !empty($post['scheduled_at'])
     .top-bar { justify-content: flex-start; gap: 16px; }
     .field { margin-bottom: 28px; }
     textarea { min-height: 80px; }
-    select { font-size: 15px; }
+    select { font-size: 16px; }
 
     /* Quill editor styling to match dark theme */
     .ql-toolbar.ql-snow {
@@ -199,7 +199,7 @@ $sched_val = !empty($post['scheduled_at'])
     .radio-option {
       display: flex; align-items: center; gap: 8px;
       padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 13px; color: rgba(236,234,226,0.55);
+      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.55);
       transition: border-color 0.2s, color 0.2s; user-select: none;
     }
     .radio-option:has(input:checked) {
@@ -214,7 +214,7 @@ $sched_val = !empty($post['scheduled_at'])
       color-scheme: dark;
     }
     input[type=datetime-local]:focus { border-color: #E8320A; }
-    .schedule-hint { font-size: 11px; color: rgba(236,234,226,0.3); margin-top: 6px; }
+    .schedule-hint { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 8px; }
 
     /* ── Drag-and-drop image zone ── */
     .drop-zone {
@@ -228,16 +228,16 @@ $sched_val = !empty($post['scheduled_at'])
     .drop-zone input[type=file] {
       position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
     }
-    .drop-icon { font-size: 28px; margin-bottom: 10px; opacity: 0.35; line-height: 1; }
-    .drop-text { font-size: 13px; color: rgba(236,234,226,0.4); }
+    .drop-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.35; line-height: 1; }
+    .drop-text { font-size: 14px; color: rgba(236,234,226,0.4); }
     .drop-text span { color: #E8320A; }
-    .drop-filename { font-size: 12px; color: rgba(236,234,226,0.5); margin-top: 6px; }
+    .drop-filename { font-size: 14px; color: rgba(236,234,226,0.5); margin-top: 8px; }
     .img-preview {
       display: block; width: 100%; max-height: 220px; object-fit: cover;
       margin-top: 12px; opacity: 0.85;
     }
     .img-remove {
-      display: inline-block; margin-top: 8px; font-size: 11px; letter-spacing: 0.08em;
+      display: inline-block; margin-top: 8px; font-size: 12px; letter-spacing: 0.1em;
       text-transform: uppercase; color: rgba(232,50,10,0.6); cursor: pointer;
       background: none; border: none; font-family: inherit; transition: color 0.2s;
     }
@@ -294,14 +294,14 @@ $sched_val = !empty($post['scheduled_at'])
       </div>
 
       <div class="field">
-        <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+        <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
         <input type="text" id="slug" name="slug"
                value="<?= htmlspecialchars($post['slug']) ?>"
                placeholder="post-url-slug" required/>
       </div>
 
       <div class="field">
-        <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:10px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
+        <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
         <textarea id="excerpt" name="excerpt" rows="3"
                   placeholder="Short summary of the post..."><?= htmlspecialchars($post['excerpt']) ?></textarea>
       </div>
