@@ -495,91 +495,73 @@
       max-width: 240px; text-align: right; line-height: 1.65;
     }
 
-    /* horizontal scroll container */
-    .hscroll-outer {
-      overflow-x: auto;
-      overflow-y: hidden;
-      cursor: grab;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      border-top: 1px solid var(--border);
-    }
-    .hscroll-outer::-webkit-scrollbar { display: none; }
-    .hscroll-outer.grabbing { cursor: grabbing; }
-    .hscroll-track {
-      display: flex;
-      width: max-content;
-      align-items: stretch;
-    }
-
-    .project-panel {
-      width: 520px;
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      padding: 48px 40px 48px;
-      flex-shrink: 0;
+    /* ── Scattered work layout ── */
+    .work-scattered {
       position: relative;
-      transition: background 0.4s;
+      height: 840px;
+      margin-top: 0;
+      padding: 0 var(--pad-x);
     }
-    .project-panel:last-child { border-right: none; }
-    .project-panel:hover { background: rgba(13,12,9,0.02); }
-    a.project-panel { text-decoration: none !important; color: inherit; display: flex; flex-direction: column; }
 
-    .proj-head { margin-bottom: 32px; }
-    .proj-idx {
-      font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--ink-3); margin-bottom: 20px;
-      display: flex; align-items: center; gap: 12px;
+    .wc {
+      position: absolute;
+      text-decoration: none;
+      display: block;
     }
-    .proj-idx::after { content: ''; display: block; width: 28px; height: 1px; background: var(--ink-3); }
-    .proj-name {
+    .wc:hover .wc-name { color: var(--red); }
+
+    .wc-idx {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+    }
+
+    .wc-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    /* Force vis-* to fill portrait card */
+    .wc-card .vis-brand,
+    .wc-card .vis-uiux,
+    .wc-card .vis-dash,
+    .wc-card .vis-dev {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      min-height: unset;
+    }
+
+    .wc-foot   { padding-top: 12px; }
+    .wc-name {
+      display: block;
       font-family: 'Instrument Serif', serif;
       font-style: italic;
-      font-size: clamp(44px, 5vw, 80px);
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 0.92;
+      font-size: clamp(16px, 1.6vw, 24px);
+      letter-spacing: -0.01em;
       color: var(--ink);
-      transition: color 0.3s;
+      transition: color 0.25s;
     }
-    .project-panel:hover .proj-name { color: var(--red); }
-
-    .proj-visual {
-      flex: 1;
-      min-height: 280px;
-      border-radius: 10px;
-      overflow: hidden;
-      position: relative;
-      margin: 24px 0;
-      background: rgba(13,12,9,0.04);
-      border: 1px solid var(--border);
-    }
-    /* hover overlay */
-    .proj-visual::after {
-      content: 'View →';
-      position: absolute; inset: 0;
-      background: var(--red);
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
-    .project-panel:hover .proj-visual::after { opacity: 1; }
-
-    .proj-foot {
-      display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
-    }
-    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .ptag {
-      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 10px;
-      border: 1px solid var(--border);
-      border-radius: 100px;
+    .wc-meta {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.06em;
       color: var(--ink-3);
+      margin-top: 4px;
     }
-    .proj-year { font-size: 12px; color: var(--ink-3); flex-shrink: 0; }
+
+    /* ── Card positions ── */
+    .wc-1 { top: 0;     left: 19%;  width: 24%; }
+    .wc-2 { top: 290px; right: 2%;  width: 19%; }
+    .wc-3 { top: 370px; left: 43%;  width: 17%; }
+    .wc-4 { top: 460px; left: 1%;   width: 15%; }
+    .wc-5 { top: 520px; right: 23%; width: 14%; }
 
     /* ── Project visuals ── */
 
@@ -805,18 +787,6 @@
       top: 14%; right: 10%;
       width: 8px; height: 8px; border-radius: 50%;
       background: var(--red);
-    }
-
-    .drag-hint {
-      padding: 20px var(--pad-x) 0;
-      display: flex; align-items: center; gap: 10px;
-      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--ink-3);
-    }
-    .drag-hint-arrow { font-size: 16px; color: var(--red); animation: nudge 1.5s infinite; }
-    @keyframes nudge {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(8px); }
     }
 
     /* ═══════════════════════════════════════
@@ -1304,7 +1274,6 @@
       .approach-step:nth-child(2) { border-right: none; }
       .approach-step:nth-child(3) { border-top: 1px solid var(--border); }
       .approach-step:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
-      .project-panel { width: 420px; }
     }
 
     /* ═══════════════════════════════════════
@@ -1331,10 +1300,14 @@
       .work-header { padding: 0 24px; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 40px; }
       .work-subtitle { text-align: left; max-width: 100%; }
       .work-title { font-size: clamp(40px, 10vw, 72px); }
-      .project-panel { width: 88vw; padding: 32px 24px; }
-      .proj-name { font-size: clamp(36px, 10vw, 56px); }
-      .proj-visual { min-height: 220px; }
-      .drag-hint { padding: 16px 24px 0; }
+      .work-scattered {
+        height: auto;
+        padding: 0 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px 16px;
+      }
+      .wc { position: relative; top: auto !important; left: auto !important; right: auto !important; width: auto !important; }
 
       #about { padding: 80px 24px; }
       .about-grid { gap: 40px; }

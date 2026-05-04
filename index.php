@@ -131,110 +131,83 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <p class="work-subtitle">Cases where design became the deciding factor.</p>
     </div>
 
-    <div class="hscroll-outer" id="hscroll">
-      <div class="hscroll-track">
+    <div class="work-scattered">
 
-        <a class="project-panel" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
-          <div class="proj-head">
-            <div class="proj-idx">01 — Ongoing</div>
-            <div class="proj-name">Xertra</div>
-          </div>
-          <div class="proj-visual vis-brand">
+      <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
+        <span class="wc-idx">01 — Ongoing</span>
+        <div class="wc-card">
+          <div class="vis-brand">
             <div class="vb-grid"></div>
             <div class="vb-mark"></div>
             <div class="vb-pal"></div>
           </div>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="ptag">Web Design</span>
-              <span class="ptag">Branding</span>
-            </div>
-            <span class="proj-year">2025</span>
-          </div>
-        </a>
+        </div>
+        <div class="wc-foot">
+          <span class="wc-name">Xertra</span>
+          <span class="wc-meta">Web Design · Branding · 2025</span>
+        </div>
+      </a>
 
-        <a class="project-panel" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
-          <div class="proj-head">
-            <div class="proj-idx">02 — Ongoing</div>
-            <div class="proj-name">Wordsburg</div>
-          </div>
-          <div class="proj-visual vis-uiux">
+      <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
+        <span class="wc-idx">02 — Ongoing</span>
+        <div class="wc-card">
+          <div class="vis-uiux">
             <div class="vu-nav"></div>
             <div class="vu-card1"></div>
             <div class="vu-card2"></div>
           </div>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="ptag">UI/UX</span>
-              <span class="ptag">Web Design</span>
-            </div>
-            <span class="proj-year">2025</span>
-          </div>
-        </a>
+        </div>
+        <div class="wc-foot">
+          <span class="wc-name">Wordsburg</span>
+          <span class="wc-meta">UI/UX · Web Design · 2025</span>
+        </div>
+      </a>
 
-        <a class="project-panel" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
-          <div class="proj-head">
-            <div class="proj-idx">03 — 2026</div>
-            <div class="proj-name">Brenom Systems</div>
-          </div>
-          <div class="proj-visual vis-dash">
+      <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
+        <span class="wc-idx">03 — 2026</span>
+        <div class="wc-card">
+          <div class="vis-dash">
             <div class="vh-sidebar"></div>
             <div class="vh-chart"></div>
             <div class="vh-dot"></div>
           </div>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="ptag">Web Design</span>
-              <span class="ptag">Web Development</span>
-            </div>
-            <span class="proj-year">2025</span>
-          </div>
-        </a>
+        </div>
+        <div class="wc-foot">
+          <span class="wc-name">Brenom Systems</span>
+          <span class="wc-meta">Web Design · Dev · 2026</span>
+        </div>
+      </a>
 
-        <a class="project-panel" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
-          <div class="proj-head">
-            <div class="proj-idx">04 — Ongoing</div>
-            <div class="proj-name">Digital Revo</div>
-          </div>
-          <div class="proj-visual vis-dev">
+      <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
+        <span class="wc-idx">04 — Ongoing</span>
+        <div class="wc-card">
+          <div class="vis-dev">
             <div class="vd-chrome"></div>
             <div class="vd-lines"></div>
             <div class="vd-cursor"></div>
           </div>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="ptag">UI/UX</span>
-              <span class="ptag">Web Design</span>
-              <span class="ptag">Web Development</span>
-            </div>
-            <span class="proj-year">2025</span>
-          </div>
-        </a>
+        </div>
+        <div class="wc-foot">
+          <span class="wc-name">Digital Revo</span>
+          <span class="wc-meta">UI/UX · Web Dev · 2025</span>
+        </div>
+      </a>
 
-        <a class="project-panel" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
-          <div class="proj-head">
-            <div class="proj-idx">05 — 2025</div>
-            <div class="proj-name">MoRe</div>
+      <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
+        <span class="wc-idx">05 — 2025</span>
+        <div class="wc-card">
+          <div class="vis-uiux">
+            <div class="vu-nav"></div>
+            <div class="vu-card1"></div>
+            <div class="vu-card2"></div>
           </div>
-          <div class="proj-visual vis-dash">
-            <div class="vh-sidebar"></div>
-            <div class="vh-chart"></div>
-            <div class="vh-dot"></div>
-          </div>
-          <div class="proj-foot">
-            <div class="proj-tags">
-              <span class="ptag">Web Development</span>
-            </div>
-            <span class="proj-year">2025</span>
-          </div>
-        </a>
+        </div>
+        <div class="wc-foot">
+          <span class="wc-name">MoRe</span>
+          <span class="wc-meta">Web Development · 2025</span>
+        </div>
+      </a>
 
-      </div><!-- /hscroll-track -->
-    </div><!-- /hscroll-outer -->
-
-    <div class="drag-hint">
-      <span class="drag-hint-arrow">→</span>
-      Drag to explore
     </div>
   </section>
 
