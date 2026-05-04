@@ -353,9 +353,57 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
+  <section id="testimonials">
+    <div class="testi-header">
+      <div class="section-meta">
+        <span class="section-num">05</span>
+        <div class="section-line" style="max-width:40px;"></div>
+        <span class="section-title-sm">Testimonials</span>
+      </div>
+      <h2 class="testi-title">What clients say.</h2>
+    </div>
+
+    <div class="testi-grid">
+
+      <div class="testi-card tc-dark">
+        <div class="tc-body">
+          <span class="tc-mark">"</span>
+          <blockquote class="tc-quote">Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens — and the results speak for themselves.</blockquote>
+        </div>
+        <div class="tc-author">
+          <span class="tc-name">Ahmad Fauzi</span>
+          <span class="tc-role">Founder, Xertra</span>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="tc-body">
+          <span class="tc-mark">"</span>
+          <blockquote class="tc-quote">The redesign increased our user engagement significantly. Denny is more than a designer — he's a strategic partner who understands both sides of the product.</blockquote>
+        </div>
+        <div class="tc-author">
+          <span class="tc-name">Sarah Chen</span>
+          <span class="tc-role">Product Lead, Wordsburg</span>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="tc-body">
+          <span class="tc-mark">"</span>
+          <blockquote class="tc-quote">He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.</blockquote>
+        </div>
+        <div class="tc-author">
+          <span class="tc-name">Rizky Ananda</span>
+          <span class="tc-role">Creative Director, MoRe</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <section id="blog-preview">
     <div class="bp-header">
-      <div class="bp-eyebrow">05 — Writing</div>
+      <div class="bp-eyebrow">06 — Writing</div>
       <a class="bp-view-all" href="/blog">View all →</a>
     </div>
     <h2 class="bp-title">Thoughts &amp; ideas.</h2>
@@ -372,7 +420,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
   <section id="cta">
     <div class="cta-bg-type">Let's go.</div>
     <div class="cta-inner">
-      <div class="cta-label">06 — Let's Work</div>
+      <div class="cta-label">07 — Let's Work</div>
       <h2 class="cta-title">
         Something<br/>
         worth<br/>

@@ -155,7 +155,6 @@
       transition: clip-path 0.9s cubic-bezier(0.76,0,0.24,1);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       padding: 120px var(--pad-x) 48px;
       pointer-events: none;
       overflow: hidden;
@@ -167,9 +166,7 @@
 
     /* ── Menu list ── */
     .nav-overlay-links {
-      flex: 1;
       display: flex; flex-direction: column;
-      justify-content: center;
       width: 100%;
     }
 
@@ -212,10 +209,11 @@
     }
     .nav-overlay-label { display: block; }
 
-    /* ── Overlay footer ── */
+    /* ── Overlay footer — pinned to bottom via margin-top: auto ── */
     .nav-overlay-footer {
       display: flex; justify-content: space-between; align-items: flex-end;
       gap: 32px;
+      margin-top: auto;
       padding-top: 32px;
       opacity: 0;
       transform: translateY(20px);
@@ -1239,11 +1237,7 @@
 
       /* Nav overlay — mobile */
       .nav-overlay {
-        padding: 96px 28px 44px;
-      }
-      .nav-overlay-links {
-        justify-content: flex-start;
-        padding-top: 8px;
+        padding: 100px 28px 48px;
       }
       .nav-overlay-link {
         grid-template-columns: 36px 1fr;
@@ -1400,7 +1394,83 @@
       .clients-desc { text-align: left; }
       .clients-grid { grid-template-columns: repeat(2, 1fr); }
       .client-cell { padding: 32px 20px; }
+      #testimonials { padding: 80px 24px; }
+      .testi-header { margin-bottom: 40px; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .testi-card { min-height: auto; padding: 28px 24px; }
     }
+
+    /* ═══════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════ */
+    #testimonials {
+      padding: 128px var(--pad-x);
+      border-top: 1px solid var(--border);
+    }
+    .testi-header { margin-bottom: 64px; }
+    .testi-title {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(36px, 4vw, 56px);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-top: 16px;
+    }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .testi-card {
+      background: var(--paper);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 32px;
+      min-height: 280px;
+    }
+    .tc-dark { background: var(--ink); }
+    .tc-mark {
+      display: block;
+      font-family: 'Instrument Serif', serif;
+      font-size: 72px;
+      line-height: 0.75;
+      color: var(--red);
+      margin-bottom: 12px;
+      user-select: none;
+    }
+    .tc-quote {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(16px, 1.4vw, 20px);
+      line-height: 1.6;
+      color: var(--ink);
+      margin: 0;
+    }
+    .tc-dark .tc-quote { color: var(--paper); }
+    .tc-author {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .tc-dark .tc-author { border-top-color: rgba(236,234,226,0.12); }
+    .tc-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+    }
+    .tc-dark .tc-name { color: var(--paper); }
+    .tc-role {
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+    .tc-dark .tc-role { color: rgba(236,234,226,0.4); }
 
     /* ═══════════════════════════════════════
        BLOG PREVIEW (homepage section)
