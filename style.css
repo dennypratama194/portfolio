@@ -816,8 +816,9 @@
     #about {
       padding: 160px var(--pad-x) 0;
       position: relative;
-      background: var(--ink);
+      background: var(--paper);
     }
+    #about.in-dark { background: var(--ink); }
 
     .about-grid {
       display: grid;
@@ -1019,26 +1020,32 @@
        Defaults are dark text (readable on paper bg before scroll wash).
        JS adds .in-dark when bg transitions to ink, restoring light values.
     ═══════════════════════════════════════ */
-    /* Hover-driven elements still want a smooth swap when the .in-dark class
-       flips at 50% scroll progress (GSAP doesn't drive these, since inline
-       styles would override the :hover state). Text colors are animated by
-       GSAP in real-time, so no CSS transition on those — it would lag. */
+    /* Wash-mode transitions — when JS adds .in-dark, every paper-mode value
+       below interpolates to its dark-mode counterpart over 1s. GPU-composited
+       and frame-rate independent, so it stays smooth on any scroll input. */
+    #about,
+    #about .manifesto-text,
+    #about .manifesto-label,
+    #about .about-quote,
+    #about .stat-num,
+    #about .stat-desc,
     #about .stat-cell,
     #about .bio-block,
+    #about .bio-label,
+    #about .bio-text,
+    #about .bio-text strong,
     #about .capg-card,
+    #about .capg-title,
     #about .capg-arrow,
     #about .capg-pill,
-    #about .about-quote,
+    #about .capg-marquee-track,
     #about .manifesto-text .outline-t {
-      transition: background-color 0.45s ease,
-                  border-color 0.45s ease,
-                  border-top-color 0.45s ease,
-                  -webkit-text-stroke-color 0.45s ease;
+      transition: color 1s ease,
+                  background-color 1s ease,
+                  border-color 1s ease,
+                  border-top-color 1s ease,
+                  -webkit-text-stroke-color 1s ease;
     }
-
-    /* Promote the wash onto its own compositor layer so per-frame color
-       interpolation doesn't trigger heavy paint on the rest of the page. */
-    #about { will-change: background-color; }
 
     #about .manifesto-text { color: rgba(13,12,9,0.92); }
     #about .manifesto-text .outline-t { -webkit-text-stroke-color: rgba(13,12,9,0.92); }
@@ -1726,18 +1733,6 @@
       background: var(--ink);
       padding: 0 var(--pad-x) 64px;
     }
-    .cl-header {
-      display: flex; align-items: baseline; justify-content: space-between;
-      padding: 32px 0 24px;
-    }
-    .cl-eyebrow {
-      font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: rgba(236,234,226,0.35); font-family: var(--font-mono);
-    }
-    .cl-desc {
-      font-size: 14px; color: rgba(236,234,226,0.35);
-      font-weight: 300; max-width: 320px; text-align: right;
-    }
     .cl-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -1786,8 +1781,6 @@
       .bc-testi { grid-row: auto; min-height: 280px; }
       .bc-clients, .bc-cta { grid-row: auto; }
       #clients { padding: 0 var(--pad-x-sm) 40px; }
-      .cl-header { flex-direction: column; gap: 8px; padding: 24px 0 16px; }
-      .cl-desc { text-align: left; }
       .cl-grid { grid-template-columns: 1fr 1fr; }
       .cl-cell--text { grid-column: 1 / 3; grid-row: auto; min-height: 100px; }
       .cl-cell { min-height: 100px; padding: 20px; }

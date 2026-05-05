@@ -413,10 +413,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
   </section>
 
   <section id="clients">
-    <div class="cl-header">
-      <span class="cl-eyebrow">04 &mdash; Clients</span>
-      <p class="cl-desc">Brands and teams I've had the privilege to work with.</p>
-    </div>
     <div class="cl-grid">
       <div class="cl-cell cl-cell--text">
         <span class="cl-headline">Brands I've<br>partnered<br>with.</span>

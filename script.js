@@ -504,65 +504,18 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // ── Scroll-driven wash: paper → ink for #about ───────────────────────────
-    // Single scrub timeline animates bg AND every text color in lockstep, so
-    // the entire palette interpolates per scroll-frame (no snap, no CSS-transition
-    // lag fighting the scrub). Hover-affected items (.in-dark class fallback)
-    // still flip at 50% via the onUpdate toggle.
+    // ── Trigger-based wash: paper → ink when #about hits 75% in view ─────────
+    // No scrub — GPU-composited CSS transitions handle the interpolation, which
+    // is frame-rate independent and immune to wheel/trackpad jitter. The class
+    // toggles once on enter and reverses on scroll-back.
     const aboutEl = document.getElementById('about');
     if (aboutEl) {
-      const E = 'power2.inOut';
-
-      // Force the paper-mode starting state on initial paint
-      gsap.set([document.body, aboutEl], { backgroundColor: '#F9F9F9' });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: aboutEl,
-          start: 'top 25%',
-          end:   '+=80%',
-          scrub: 0.8,
-          invalidateOnRefresh: true,
-          onUpdate: function (self) {
-            aboutEl.classList.toggle('in-dark', self.progress > 0.7);
-          },
-        },
+      ScrollTrigger.create({
+        trigger: aboutEl,
+        start: 'top 25%',
+        onEnter:     function () { aboutEl.classList.add('in-dark'); },
+        onLeaveBack: function () { aboutEl.classList.remove('in-dark'); },
       });
-
-      // Phase 1 (0 → 0.55): bg darkens. Text holds dark.
-      tl.to([document.body, aboutEl],
-        { backgroundColor: '#0D0C09', ease: E, duration: 0.55 },
-      0);
-
-      // Phase 2 (0.45 → 1): text inverts to light, after bg is mostly dark.
-      // Slight overlap so the two phases feel connected, not staged.
-      const TEXT_AT = 0.45;
-      const TEXT_DUR = 0.55;
-
-      tl.to(
-        '#about .manifesto-text, #about .stat-num, #about .bio-text strong, #about .capg-title',
-        { color: 'rgba(255,255,255,0.9)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
-
-      tl.to('#about .bio-text',
-        { color: 'rgba(255,255,255,0.6)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
-
-      tl.to('#about .stat-desc, #about .capg-arrow',
-        { color: 'rgba(255,255,255,0.4)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
-
-      tl.to('#about .manifesto-label, #about .bio-label, #about .about-quote',
-        { color: 'rgba(255,255,255,0.35)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
-
-      tl.to('#about .capg-marquee-track',
-        { color: 'rgba(255,255,255,0.07)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
-
-      tl.to('#about .capg-pill',
-        { color: 'rgba(255,255,255,0.5)', ease: E, duration: TEXT_DUR },
-      TEXT_AT);
     }
 
     // Approach — sticky scroll switcher
