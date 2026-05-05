@@ -1668,7 +1668,7 @@
       .clients-desc { text-align: left; }
       .clients-grid { grid-template-columns: repeat(2, 1fr); }
       .client-cell { padding: 32px 20px; }
-      #testimonials { padding: 80px 24px; }
+      #testimonials { padding: 40px 0; }
       .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto; min-height: auto; }
       .bc-stats { grid-row: auto; grid-template-columns: 1fr 1fr; display: grid; gap: 2px; padding: 0; }
       .bento-stat { padding: 28px 24px; }
@@ -1680,19 +1680,19 @@
        TESTIMONIALS — bento grid
     ═══════════════════════════════════════ */
     #testimonials {
-      padding: 128px var(--pad-x);
-      border-top: 1px solid var(--border);
+      padding: 64px var(--pad-x);
+      background: var(--ink);
     }
     .bento-grid {
       display: grid;
       grid-template-columns: 1fr 2fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 2px;
-      background: rgba(236,234,226,0.08);
+      background: rgba(236,234,226,0.06);
       min-height: 560px;
     }
     .bento-cell {
-      background: var(--ink);
+      background: #1a1916;
       padding: 40px;
       display: flex;
       flex-direction: column;

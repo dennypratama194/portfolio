@@ -343,6 +343,105 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
   </section>
 
+  <section id="testimonials">
+    <div class="bento-grid">
+
+      <!-- Stats -->
+      <div class="bento-cell bc-stats">
+        <div class="bento-stat">
+          <span class="bs-num">6<span class="bs-red">+</span></span>
+          <span class="bs-label">Years of experience</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">40<span class="bs-red">+</span></span>
+          <span class="bs-label">Projects delivered</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">10<span class="bs-red">+</span></span>
+          <span class="bs-label">Clients worldwide</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">100<span class="bs-red">%</span></span>
+          <span class="bs-label">Client satisfaction</span>
+        </div>
+      </div>
+
+      <!-- Testimonial slider -->
+      <div class="bento-cell bc-testi" id="testi-stage">
+        <button class="bt-prev" data-dir="prev" aria-label="Previous testimonial"></button>
+        <button class="bt-next" data-dir="next" aria-label="Next testimonial"></button>
+
+        <article class="testi-slide is-active" data-index="0">
+          <div class="bento-dots">
+            <span class="bento-dot is-active"></span>
+            <span class="bento-dot"></span>
+            <span class="bento-dot"></span>
+          </div>
+          <blockquote class="bt-quote">&ldquo;Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">AF</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Ahmad Fauzi</span>
+              <span class="bt-role">Founder, Xertra</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="testi-slide" data-index="1">
+          <div class="bento-dots">
+            <span class="bento-dot"></span>
+            <span class="bento-dot is-active"></span>
+            <span class="bento-dot"></span>
+          </div>
+          <blockquote class="bt-quote">&ldquo;The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">SC</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Sarah Chen</span>
+              <span class="bt-role">Product Lead, Wordsburg</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="testi-slide" data-index="2">
+          <div class="bento-dots">
+            <span class="bento-dot"></span>
+            <span class="bento-dot"></span>
+            <span class="bento-dot is-active"></span>
+          </div>
+          <blockquote class="bt-quote">&ldquo;He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">RA</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Rizky Ananda</span>
+              <span class="bt-role">Creative Director, MoRe</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Client logos -->
+      <div class="bento-cell bc-clients">
+        <span class="bc-clients-label">Trusted by</span>
+        <div class="bento-logos">
+          <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-xertra.png" alt="Xertra" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-ortex.png" alt="Ortex" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-more.png" alt="MoRe" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-labme.png" alt="LAB.ME" class="bl-logo" loading="lazy"/>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="bento-cell bc-cta">
+        <p class="bc-cta-text">Have a project in&nbsp;mind?</p>
+        <button class="bc-cta-btn js-open-modal">Start a project &rarr;</button>
+      </div>
+
+    </div>
+  </section>
+
   <section id="approach">
     <h2 class="sr-only">My Process</h2>
 
@@ -456,105 +555,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <div class="client-cell">
         <img src="/assets/client-isohorns.png" alt="IsoHorns" class="client-logo" loading="lazy"/>
       </div>
-    </div>
-  </section>
-
-  <section id="testimonials">
-    <div class="bento-grid">
-
-      <!-- Stats -->
-      <div class="bento-cell bc-stats">
-        <div class="bento-stat">
-          <span class="bs-num">6<span class="bs-red">+</span></span>
-          <span class="bs-label">Years of experience</span>
-        </div>
-        <div class="bento-stat">
-          <span class="bs-num">40<span class="bs-red">+</span></span>
-          <span class="bs-label">Projects delivered</span>
-        </div>
-        <div class="bento-stat">
-          <span class="bs-num">10<span class="bs-red">+</span></span>
-          <span class="bs-label">Clients worldwide</span>
-        </div>
-        <div class="bento-stat">
-          <span class="bs-num">100<span class="bs-red">%</span></span>
-          <span class="bs-label">Client satisfaction</span>
-        </div>
-      </div>
-
-      <!-- Testimonial slider -->
-      <div class="bento-cell bc-testi" id="testi-stage">
-        <button class="bt-prev" data-dir="prev" aria-label="Previous testimonial"></button>
-        <button class="bt-next" data-dir="next" aria-label="Next testimonial"></button>
-
-        <article class="testi-slide is-active" data-index="0">
-          <div class="bento-dots">
-            <span class="bento-dot is-active"></span>
-            <span class="bento-dot"></span>
-            <span class="bento-dot"></span>
-          </div>
-          <blockquote class="bt-quote">&ldquo;Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.&rdquo;</blockquote>
-          <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">AF</div>
-            <div class="bt-author-info">
-              <span class="bt-name">Ahmad Fauzi</span>
-              <span class="bt-role">Founder, Xertra</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="testi-slide" data-index="1">
-          <div class="bento-dots">
-            <span class="bento-dot"></span>
-            <span class="bento-dot is-active"></span>
-            <span class="bento-dot"></span>
-          </div>
-          <blockquote class="bt-quote">&ldquo;The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.&rdquo;</blockquote>
-          <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">SC</div>
-            <div class="bt-author-info">
-              <span class="bt-name">Sarah Chen</span>
-              <span class="bt-role">Product Lead, Wordsburg</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="testi-slide" data-index="2">
-          <div class="bento-dots">
-            <span class="bento-dot"></span>
-            <span class="bento-dot"></span>
-            <span class="bento-dot is-active"></span>
-          </div>
-          <blockquote class="bt-quote">&ldquo;He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.&rdquo;</blockquote>
-          <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">RA</div>
-            <div class="bt-author-info">
-              <span class="bt-name">Rizky Ananda</span>
-              <span class="bt-role">Creative Director, MoRe</span>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <!-- Client logos -->
-      <div class="bento-cell bc-clients">
-        <span class="bc-clients-label">Trusted by</span>
-        <div class="bento-logos">
-          <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-xertra.png" alt="Xertra" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-ortex.png" alt="Ortex" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-more.png" alt="MoRe" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-labme.png" alt="LAB.ME" class="bl-logo" loading="lazy"/>
-        </div>
-      </div>
-
-      <!-- CTA -->
-      <div class="bento-cell bc-cta">
-        <p class="bc-cta-text">Have a project in&nbsp;mind?</p>
-        <button class="bc-cta-btn js-open-modal">Start a project &rarr;</button>
-      </div>
-
     </div>
   </section>
 
