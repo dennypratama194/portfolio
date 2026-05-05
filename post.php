@@ -94,7 +94,7 @@ $jsonld      = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=12" defer></script>
+<script src="/script.js?v=13" defer></script>
 <script>var PAGE='post', SLUG=<?= json_encode($post['slug']) ?>;</script>
 <script src="/api/tracker.js" defer></script>
 </body>

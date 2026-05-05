@@ -82,7 +82,7 @@ $purchases = $list_stmt->fetchAll();
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <style>
     .top-bar { align-items: flex-start; margin-bottom: 32px; gap: 24px; }
@@ -103,14 +103,14 @@ $purchases = $list_stmt->fetchAll();
     .search-input {
       flex: 1; max-width: 320px;
       background: rgba(236,234,226,0.05); border: 1px solid rgba(236,234,226,0.1);
-      color: #ECEAE2; font-family: 'Inter', sans-serif; font-size: 14px;
+      color: #ECEAE2; font-family: var(--font-sans); font-size: 14px;
       padding: 10px 14px; outline: none; transition: border-color 0.2s;
     }
     .search-input:focus { border-color: #E8320A; }
     .search-input::placeholder { color: rgba(236,234,226,0.25); }
     .btn-search {
       background: rgba(236,234,226,0.08); border: 1px solid rgba(236,234,226,0.1);
-      color: rgba(236,234,226,0.6); font-family: 'Inter', sans-serif; font-size: 12px;
+      color: rgba(236,234,226,0.6); font-family: var(--font-sans); font-size: 12px;
       letter-spacing: 0.08em; text-transform: uppercase;
       padding: 10px 18px; cursor: pointer; transition: background 0.2s, color 0.2s;
     }
@@ -133,14 +133,14 @@ $purchases = $list_stmt->fetchAll();
     .chapter-cell { font-size: 14px; color: rgba(236,234,226,0.4); }
     .btn-resend {
       background: none; border: none; cursor: pointer; padding: 0;
-      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 0.06em;
+      font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
       text-transform: uppercase; color: rgba(236,234,226,0.3); transition: color 0.2s;
     }
     .btn-resend:hover { color: #ECEAE2; }
     .btn-resend:disabled { color: rgba(236,234,226,0.15); cursor: default; }
     .btn-delete {
       background: none; border: none; cursor: pointer; padding: 0;
-      font-family: 'Inter', sans-serif; font-size: 12px; letter-spacing: 0.06em;
+      font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
       text-transform: uppercase; color: rgba(232,50,10,0.4); transition: color 0.2s;
     }
     .btn-delete:hover { color: #E8320A; }

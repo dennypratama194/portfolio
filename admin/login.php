@@ -49,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Admin — Login</title>
   <meta name="robots" content="noindex, nofollow"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #0D0C09; color: #ECEAE2;
-      font-family: 'Inter', sans-serif;
+      font-family: var(--font-sans);
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
     }
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     input {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1);
-      color: #ECEAE2; font-family: 'Inter', sans-serif;
+      color: #ECEAE2; font-family: var(--font-sans);
       font-size: 16px; padding: 12px 16px;
       outline: none; margin-bottom: 20px;
       transition: border-color 0.2s;
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     button {
       width: 100%; background: #E8320A; color: #ECEAE2;
-      border: none; font-family: 'Inter', sans-serif;
+      border: none; font-family: var(--font-sans);
       font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 14px;
       cursor: pointer; transition: opacity 0.2s;

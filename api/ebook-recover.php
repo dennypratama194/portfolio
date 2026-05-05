@@ -122,7 +122,7 @@ $html = <<<HTML
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Your ebook access links</title>
 </head>
-<body style="margin:0;padding:0;background:#F5F4F0;font-family:'Inter',Helvetica,Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#F5F4F0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
          style="background:#F5F4F0;padding:48px 16px;">
     <tr>

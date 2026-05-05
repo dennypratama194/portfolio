@@ -100,9 +100,9 @@ $jsonld = json_encode([
   }
   .eb-eyebrow-line { flex: 1; max-width: 40px; height: 1px; background: var(--border); }
   .eb-h2 {
-    font-family: 'Instrument Serif', serif; font-weight: 400;
-    font-size: clamp(38px, 6vw, 72px); line-height: 1.08;
-    letter-spacing: -0.02em; color: var(--ink); margin-bottom: 20px;
+    font-family: var(--font-sans); font-weight: 700;
+    font-size: clamp(40px, 6vw, 72px); line-height: 1.08;
+    letter-spacing: -0.03em; color: var(--ink); margin-bottom: 20px;
   }
   .eb-lead {
     font-size: clamp(16px, 2vw, 18px); color: var(--ink-2);
@@ -126,9 +126,9 @@ $jsonld = json_encode([
     color: var(--red); margin-bottom: 24px;
   }
   .eb-hero-title {
-    font-family: 'Instrument Serif', serif; font-weight: 400;
+    font-family: var(--font-sans); font-weight: 700;
     font-size: clamp(48px, 8vw, 96px); line-height: 1.0;
-    letter-spacing: -0.03em; color: var(--ink);
+    letter-spacing: -0.04em; color: var(--ink);
     margin-bottom: 20px;
   }
   .eb-tagline {
@@ -150,7 +150,7 @@ $jsonld = json_encode([
     flex: 1; min-width: 0;
     background: #fff; border: 1.5px solid var(--ink);
     border-right: none;
-    font-family: 'Inter', sans-serif; font-size: 14px;
+    font-family: var(--font-sans); font-size: 14px;
     padding: 14px 18px; color: var(--ink); outline: none;
     transition: border-color 0.2s;
   }
@@ -159,7 +159,7 @@ $jsonld = json_encode([
   .eb-btn-buy {
     background: var(--ink); color: var(--paper);
     border: 1.5px solid var(--ink);
-    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+    font-family: var(--font-sans); font-size: 12px; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
     padding: 14px 24px; cursor: none; white-space: nowrap;
     transition: background 0.22s, color 0.22s;
@@ -569,7 +569,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=12" defer></script>
+<script src="/script.js?v=13" defer></script>
 <script>
   /* ── Ebook page GSAP animations ── */
   document.addEventListener('DOMContentLoaded', function () {

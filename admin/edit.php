@@ -162,7 +162,7 @@ $sched_val = !empty($post['scheduled_at'])
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
@@ -184,7 +184,7 @@ $sched_val = !empty($post['scheduled_at'])
       background: rgba(236,234,226,0.03);
     }
     .ql-editor {
-      color: #ECEAE2; font-family: 'Inter', sans-serif;
+      color: #ECEAE2; font-family: var(--font-sans);
       font-size: 16px; line-height: 1.75; min-height: 320px;
     }
     .ql-editor p { margin-bottom: 0; }
@@ -209,7 +209,7 @@ $sched_val = !empty($post['scheduled_at'])
     input[type=datetime-local] {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 14px;
+      font-family: var(--font-sans); font-size: 14px;
       padding: 11px 14px; outline: none; transition: border-color 0.2s;
       color-scheme: dark;
     }

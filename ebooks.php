@@ -116,7 +116,7 @@ $products = $pdo->query(
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Instrument Serif', serif;
+  font-family: var(--font-sans);
   font-size: 64px;
   color: var(--ink-3);
 }
@@ -131,10 +131,9 @@ $products = $pdo->query(
 }
 
 .eb-list-title {
-  font-family: 'Instrument Serif', serif;
-  font-style: italic;
-  font-size: clamp(22px, 2.2vw, 28px);
-  font-weight: 400;
+  font-family: var(--font-sans);
+  font-size: clamp(24px, 2.2vw, 28px);
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--ink);
@@ -189,7 +188,7 @@ $products = $pdo->query(
 }
 </style>
 
-  <script src="/script.js?v=12" defer></script>
+  <script src="/script.js?v=13" defer></script>
   <script>var PAGE='ebooks',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

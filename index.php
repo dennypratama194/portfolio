@@ -354,49 +354,56 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
   </section>
 
   <section id="testimonials">
-    <div class="testi-header">
-      <div class="section-meta">
-        <span class="section-num">05</span>
-        <div class="section-line" style="max-width:40px;"></div>
-        <span class="section-title-sm">Testimonials</span>
+    <div class="testi-top">
+      <span class="testi-eyebrow"><span class="testi-eyebrow-mark">◆</span> Client Stories</span>
+      <span class="testi-counter">
+        <span id="testi-current">01</span>
+        <span class="testi-counter-sep">/</span>
+        <span id="testi-total">03</span>
+      </span>
+      <div class="testi-nav">
+        <button class="testi-arrow" data-dir="prev" aria-label="Previous testimonial">&larr;</button>
+        <button class="testi-arrow" data-dir="next" aria-label="Next testimonial">&rarr;</button>
       </div>
-      <h2 class="testi-title">What clients say.</h2>
     </div>
 
-    <div class="testi-grid">
+    <div class="testi-stage" id="testi-stage">
 
-      <div class="testi-card tc-dark">
-        <div class="tc-body">
-          <span class="tc-mark">"</span>
-          <blockquote class="tc-quote">Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens — and the results speak for themselves.</blockquote>
+      <article class="testi-slide is-active" data-index="0">
+        <div class="testi-portrait" aria-hidden="true">AF</div>
+        <div class="testi-content">
+          <span class="testi-mark">&ldquo;</span>
+          <blockquote class="testi-quote">Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.</blockquote>
+          <div class="testi-author">
+            <span class="testi-name">Ahmad Fauzi</span>
+            <span class="testi-role">Founder, Xertra</span>
+          </div>
         </div>
-        <div class="tc-author">
-          <span class="tc-name">Ahmad Fauzi</span>
-          <span class="tc-role">Founder, Xertra</span>
-        </div>
-      </div>
+      </article>
 
-      <div class="testi-card">
-        <div class="tc-body">
-          <span class="tc-mark">"</span>
-          <blockquote class="tc-quote">The redesign increased our user engagement significantly. Denny is more than a designer — he's a strategic partner who understands both sides of the product.</blockquote>
+      <article class="testi-slide" data-index="1">
+        <div class="testi-portrait" aria-hidden="true">SC</div>
+        <div class="testi-content">
+          <span class="testi-mark">&ldquo;</span>
+          <blockquote class="testi-quote">The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.</blockquote>
+          <div class="testi-author">
+            <span class="testi-name">Sarah Chen</span>
+            <span class="testi-role">Product Lead, Wordsburg</span>
+          </div>
         </div>
-        <div class="tc-author">
-          <span class="tc-name">Sarah Chen</span>
-          <span class="tc-role">Product Lead, Wordsburg</span>
-        </div>
-      </div>
+      </article>
 
-      <div class="testi-card">
-        <div class="tc-body">
-          <span class="tc-mark">"</span>
-          <blockquote class="tc-quote">He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.</blockquote>
+      <article class="testi-slide" data-index="2">
+        <div class="testi-portrait" aria-hidden="true">RA</div>
+        <div class="testi-content">
+          <span class="testi-mark">&ldquo;</span>
+          <blockquote class="testi-quote">He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.</blockquote>
+          <div class="testi-author">
+            <span class="testi-name">Rizky Ananda</span>
+            <span class="testi-role">Creative Director, MoRe</span>
+          </div>
         </div>
-        <div class="tc-author">
-          <span class="tc-name">Rizky Ananda</span>
-          <span class="tc-role">Creative Director, MoRe</span>
-        </div>
-      </div>
+      </article>
 
     </div>
   </section>
@@ -445,7 +452,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=12" defer></script>
+  <script src="/script.js?v=13" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

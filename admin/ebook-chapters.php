@@ -159,7 +159,7 @@ if ($chapter_id && !$edit_chapter) {
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <?php if ($chapter_id && $edit_chapter): ?>
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
@@ -232,7 +232,7 @@ if ($chapter_id && !$edit_chapter) {
     .btn-add-chapter {
       display: block; width: 100%; padding: 10px;
       background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.2);
-      color: #E8320A; font-family: 'Inter', sans-serif; font-size: 12px;
+      color: #E8320A; font-family: var(--font-sans); font-size: 12px;
       letter-spacing: 0.08em; text-transform: uppercase;
       cursor: pointer; transition: background 0.2s;
     }
@@ -257,7 +257,7 @@ if ($chapter_id && !$edit_chapter) {
     input[type=text] {
       width: 100%; background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
-      font-family: 'Inter', sans-serif; font-size: 16px;
+      font-family: var(--font-sans); font-size: 16px;
       padding: 12px 16px; outline: none; transition: border-color 0.2s;
     }
     input[type=text]:focus { border-color: #E8320A; }
@@ -273,7 +273,7 @@ if ($chapter_id && !$edit_chapter) {
       background: rgba(236,234,226,0.03);
     }
     .ql-editor {
-      color: #ECEAE2; font-family: 'Inter', sans-serif;
+      color: #ECEAE2; font-family: var(--font-sans);
       font-size: 16px; line-height: 1.75; min-height: 360px;
     }
     .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }

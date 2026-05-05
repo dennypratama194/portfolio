@@ -67,7 +67,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <style>
     .main { max-width: 760px; }
@@ -124,7 +124,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     .run-btn {
       background: #E8320A; color: #ECEAE2; border: none;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      font-family: var(--font-sans); font-size: 12px; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase;
       padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; margin-right: 12px;
     }

@@ -99,9 +99,9 @@ $page_title = htmlspecialchars($chapter['title'])
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'"/>
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/></noscript>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <style>
     /* ── Design tokens ────────────────────────────────────── */
@@ -116,6 +116,9 @@ $page_title = htmlspecialchars($chapter['title'])
       --header-h:    56px;
       --sidebar-w:   280px;
       --content-max: 680px;
+
+      --font-sans:   'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono:   'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
     }
     [data-theme="dark"] {
       --bg:    #0D0C09;
@@ -131,7 +134,7 @@ $page_title = htmlspecialchars($chapter['title'])
     html { font-size: 18px; scroll-behavior: smooth; }
     body {
       background: var(--bg); color: var(--text);
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: var(--font-sans);
       line-height: 1.8;
       -webkit-font-smoothing: antialiased;
       transition: background 0.2s, color 0.2s;
@@ -250,9 +253,9 @@ $page_title = htmlspecialchars($chapter['title'])
       color: var(--text-3); margin-bottom: 20px;
     }
     #read-article h1 {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
-      font-size: clamp(34px, 5vw, 52px); line-height: 1.1;
-      letter-spacing: -0.02em; color: var(--text);
+      font-family: var(--font-sans); font-weight: 700;
+      font-size: clamp(36px, 5vw, 52px); line-height: 1.1;
+      letter-spacing: -0.03em; color: var(--text);
       margin-bottom: 48px;
     }
 
@@ -264,7 +267,7 @@ $page_title = htmlspecialchars($chapter['title'])
     .read-body p   { margin-bottom: 1em; }
     .read-body p:has(> br:only-child) { margin-bottom: 8px; line-height: 0; }
     .read-body h2  {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
+      font-family: var(--font-sans); font-weight: 700;
       font-size: 1.9rem; line-height: 1.2; letter-spacing: -0.02em;
       color: var(--text); margin: 2.2em 0 0.7em;
     }
@@ -334,8 +337,9 @@ $page_title = htmlspecialchars($chapter['title'])
       font-size: 24px; margin: 0 auto 20px;
     }
     .rc-title {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
-      font-size: 1.8rem; color: var(--text); margin-bottom: 12px;
+      font-family: var(--font-sans); font-weight: 700;
+      font-size: 1.8rem; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 12px;
     }
     .rc-desc { font-size: 16px; color: var(--text-2); margin-bottom: 28px; }
     .rc-link {
