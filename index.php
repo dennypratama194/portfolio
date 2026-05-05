@@ -277,9 +277,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       </div>
     </div>
-  </section>
 
-  <section id="capabilities">
     <div class="capg-grid">
 
       <div class="capg-card capg-card--large">
@@ -341,7 +339,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       </div>
 
     </div>
-  </section>
+  </section><!-- /#about -->
 
   <section id="testimonials">
     <div class="bento-grid">
@@ -420,17 +418,9 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
         </article>
       </div>
 
-      <!-- Client logos -->
+      <!-- Image cell -->
       <div class="bento-cell bc-clients">
-        <span class="bc-clients-label">Trusted by</span>
-        <div class="bento-logos">
-          <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-xertra.png" alt="Xertra" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-ortex.png" alt="Ortex" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-more.png" alt="MoRe" class="bl-logo" loading="lazy"/>
-          <img src="/assets/client-labme.png" alt="LAB.ME" class="bl-logo" loading="lazy"/>
-        </div>
+        <img src="https://picsum.photos/seed/denny/400/560" alt="Portfolio visual" class="bc-img" loading="lazy"/>
       </div>
 
       <!-- CTA -->
@@ -439,6 +429,48 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
         <button class="bc-cta-btn js-open-modal">Start a project &rarr;</button>
       </div>
 
+    </div>
+  </section>
+
+  <section id="clients">
+    <div class="cl-header">
+      <span class="cl-eyebrow">04 &mdash; Clients</span>
+      <p class="cl-desc">Brands and teams I've had the privilege to work with.</p>
+    </div>
+    <div class="cl-grid">
+      <div class="cl-cell cl-cell--text">
+        <span class="cl-headline">Brands I've<br>partnered<br>with.</span>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-xertra.png" alt="Xertra" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-ortex.png" alt="Ortex" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-more.png" alt="MoRe Creative Agency" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-labme.png" alt="LAB.ME" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-socialbee.png" alt="Socialbee" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-edufarmers.png" alt="Edufarmers" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-ispapp.png" alt="ISPApp" class="cl-logo" loading="lazy"/>
+      </div>
+      <div class="cl-cell">
+        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy"/>
+      </div>
     </div>
   </section>
 
@@ -515,46 +547,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
         </div>
       </div>
 
-    </div>
-  </section>
-
-  <section id="clients">
-    <div class="clients-header">
-      <h2 class="sr-only">Clients</h2>
-      <div class="clients-eyebrow">04 — Clients</div>
-      <p class="clients-desc">Brands and teams I've had the privilege to work with.</p>
-    </div>
-    <div class="clients-grid">
-      <div class="client-cell">
-        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-xertra.png" alt="Xertra" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-ortex.png" alt="Ortex" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-more.png" alt="*MORe Creative Agency" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-labme.png" alt="LAB.ME" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-socialbee.png" alt="socialbee" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-edufarmers.png" alt="edufarmers" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-ispapp.png" alt="ISPApp" class="client-logo" loading="lazy"/>
-      </div>
-      <div class="client-cell">
-        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="client-logo" loading="lazy"/>
-      </div>
     </div>
   </section>
 
