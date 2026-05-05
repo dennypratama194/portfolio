@@ -1738,7 +1738,6 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 2px;
       background: rgba(236,234,226,0.18);
-      box-shadow: 0 -2px 0 rgba(236,234,226,0.18);
     }
     .cl-cell {
       background: #1a1916;
@@ -1793,6 +1792,7 @@
     #testimonials {
       padding: 48px var(--pad-x) 0;
       background: var(--ink);
+      border-bottom: 2px solid rgba(236,234,226,0.18);
     }
     .bento-grid {
       display: grid;
