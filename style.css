@@ -1028,6 +1028,7 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      padding: 64px var(--pad-x);
       display: grid;
       grid-template-columns: 1fr 1fr;
       overflow: hidden;
@@ -1038,8 +1039,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 80px var(--pad-x) 80px 0;
-      padding-left: var(--pad-x);
+      padding: 0 48px 0 0;
       position: relative;
       border-right: 1px solid var(--border);
     }
@@ -1108,8 +1108,9 @@
     /* Right panel — images */
     .approach-right {
       position: relative;
-      height: 100vh;
+      height: 100%;
       overflow: hidden;
+      margin-left: 48px;
     }
     .approach-img {
       position: absolute;
@@ -1589,7 +1590,7 @@
         padding: 80px 24px 0;
       }
       .approach-left {
-        border-right: none; padding: 0 0 48px;
+        border-right: none; padding: 0 0 48px; margin: 0;
       }
       .approach-eyebrow { margin-bottom: 40px; }
       .approach-steps-wrap { flex: none; }
@@ -1602,7 +1603,7 @@
       }
       .approach-step:last-child { border-bottom: none; margin-bottom: 0; }
       .approach-step.is-active { position: relative; }
-      .approach-right { height: 60vw; }
+      .approach-right { height: 60vw; margin-left: 0; }
       .approach-dots { display: none; }
 
       #cta { padding: 80px 24px; }
@@ -1659,7 +1660,7 @@
     }
     .cl-cell:hover { background: #211f1c; }
     .cl-cell--text {
-      grid-column: 1 / 3;
+      grid-column: 1 / 2;
       grid-row: 1 / 3;
       align-items: flex-start; justify-content: flex-end;
       flex-direction: column;

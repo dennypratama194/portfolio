@@ -451,8 +451,6 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <div class="cl-cell">
         <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy"/>
       </div>
-      <div class="cl-cell" aria-hidden="true"></div>
-      <div class="cl-cell" aria-hidden="true"></div>
     </div>
   </section>
 
