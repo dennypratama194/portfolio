@@ -302,28 +302,77 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
   <section id="approach">
     <h2 class="sr-only">My Process</h2>
-    <div class="approach-eyebrow">03 — Process</div>
-    <div class="approach-steps">
-      <div class="approach-step">
-        <div class="as-num">01 · Discover</div>
-        <div class="as-title">No assumptions.</div>
-        <div class="as-desc">Deep research into your users, market, and goals before a single pixel is touched.</div>
+
+    <div class="approach-layout" id="approach-layout">
+
+      <!-- Left: sticky step info -->
+      <div class="approach-left">
+        <div class="approach-eyebrow">03 — Process</div>
+
+        <div class="approach-steps-wrap">
+
+          <div class="approach-step is-active" data-step="0">
+            <div class="as-kicker">
+              <span class="as-num">01</span>
+              <span class="as-tag">Discover</span>
+            </div>
+            <div class="as-title">No assumptions.</div>
+            <div class="as-desc">Deep research into your users, market, and goals before a single pixel is touched.</div>
+          </div>
+
+          <div class="approach-step" data-step="1">
+            <div class="as-kicker">
+              <span class="as-num">02</span>
+              <span class="as-tag">Define</span>
+            </div>
+            <div class="as-title">Clarity first.</div>
+            <div class="as-desc">Strategy, IA, and wireframes locked before visual design begins. Prevents expensive rework.</div>
+          </div>
+
+          <div class="approach-step" data-step="2">
+            <div class="as-kicker">
+              <span class="as-num">03</span>
+              <span class="as-tag">Design</span>
+            </div>
+            <div class="as-title">Craft, not trend.</div>
+            <div class="as-desc">High-fidelity UI with motion, systems, and visual language built to endure — not just impress.</div>
+          </div>
+
+          <div class="approach-step" data-step="3">
+            <div class="as-kicker">
+              <span class="as-num">04</span>
+              <span class="as-tag">Deliver</span>
+            </div>
+            <div class="as-title">Ship it. Own it.</div>
+            <div class="as-desc">Full build or clean handoff. Your product, live and accountable. No disappearing acts.</div>
+          </div>
+
+        </div>
+
+        <div class="approach-dots" id="approach-dots">
+          <span class="approach-dot is-active" data-step="0"></span>
+          <span class="approach-dot" data-step="1"></span>
+          <span class="approach-dot" data-step="2"></span>
+          <span class="approach-dot" data-step="3"></span>
+        </div>
       </div>
-      <div class="approach-step">
-        <div class="as-num">02 · Define</div>
-        <div class="as-title">Clarity first.</div>
-        <div class="as-desc">Strategy, IA, and wireframes locked before visual design begins. Prevents expensive rework.</div>
+
+      <!-- Right: sticky dummy images -->
+      <div class="approach-right">
+        <div class="approach-img is-active" data-step="0">
+          <div class="ai-inner ai-discover"></div>
+        </div>
+        <div class="approach-img" data-step="1">
+          <div class="ai-inner ai-define"></div>
+        </div>
+        <div class="approach-img" data-step="2">
+          <div class="ai-inner ai-design"></div>
+        </div>
+        <div class="approach-img" data-step="3">
+          <div class="ai-inner ai-deliver"></div>
+        </div>
       </div>
-      <div class="approach-step">
-        <div class="as-num">03 · Design</div>
-        <div class="as-title">Craft, not trend.</div>
-        <div class="as-desc">High-fidelity UI with motion, systems, and visual language built to endure — not just impress.</div>
-      </div>
-      <div class="approach-step">
-        <div class="as-num">04 · Deliver</div>
-        <div class="as-title">Ship it. Own it.</div>
-        <div class="as-desc">Full build or clean handoff. Your product, live and accountable. No disappearing acts.</div>
-      </div>
+
     </div>
   </section>
 
@@ -480,7 +529,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=13" defer></script>
+  <script src="/script.js?v=14" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

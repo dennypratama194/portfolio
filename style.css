@@ -99,7 +99,7 @@
       align-items: center;
     }
     .nav-logo-img {
-      height: 28px;
+      height: 32px;
       width: auto;
       display: block;
       transition: filter 0.3s;
@@ -915,38 +915,193 @@
     /* ═══════════════════════════════════════
        APPROACH (BIG STATEMENT)
     ═══════════════════════════════════════ */
+    /* ── Approach: sticky 2-col scroll ── */
     #approach {
-      padding: 100px var(--pad-x) 140px;
+      height: 400vh;
       border-top: 1px solid var(--border);
-      overflow: hidden;
       position: relative;
+    }
+    .approach-layout {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    /* Left panel */
+    .approach-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px var(--pad-x) 80px 0;
+      padding-left: var(--pad-x);
+      position: relative;
+      border-right: 1px solid var(--border);
     }
     .approach-eyebrow {
       font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--ink-3); margin-bottom: 56px;
+      color: var(--ink-3); margin-bottom: 64px;
     }
-
-    .approach-steps {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 0; border: 1px solid var(--border);
+    .approach-steps-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
     }
     .approach-step {
-      padding: 36px 28px;
-      border-right: 1px solid var(--border);
-      position: relative;
-      transition: background 0.3s;
+      position: absolute;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.6s cubic-bezier(0.23,1,0.32,1);
+      pointer-events: none;
     }
-    .approach-step:last-child { border-right: none; }
-    .approach-step:hover { background: rgba(232,50,10,0.03); }
+    .approach-step.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      position: relative;
+    }
+    .as-kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
     .as-num {
-      font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--red); margin-bottom: 24px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.14em;
+      color: var(--red);
+    }
+    .as-tag {
+      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-3);
     }
     .as-title {
-      font-size: 20px; font-weight: 500; letter-spacing: -0.025em;
-      color: var(--ink); margin-bottom: 12px; line-height: 1.2;
+      font-size: clamp(32px, 3.5vw, 48px); font-weight: 500;
+      letter-spacing: -0.025em; line-height: 1.1;
+      color: var(--ink); margin-bottom: 20px;
     }
-    .as-desc { font-size: 14px; color: var(--ink-3); line-height: 1.65; }
+    .as-desc {
+      font-size: 16px; color: var(--ink-2); line-height: 1.7;
+      max-width: 400px;
+    }
+
+    /* Step dots */
+    .approach-dots {
+      display: flex; gap: 8px; margin-top: 48px;
+    }
+    .approach-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s, transform 0.3s;
+    }
+    .approach-dot.is-active {
+      background: var(--red);
+      transform: scale(1.4);
+    }
+
+    /* Right panel — images */
+    .approach-right {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .approach-img {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+    }
+    .approach-img.is-active { opacity: 1; }
+    .ai-inner {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Dummy visuals */
+    .ai-discover {
+      background: var(--ink);
+      background-image:
+        radial-gradient(circle, rgba(236,234,226,0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .ai-discover::after {
+      content: '';
+      position: absolute;
+      left: 10%; top: 50%;
+      transform: translateY(-50%);
+      width: 80%; height: 1px;
+      box-shadow:
+        0 -80px 0 rgba(236,234,226,0.08),
+        0 -40px 0 rgba(236,234,226,0.05),
+        0 0 0 rgba(236,234,226,0.12),
+        0 40px 0 rgba(236,234,226,0.05),
+        0 80px 0 rgba(236,234,226,0.08);
+      background: rgba(232,50,10,0.6);
+    }
+    .ai-define {
+      background: #f5f3ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ai-define::before {
+      content: '';
+      position: absolute;
+      inset: 15%;
+      border: 1px solid rgba(13,12,9,0.12);
+    }
+    .ai-define::after {
+      content: '';
+      position: absolute;
+      left: 20%; top: 25%; right: 20%;
+      height: 1px; background: rgba(13,12,9,0.15);
+      box-shadow:
+        0 40px 0 rgba(13,12,9,0.1),
+        0 80px 0 rgba(13,12,9,0.08),
+        0 120px 0 rgba(13,12,9,0.06);
+    }
+    .ai-design {
+      background: var(--paper);
+    }
+    .ai-design::before {
+      content: '';
+      position: absolute;
+      left: 10%; top: 15%; width: 55%; height: 45%;
+      background: var(--ink);
+    }
+    .ai-design::after {
+      content: '';
+      position: absolute;
+      right: 8%; top: 35%; width: 28%; height: 28%;
+      background: var(--red);
+    }
+    .ai-deliver {
+      background: #111010;
+    }
+    .ai-deliver::before {
+      content: '';
+      position: absolute;
+      left: 10%; top: 12%; right: 10%; height: 32px;
+      background: rgba(236,234,226,0.04);
+      border: 1px solid rgba(236,234,226,0.08);
+      border-radius: 4px;
+    }
+    .ai-deliver::after {
+      content: '';
+      position: absolute;
+      left: 12%; top: calc(12% + 56px); right: 12%;
+      height: 2px;
+      background: rgba(232,50,10,0.5);
+      box-shadow:
+        0 24px 0 rgba(236,234,226,0.06),
+        0 48px 0 rgba(236,234,226,0.04),
+        0 72px 0 rgba(236,234,226,0.06),
+        0 96px 0 rgba(236,234,226,0.03),
+        0 120px 0 rgba(236,234,226,0.05);
+    }
 
     /* ═══════════════════════════════════════
        CTA — FULL BLEED
@@ -1272,10 +1427,7 @@
     @media (max-width: 1024px) {
       .about-grid { grid-template-columns: 1fr; gap: 56px; }
       .about-left-sticky { position: static; }
-      .approach-steps { grid-template-columns: repeat(2, 1fr); }
-      .approach-step:nth-child(2) { border-right: none; }
-      .approach-step:nth-child(3) { border-top: 1px solid var(--border); }
-      .approach-step:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+      /* approach stays 2-col at tablet */
     }
 
     /* ═══════════════════════════════════════
@@ -1319,10 +1471,28 @@
       .stat-cell { padding: 24px 16px; }
       .stat-num { font-size: 48px; }
 
-      #approach { padding: 80px 24px 100px; }
-      .approach-steps { grid-template-columns: 1fr; }
-      .approach-step { border-right: none; border-top: none; border-bottom: 1px solid var(--border); }
-      .approach-step:last-child { border-bottom: none; }
+      #approach { height: auto; }
+      .approach-layout {
+        position: relative; height: auto;
+        grid-template-columns: 1fr;
+        padding: 80px 24px 0;
+      }
+      .approach-left {
+        border-right: none; padding: 0 0 48px;
+      }
+      .approach-eyebrow { margin-bottom: 40px; }
+      .approach-steps-wrap { flex: none; }
+      .approach-step {
+        position: relative; opacity: 1; transform: none;
+        pointer-events: auto;
+        padding-bottom: 48px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 48px;
+      }
+      .approach-step:last-child { border-bottom: none; margin-bottom: 0; }
+      .approach-step.is-active { position: relative; }
+      .approach-right { height: 60vw; }
+      .approach-dots { display: none; }
 
       #cta { padding: 80px 24px; }
       .cta-title { font-size: clamp(40px, 10vw, 72px); margin-bottom: 40px; }
@@ -1519,7 +1689,7 @@
       user-select: none;
     }
     .testi-content {
-      grid-column: 3 / span 8;
+      grid-column: 4 / span 8;
       display: flex;
       flex-direction: column;
       gap: 48px;
