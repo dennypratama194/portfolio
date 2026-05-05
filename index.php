@@ -451,6 +451,8 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <div class="cl-cell">
         <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy"/>
       </div>
+      <div class="cl-cell" aria-hidden="true"></div>
+      <div class="cl-cell" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -514,16 +516,16 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <!-- Right: sticky dummy images -->
       <div class="approach-right">
         <div class="approach-img is-active" data-step="0">
-          <div class="ai-inner ai-discover"></div>
+          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="Discover step placeholder" loading="lazy"/>
         </div>
         <div class="approach-img" data-step="1">
-          <div class="ai-inner ai-define"></div>
+          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="Define step placeholder" loading="lazy"/>
         </div>
         <div class="approach-img" data-step="2">
-          <div class="ai-inner ai-design"></div>
+          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="Design step placeholder" loading="lazy"/>
         </div>
         <div class="approach-img" data-step="3">
-          <div class="ai-inner ai-deliver"></div>
+          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Deliver step placeholder" loading="lazy"/>
         </div>
       </div>
 
