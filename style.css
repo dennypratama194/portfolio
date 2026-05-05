@@ -1015,6 +1015,100 @@
     }
 
     /* ═══════════════════════════════════════
+       ABOUT — paper-mode default + dark-mode override
+       Defaults are dark text (readable on paper bg before scroll wash).
+       JS adds .in-dark when bg transitions to ink, restoring light values.
+    ═══════════════════════════════════════ */
+    #about .manifesto-text,
+    #about .manifesto-text .outline-t,
+    #about .manifesto-label,
+    #about .about-quote,
+    #about .stat-num,
+    #about .stat-desc,
+    #about .stat-cell,
+    #about .bio-block,
+    #about .bio-label,
+    #about .bio-text,
+    #about .bio-text strong,
+    #about .capg-card,
+    #about .capg-title,
+    #about .capg-arrow,
+    #about .capg-pill,
+    #about .capg-marquee-track {
+      transition: color 0.45s ease,
+                  background-color 0.45s ease,
+                  border-color 0.45s ease,
+                  -webkit-text-stroke-color 0.45s ease;
+    }
+
+    #about .manifesto-text { color: rgba(13,12,9,0.92); }
+    #about .manifesto-text .outline-t { -webkit-text-stroke-color: rgba(13,12,9,0.92); }
+    #about .manifesto-label,
+    #about .bio-label { color: rgba(13,12,9,0.55); }
+    #about .about-quote {
+      color: rgba(13,12,9,0.55);
+      border-top-color: rgba(13,12,9,0.12);
+    }
+    #about .stat-num { color: rgba(13,12,9,0.92); }
+    #about .stat-desc { color: rgba(13,12,9,0.55); }
+    #about .stat-cell {
+      border-color: rgba(13,12,9,0.1);
+      background: rgba(13,12,9,0.025);
+    }
+    #about .bio-block { border-top-color: rgba(13,12,9,0.12); }
+    #about .bio-text { color: rgba(13,12,9,0.7); }
+    #about .bio-text strong { color: rgba(13,12,9,0.92); }
+    #about .capg-card { border-color: rgba(13,12,9,0.1); }
+    #about .capg-title { color: rgba(13,12,9,0.92); }
+    #about .capg-arrow { color: rgba(13,12,9,0.5); }
+    #about .capg-card:hover .capg-arrow { color: rgba(13,12,9,0.92); }
+    #about .capg-pill {
+      color: rgba(13,12,9,0.6);
+      background: rgba(13,12,9,0.04);
+      border-color: rgba(13,12,9,0.12);
+    }
+    #about .capg-card:hover .capg-pill {
+      color: rgba(13,12,9,0.85);
+      background: rgba(13,12,9,0.07);
+      border-color: rgba(13,12,9,0.2);
+    }
+    #about .capg-marquee-track { color: rgba(13,12,9,0.06); }
+
+    /* Dark-mode — applied by JS once the bg has finished washing to ink */
+    #about.in-dark .manifesto-text { color: rgba(255,255,255,0.9); }
+    #about.in-dark .manifesto-text .outline-t { -webkit-text-stroke-color: rgba(255,255,255,0.9); }
+    #about.in-dark .manifesto-label,
+    #about.in-dark .bio-label { color: rgba(255,255,255,0.35); }
+    #about.in-dark .about-quote {
+      color: rgba(255,255,255,0.35);
+      border-top-color: rgba(255,255,255,0.1);
+    }
+    #about.in-dark .stat-num { color: rgba(255,255,255,0.9); }
+    #about.in-dark .stat-desc { color: rgba(255,255,255,0.4); }
+    #about.in-dark .stat-cell {
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+    #about.in-dark .bio-block { border-top-color: rgba(255,255,255,0.08); }
+    #about.in-dark .bio-text { color: rgba(255,255,255,0.6); }
+    #about.in-dark .bio-text strong { color: rgba(255,255,255,0.9); }
+    #about.in-dark .capg-card { border-color: rgba(255,255,255,0.08); }
+    #about.in-dark .capg-title { color: rgba(255,255,255,0.9); }
+    #about.in-dark .capg-arrow { color: rgba(255,255,255,0.4); }
+    #about.in-dark .capg-card:hover .capg-arrow { color: rgba(255,255,255,0.9); }
+    #about.in-dark .capg-pill {
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.1);
+    }
+    #about.in-dark .capg-card:hover .capg-pill {
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.18);
+    }
+    #about.in-dark .capg-marquee-track { color: rgba(255,255,255,0.07); }
+
+    /* ═══════════════════════════════════════
        APPROACH (BIG STATEMENT)
     ═══════════════════════════════════════ */
     /* ── Approach: sticky 2-col scroll ── */

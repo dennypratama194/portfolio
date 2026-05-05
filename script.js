@@ -505,9 +505,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Scroll-driven bg wash: paper → ink as #about enters ──────────────────
-    // Hold paper bg until the about section is ~75% into view, then transition
-    // to ink across the next 50vh of scroll. power2.inOut gives the gradient
-    // "ease into / ease out" feel rather than a linear fade.
+    // Holds paper bg + dark text until the section is ~75% into view, then
+    // washes to ink. The .in-dark class flips text colors at midpoint and
+    // CSS transitions smooth the swap (~0.45s) so it doesn't snap.
     const aboutEl = document.getElementById('about');
     if (aboutEl) {
       gsap.set([document.body, aboutEl], { backgroundColor: '#F9F9F9' });
@@ -520,6 +520,9 @@ document.addEventListener('DOMContentLoaded', function () {
           end:   '+=50%',
           scrub: true,
           invalidateOnRefresh: true,
+          onUpdate: function (self) {
+            aboutEl.classList.toggle('in-dark', self.progress > 0.5);
+          },
         },
       });
     }
