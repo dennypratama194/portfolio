@@ -505,10 +505,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ── Scroll-driven bg wash: paper → ink as #about enters ──────────────────
-    // Animates body + section together so the transition reads as a global
-    // wash rather than one panel flipping color. Long runway + power2.inOut
-    // gives the "gradual at the edges, smooth through the middle" feel; scrub:true
-    // keeps it real-time, the ease curve provides the perceived delay.
+    // Hold paper bg until the about section is ~75% into view, then transition
+    // to ink across the next 50vh of scroll. power2.inOut gives the gradient
+    // "ease into / ease out" feel rather than a linear fade.
     const aboutEl = document.getElementById('about');
     if (aboutEl) {
       gsap.set([document.body, aboutEl], { backgroundColor: '#F9F9F9' });
@@ -517,8 +516,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ease: 'power2.inOut',
         scrollTrigger: {
           trigger: aboutEl,
-          start: 'top bottom',
-          end:   'top 25%',
+          start: 'top 25%',
+          end:   '+=50%',
           scrub: true,
           invalidateOnRefresh: true,
         },
