@@ -1738,6 +1738,7 @@
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 2px;
       background: rgba(236,234,226,0.18);
+      box-shadow: 0 -2px 0 rgba(236,234,226,0.18);
     }
     .cl-cell {
       background: #1a1916;
