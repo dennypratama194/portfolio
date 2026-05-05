@@ -1977,3 +1977,131 @@ html.pt-leaving body { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .preloader { display: none !important; }
 } */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   GEIST PROTOTYPE — fluid.glass-style sans + mono pairing
+   To revert: comment out everything below this line.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+/* ── DISPLAY — all former Instrument Serif headings → Geist 700, tight tracking ── */
+.nav-overlay-link,
+.nav-overlay-cta,
+.nav-overlay-email,
+.hero-line-1,
+.hero-line-2,
+.hero-line-2 .outline-word,
+.hero-line-2 .solid-word,
+.hero-period,
+.work-title,
+.wc-name,
+.manifesto-text,
+.stat-num,
+.stat-num .red,
+.cta-bg-type,
+.cta-title,
+.footer-logo,
+.pm-title,
+.testi-title,
+.tc-mark,
+.tc-quote,
+.bp-title,
+.bp-card-title,
+.blog-hero-title,
+.blog-card-title,
+.post-hero-title,
+.post-body h2,
+.post-body blockquote,
+.preloader-count,
+.preloader-year {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Tighter tracking for the largest display sizes */
+.hero-line-1,
+.hero-line-2,
+.preloader-count,
+.cta-bg-type {
+  letter-spacing: -0.04em;
+}
+
+/* Hero outline-word: Geist has no italic, so we lean fully on the stroke effect */
+.hero-line-2 .outline-word {
+  font-style: normal;
+}
+
+/* ── MONO — eyebrows, tags, labels, small uppercase UI ── */
+.hero-overline-text,
+.hero-year,
+.nav-overlay-footer-label,
+.scroll-cue-label,
+.ticker-item,
+.section-num,
+.section-title-sm,
+.wc-num,
+.manifesto-label,
+.bio-label,
+.cap-tag,
+.approach-eyebrow,
+.as-num,
+.clients-eyebrow,
+.cta-label,
+.cta-link,
+.cta-link-divider,
+.footer-copy,
+.footer-socials a,
+.pm-eyebrow,
+.pm-label,
+.bp-eyebrow,
+.bp-view-all,
+.bp-card-meta,
+.bp-card-read,
+.blog-hero-eyebrow,
+.blog-card-meta,
+.blog-card-readmore,
+.blog-filter-btn,
+.blog-card-cat,
+.post-hero-meta,
+.post-cta-btn,
+.post-footer-back,
+.cat-badge,
+.form-page-eyebrow,
+.btn-hero-primary,
+.btn-hero-ghost,
+.preloader-label,
+.tc-name,
+.tc-role {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* Wider tracking for the standout eyebrow labels (matches fluid.glass spec) */
+.section-num,
+.section-title-sm,
+.manifesto-label,
+.bio-label,
+.cta-label,
+.pm-eyebrow,
+.approach-eyebrow,
+.as-num,
+.clients-eyebrow,
+.bp-eyebrow,
+.blog-hero-eyebrow,
+.hero-overline-text {
+  letter-spacing: 0.1em;
+}
+
+/* END GEIST PROTOTYPE */

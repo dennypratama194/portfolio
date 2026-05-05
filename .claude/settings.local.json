@@ -16,7 +16,11 @@
       "Bash(curl -s \"https://staging.dennypratama.com/style.css?v=24\")",
       "Bash(curl -sI \"https://staging.dennypratama.com/?nocache=$\\(date +%s\\)\")",
       "Bash(curl -s \"https://staging.dennypratama.com/?bust=$\\(date +%s%N\\)\")",
-      "Bash(sort -t: -k2 -rn)"
+      "Bash(sort -t: -k2 -rn)",
+      "WebFetch(domain:fluid.glass)",
+      "Bash(curl -sL https://fluid.glass -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36\")",
+      "Bash(curl -sL https://fluid.glass -A \"Mozilla/5.0\")",
+      "Bash(awk '/Instrument Serif/{print NR\":\"$0; for\\(i=1;i<=4;i++\\) print NR-i\":\"prev[i]} {for\\(i=4;i>0;i--\\) prev[i]=prev[i-1]; prev[1]=$0}' style.css)"
     ]
   }
 }
