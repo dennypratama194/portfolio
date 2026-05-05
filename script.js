@@ -504,23 +504,25 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // ── Section bg wash: about paper → ink as it enters viewport ─────────────
-    const aboutEl  = document.getElementById('about');
-    const approachEl = document.getElementById('approach');
+    // ── Scroll-driven bg wash: paper → ink as #about enters ──────────────────
+    // Animates body + section together so the transition reads as a global
+    // wash rather than one panel flipping color. Long runway + power2.inOut
+    // gives the "gradual at the edges, smooth through the middle" feel; scrub:true
+    // keeps it real-time, the ease curve provides the perceived delay.
+    const aboutEl = document.getElementById('about');
     if (aboutEl) {
-      gsap.fromTo(aboutEl,
-        { backgroundColor: '#F9F9F9' },
-        {
-          backgroundColor: '#0D0C09',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: aboutEl,
-            start: 'top 90%',
-            end:   'top 20%',
-            scrub: 1.8,
-          },
-        }
-      );
+      gsap.set([document.body, aboutEl], { backgroundColor: '#F9F9F9' });
+      gsap.to([document.body, aboutEl], {
+        backgroundColor: '#0D0C09',
+        ease: 'power2.inOut',
+        scrollTrigger: {
+          trigger: aboutEl,
+          start: 'top bottom',
+          end:   'top 25%',
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
     }
 
     // Approach — sticky scroll switcher
