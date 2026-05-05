@@ -1713,7 +1713,8 @@
       grid-template-rows: 1fr 1fr;
       gap: 2px;
       background: rgba(236,234,226,0.18);
-      min-height: 360px;
+      height: 60vh;
+      min-height: 400px;
     }
     .bento-cell {
       background: #1a1916;
