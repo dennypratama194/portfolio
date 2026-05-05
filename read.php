@@ -254,7 +254,7 @@ $page_title = htmlspecialchars($chapter['title'])
     }
     #read-article h1 {
       font-family: var(--font-sans); font-weight: 500;
-      font-size: clamp(36px, 5vw, 52px); line-height: 1.1;
+      font-size: clamp(32px, 5vw, 48px); line-height: 1.1;
       letter-spacing: -0.03em; color: var(--text);
       margin-bottom: 48px;
     }
@@ -268,15 +268,15 @@ $page_title = htmlspecialchars($chapter['title'])
     .read-body p:has(> br:only-child) { margin-bottom: 8px; line-height: 0; }
     .read-body h2  {
       font-family: var(--font-sans); font-weight: 500;
-      font-size: 1.9rem; line-height: 1.2; letter-spacing: -0.02em;
+      font-size: 32px; line-height: 1.2; letter-spacing: -0.02em;
       color: var(--text); margin: 2.2em 0 0.7em;
     }
     .read-body h3  {
-      font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em;
+      font-size: 20px; font-weight: 600; letter-spacing: -0.01em;
       color: var(--text); margin: 1.8em 0 0.5em;
     }
     .read-body h4  {
-      font-size: 1rem; font-weight: 600;
+      font-size: 18px; font-weight: 600;
       color: var(--text); margin: 1.5em 0 0.4em;
     }
     .read-body strong { font-weight: 600; color: var(--text); }
@@ -292,15 +292,15 @@ $page_title = htmlspecialchars($chapter['title'])
     .read-body pre {
       background: var(--bg-2); border: 1px solid var(--border);
       padding: 20px 24px; overflow-x: auto;
-      font-size: 0.8rem; line-height: 1.65; margin: 1.5em 0;
+      font-size: 14px; line-height: 1.65; margin: 1.5em 0;
     }
     .read-body code {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.85rem;
-      background: var(--bg-2); padding: 2px 7px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      background: var(--bg-2); padding: 2px 8px;
       border: 1px solid var(--border);
     }
-    .read-body pre code { background: none; border: none; padding: 0; font-size: 0.8rem; }
+    .read-body pre code { background: none; border: none; padding: 0; font-size: 14px; }
     .read-body ol, .read-body ul { padding-left: 28px; margin-bottom: 1.5em; }
     .read-body li   { margin-bottom: 0.45em; }
     .read-body img  { max-width: 100%; height: auto; display: block; margin: 2em 0; }
@@ -338,7 +338,7 @@ $page_title = htmlspecialchars($chapter['title'])
     }
     .rc-title {
       font-family: var(--font-sans); font-weight: 500;
-      font-size: 1.8rem; letter-spacing: -0.02em;
+      font-size: 32px; letter-spacing: -0.02em;
       color: var(--text); margin-bottom: 12px;
     }
     .rc-desc { font-size: 16px; color: var(--text-2); margin-bottom: 28px; }

@@ -504,16 +504,19 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // ── Scroll-driven bg wash: paper → ink as #about enters ──────────────────
-    // Holds paper bg + dark text until the section is ~75% into view, then
-    // washes to ink. The .in-dark class flips text colors at midpoint and
-    // CSS transitions smooth the swap (~0.45s) so it doesn't snap.
+    // ── Scroll-driven wash: paper → ink for #about ───────────────────────────
+    // Single scrub timeline animates bg AND every text color in lockstep, so
+    // the entire palette interpolates per scroll-frame (no snap, no CSS-transition
+    // lag fighting the scrub). Hover-affected items (.in-dark class fallback)
+    // still flip at 50% via the onUpdate toggle.
     const aboutEl = document.getElementById('about');
     if (aboutEl) {
+      const E = 'power2.inOut';
+
+      // Force the paper-mode starting state on initial paint
       gsap.set([document.body, aboutEl], { backgroundColor: '#F9F9F9' });
-      gsap.to([document.body, aboutEl], {
-        backgroundColor: '#0D0C09',
-        ease: 'power2.inOut',
+
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: aboutEl,
           start: 'top 25%',
@@ -525,6 +528,40 @@ document.addEventListener('DOMContentLoaded', function () {
           },
         },
       });
+
+      // bg
+      tl.to([document.body, aboutEl], { backgroundColor: '#0D0C09', ease: E }, 0);
+
+      // strong text (manifesto, big stats, capability titles, bold spans)
+      tl.to(
+        '#about .manifesto-text, #about .stat-num, #about .bio-text strong, #about .capg-title',
+        { color: 'rgba(255,255,255,0.9)', ease: E },
+      0);
+
+      // body copy
+      tl.to('#about .bio-text',
+        { color: 'rgba(255,255,255,0.6)', ease: E },
+      0);
+
+      // soft tertiary (stat descriptions, capability arrows)
+      tl.to('#about .stat-desc, #about .capg-arrow',
+        { color: 'rgba(255,255,255,0.4)', ease: E },
+      0);
+
+      // faintest (eyebrows, quote, labels)
+      tl.to('#about .manifesto-label, #about .bio-label, #about .about-quote',
+        { color: 'rgba(255,255,255,0.35)', ease: E },
+      0);
+
+      // marquee fill text behind capability cards
+      tl.to('#about .capg-marquee-track',
+        { color: 'rgba(255,255,255,0.07)', ease: E },
+      0);
+
+      // pill default state (hover state handled by .in-dark class)
+      tl.to('#about .capg-pill',
+        { color: 'rgba(255,255,255,0.5)', ease: E },
+      0);
     }
 
     // Approach — sticky scroll switcher
