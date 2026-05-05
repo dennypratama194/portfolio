@@ -504,37 +504,23 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // ── Section bg wash: work → dark (entering about) ─────────────────────────
-    const workEl   = document.getElementById('work');
+    // ── Section bg wash: about paper → ink as it enters viewport ─────────────
     const aboutEl  = document.getElementById('about');
     const approachEl = document.getElementById('approach');
-    if (workEl && aboutEl) {
-      gsap.to(workEl, {
-        backgroundColor: '#0D0C09',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: aboutEl,
-          start: 'top 95%',
-          end:   'top 15%',
-          scrub: 1.8,
-        },
-      });
-    }
-    // ── Section bg wash: clients/testimonials → light (entering approach) ─────
-    const clientsEl = document.getElementById('clients');
-    const testiEl   = document.getElementById('testimonials');
-    const washSourceEl = clientsEl || testiEl;
-    if (washSourceEl && approachEl) {
-      gsap.to(washSourceEl, {
-        backgroundColor: '#F9F9F9',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: approachEl,
-          start: 'top 95%',
-          end:   'top 15%',
-          scrub: 1.8,
-        },
-      });
+    if (aboutEl) {
+      gsap.fromTo(aboutEl,
+        { backgroundColor: '#F9F9F9' },
+        {
+          backgroundColor: '#0D0C09',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: aboutEl,
+            start: 'top 90%',
+            end:   'top 20%',
+            scrub: 1.8,
+          },
+        }
+      );
     }
 
     // Approach — sticky scroll switcher
