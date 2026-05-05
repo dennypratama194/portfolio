@@ -108,7 +108,7 @@ if (burger && navOverlay) {
 
 /* ── NAV SCROLL BLUR ── */
 const navEl = document.querySelector('nav');
-const navDarkEls = document.querySelectorAll('#cta, footer');
+const navDarkEls = document.querySelectorAll('#about, #testimonials, #clients, #cta, footer');
 function updateNavDark() {
   navEl.classList.toggle('scrolled', window.scrollY > 40);
   const navH = navEl.offsetHeight;
@@ -501,6 +501,39 @@ document.addEventListener('DOMContentLoaded', function () {
       gsap.from(capItems, {
         x: -20, opacity: 0, stagger: 0.07, duration: 1.0, ease: EASE,
         scrollTrigger: st(capItems[0], { start: 'top 90%' }),
+      });
+    }
+
+    // ── Section bg wash: work → dark (entering about) ─────────────────────────
+    const workEl   = document.getElementById('work');
+    const aboutEl  = document.getElementById('about');
+    const approachEl = document.getElementById('approach');
+    if (workEl && aboutEl) {
+      gsap.to(workEl, {
+        backgroundColor: '#0D0C09',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: aboutEl,
+          start: 'top 95%',
+          end:   'top 15%',
+          scrub: 1.8,
+        },
+      });
+    }
+    // ── Section bg wash: clients/testimonials → light (entering approach) ─────
+    const clientsEl = document.getElementById('clients');
+    const testiEl   = document.getElementById('testimonials');
+    const washSourceEl = clientsEl || testiEl;
+    if (washSourceEl && approachEl) {
+      gsap.to(washSourceEl, {
+        backgroundColor: '#F9F9F9',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: approachEl,
+          start: 'top 95%',
+          end:   'top 15%',
+          scrub: 1.8,
+        },
       });
     }
 

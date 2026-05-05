@@ -259,6 +259,7 @@
       display: flex; flex-direction: column; justify-content: flex-end;
       padding: 0 var(--pad-x) 64px;
       position: relative;
+      background: var(--paper);
       overflow: hidden;
     }
 
@@ -478,6 +479,7 @@
     #work {
       padding: 120px 0 0;
       position: relative;
+      background: var(--paper);
     }
     .work-header {
       padding: 0 var(--pad-x);
@@ -1012,6 +1014,7 @@
       height: 400vh;
       border-top: 1px solid var(--border);
       position: relative;
+      background: var(--paper);
     }
     .approach-layout {
       position: sticky;
@@ -1863,6 +1866,7 @@
     #blog-preview {
       padding: 120px var(--pad-x);
       border-top: 1px solid var(--border);
+      background: var(--paper);
     }
     .bp-header {
       display: flex; align-items: center; justify-content: space-between;
