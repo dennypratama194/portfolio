@@ -594,17 +594,17 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!stage) return;
   const slides = Array.from(stage.querySelectorAll('.testi-slide'));
   if (slides.length <= 1) return;
-  const current = document.getElementById('testi-current');
-  const total   = document.getElementById('testi-total');
-  const arrows  = document.querySelectorAll('.testi-arrow');
+  const arrows  = document.querySelectorAll('.bt-prev, .bt-next');
   let idx = 0;
-  const pad2 = function (n) { return n < 10 ? '0' + n : String(n); };
-  if (total) total.textContent = pad2(slides.length);
 
   function go(next) {
     idx = (next + slides.length) % slides.length;
-    slides.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
-    if (current) current.textContent = pad2(idx + 1);
+    slides.forEach(function (s, i) {
+      s.classList.toggle('is-active', i === idx);
+      s.querySelectorAll('.bento-dot').forEach(function (d, di) {
+        d.classList.toggle('is-active', di === idx);
+      });
+    });
   }
 
   arrows.forEach(function (btn) {

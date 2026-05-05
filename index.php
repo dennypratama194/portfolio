@@ -275,28 +275,71 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
           </p>
         </div>
 
-        <div class="bio-block">
-          <div class="bio-label">Capabilities</div>
-          <div class="caps-list">
-            <div class="cap-item">
-              <span class="cap-name">UI/UX Design</span>
-              <span class="cap-tag">Research → Pixels</span>
-            </div>
-            <div class="cap-item">
-              <span class="cap-name">WordPress Development</span>
-              <span class="cap-tag">Custom Themes · CMS</span>
-            </div>
-            <div class="cap-item">
-              <span class="cap-name">Brand Identity</span>
-              <span class="cap-tag">Visual Language</span>
-            </div>
-            <div class="cap-item">
-              <span class="cap-name">Graphic Design</span>
-              <span class="cap-tag">Print · Digital</span>
-            </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="capabilities">
+    <div class="capg-grid">
+
+      <div class="capg-card capg-card--large">
+        <div class="capg-card-header">
+          <span class="capg-title">UI/UX Design</span>
+          <span class="capg-arrow">→</span>
+        </div>
+        <div class="capg-marquee" aria-hidden="true">
+          <div class="capg-marquee-track">
+            <span>UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+            <span>UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;UI/UX Design&nbsp;&nbsp;·&nbsp;&nbsp;</span>
           </div>
         </div>
+        <div class="capg-pills">
+          <span class="capg-pill">Research</span>
+          <span class="capg-pill">Wireframes</span>
+          <span class="capg-pill">Prototyping</span>
+          <span class="capg-pill">Design Systems</span>
+          <span class="capg-pill">Strategy</span>
+        </div>
       </div>
+
+      <div class="capg-card">
+        <div class="capg-card-header">
+          <span class="capg-title">Brand Identity</span>
+          <span class="capg-arrow">→</span>
+        </div>
+        <div class="capg-marquee" aria-hidden="true">
+          <div class="capg-marquee-track">
+            <span>Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+            <span>Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;Brand Identity&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+          </div>
+        </div>
+        <div class="capg-pills">
+          <span class="capg-pill">Visual Language</span>
+          <span class="capg-pill">Logo</span>
+          <span class="capg-pill">Guidelines</span>
+          <span class="capg-pill">Typography</span>
+        </div>
+      </div>
+
+      <div class="capg-card">
+        <div class="capg-card-header">
+          <span class="capg-title">Web Development</span>
+          <span class="capg-arrow">→</span>
+        </div>
+        <div class="capg-marquee" aria-hidden="true">
+          <div class="capg-marquee-track">
+            <span>Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+            <span>Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;Web Development&nbsp;&nbsp;·&nbsp;&nbsp;</span>
+          </div>
+        </div>
+        <div class="capg-pills">
+          <span class="capg-pill">PHP</span>
+          <span class="capg-pill">JavaScript</span>
+          <span class="capg-pill">WordPress</span>
+          <span class="capg-pill">MySQL</span>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -417,56 +460,100 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
   </section>
 
   <section id="testimonials">
-    <div class="testi-top">
-      <span class="testi-eyebrow">05 &mdash; Client Stories</span>
-      <span class="testi-counter">
-        <span id="testi-current">01</span>
-        <span class="testi-counter-sep">/</span>
-        <span id="testi-total">03</span>
-      </span>
-      <div class="testi-nav">
-        <button class="testi-arrow" data-dir="prev" aria-label="Previous testimonial">&larr;</button>
-        <button class="testi-arrow" data-dir="next" aria-label="Next testimonial">&rarr;</button>
+    <div class="bento-grid">
+
+      <!-- Stats -->
+      <div class="bento-cell bc-stats">
+        <div class="bento-stat">
+          <span class="bs-num">6<span class="bs-red">+</span></span>
+          <span class="bs-label">Years of experience</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">40<span class="bs-red">+</span></span>
+          <span class="bs-label">Projects delivered</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">10<span class="bs-red">+</span></span>
+          <span class="bs-label">Clients worldwide</span>
+        </div>
+        <div class="bento-stat">
+          <span class="bs-num">100<span class="bs-red">%</span></span>
+          <span class="bs-label">Client satisfaction</span>
+        </div>
       </div>
-    </div>
 
-    <div class="testi-stage" id="testi-stage">
+      <!-- Testimonial slider -->
+      <div class="bento-cell bc-testi" id="testi-stage">
+        <button class="bt-prev" data-dir="prev" aria-label="Previous testimonial"></button>
+        <button class="bt-next" data-dir="next" aria-label="Next testimonial"></button>
 
-      <article class="testi-slide is-active" data-index="0">
-        <div class="testi-portrait" aria-hidden="true">AF</div>
-        <div class="testi-content">
-          <span class="testi-mark">&ldquo;</span>
-          <blockquote class="testi-quote">Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.</blockquote>
-          <div class="testi-author">
-            <span class="testi-name">Ahmad Fauzi</span>
-            <span class="testi-role">Founder, Xertra</span>
+        <article class="testi-slide is-active" data-index="0">
+          <div class="bento-dots">
+            <span class="bento-dot is-active"></span>
+            <span class="bento-dot"></span>
+            <span class="bento-dot"></span>
           </div>
-        </div>
-      </article>
-
-      <article class="testi-slide" data-index="1">
-        <div class="testi-portrait" aria-hidden="true">SC</div>
-        <div class="testi-content">
-          <span class="testi-mark">&ldquo;</span>
-          <blockquote class="testi-quote">The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.</blockquote>
-          <div class="testi-author">
-            <span class="testi-name">Sarah Chen</span>
-            <span class="testi-role">Product Lead, Wordsburg</span>
+          <blockquote class="bt-quote">&ldquo;Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">AF</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Ahmad Fauzi</span>
+              <span class="bt-role">Founder, Xertra</span>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
 
-      <article class="testi-slide" data-index="2">
-        <div class="testi-portrait" aria-hidden="true">RA</div>
-        <div class="testi-content">
-          <span class="testi-mark">&ldquo;</span>
-          <blockquote class="testi-quote">He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.</blockquote>
-          <div class="testi-author">
-            <span class="testi-name">Rizky Ananda</span>
-            <span class="testi-role">Creative Director, MoRe</span>
+        <article class="testi-slide" data-index="1">
+          <div class="bento-dots">
+            <span class="bento-dot"></span>
+            <span class="bento-dot is-active"></span>
+            <span class="bento-dot"></span>
           </div>
+          <blockquote class="bt-quote">&ldquo;The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">SC</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Sarah Chen</span>
+              <span class="bt-role">Product Lead, Wordsburg</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="testi-slide" data-index="2">
+          <div class="bento-dots">
+            <span class="bento-dot"></span>
+            <span class="bento-dot"></span>
+            <span class="bento-dot is-active"></span>
+          </div>
+          <blockquote class="bt-quote">&ldquo;He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.&rdquo;</blockquote>
+          <div class="bt-author">
+            <div class="bt-avatar" aria-hidden="true">RA</div>
+            <div class="bt-author-info">
+              <span class="bt-name">Rizky Ananda</span>
+              <span class="bt-role">Creative Director, MoRe</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Client logos -->
+      <div class="bento-cell bc-clients">
+        <span class="bc-clients-label">Trusted by</span>
+        <div class="bento-logos">
+          <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-xertra.png" alt="Xertra" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-ortex.png" alt="Ortex" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-more.png" alt="MoRe" class="bl-logo" loading="lazy"/>
+          <img src="/assets/client-labme.png" alt="LAB.ME" class="bl-logo" loading="lazy"/>
         </div>
-      </article>
+      </div>
+
+      <!-- CTA -->
+      <div class="bento-cell bc-cta">
+        <p class="bc-cta-text">Have a project in&nbsp;mind?</p>
+        <button class="bc-cta-btn js-open-modal">Start a project &rarr;</button>
+      </div>
 
     </div>
   </section>
@@ -529,7 +616,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=14" defer></script>
+  <script src="/script.js?v=15" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>
