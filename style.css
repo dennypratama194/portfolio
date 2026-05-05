@@ -1792,7 +1792,6 @@
     #testimonials {
       padding: 48px var(--pad-x) 0;
       background: var(--ink);
-      border-bottom: 2px solid rgba(236,234,226,0.18);
     }
     .bento-grid {
       display: grid;
@@ -1802,6 +1801,7 @@
       background: rgba(236,234,226,0.18);
       height: 60vh;
       min-height: 400px;
+      border-bottom: 2px solid rgba(236,234,226,0.18);
     }
     .bento-cell {
       background: #1a1916;
