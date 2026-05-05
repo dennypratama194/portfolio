@@ -1,4 +1,18 @@
 <?php
+require __DIR__ . '/api/db.php';
+require __DIR__ . '/api/helpers.php';
+
+$bp_stmt = $pdo->query(
+    'SELECT title, slug, excerpt, featured_image,
+            COALESCE(published_at, scheduled_at) AS published_at
+     FROM posts
+     WHERE is_published = 1
+        OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW())
+     ORDER BY COALESCE(published_at, scheduled_at) DESC
+     LIMIT 3'
+);
+$bp_posts = $bp_stmt->fetchAll();
+
 $title       = 'Denny Pratama — Design is Conviction';
 $description = 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.';
 ?>
@@ -355,7 +369,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
   <section id="testimonials">
     <div class="testi-top">
-      <span class="testi-eyebrow"><span class="testi-eyebrow-mark">◆</span> Client Stories</span>
+      <span class="testi-eyebrow">05 &mdash; Client Stories</span>
       <span class="testi-counter">
         <span id="testi-current">01</span>
         <span class="testi-counter-sep">/</span>
@@ -415,12 +429,26 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
     <h2 class="bp-title">Thoughts &amp; ideas.</h2>
     <div class="bp-grid" id="bp-grid">
-      <!-- populated by JS -->
-      <div class="bp-loading">
-        <span class="blog-loading-dot"></span>
-        <span class="blog-loading-dot"></span>
-        <span class="blog-loading-dot"></span>
-      </div>
+      <?php foreach ($bp_posts as $bp):
+        $bp_img = $bp['featured_image'] ? '/admin/uploads/' . $bp['featured_image'] : null;
+      ?>
+        <a class="bp-card" href="/post?slug=<?= rawurlencode($bp['slug']) ?>">
+          <?php if ($bp_img): ?>
+            <img class="bp-card-img"
+                 src="<?= escHtml($bp_img) ?>"
+                 alt="<?= escHtml($bp['title']) ?>"
+                 loading="lazy"/>
+          <?php else: ?>
+            <div class="bp-card-img"></div>
+          <?php endif; ?>
+          <div class="bp-card-meta"><?= escHtml(date('j M Y', strtotime($bp['published_at']))) ?></div>
+          <div class="bp-card-title"><?= escHtml($bp['title']) ?></div>
+          <?php if ($bp['excerpt']): ?>
+            <div class="bp-card-excerpt"><?= escHtml($bp['excerpt']) ?></div>
+          <?php endif; ?>
+          <div class="bp-card-read">Read &rarr;</div>
+        </a>
+      <?php endforeach; ?>
     </div>
   </section>
 

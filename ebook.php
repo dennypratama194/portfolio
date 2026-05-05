@@ -100,7 +100,7 @@ $jsonld = json_encode([
   }
   .eb-eyebrow-line { flex: 1; max-width: 40px; height: 1px; background: var(--border); }
   .eb-h2 {
-    font-family: var(--font-sans); font-weight: 700;
+    font-family: var(--font-sans); font-weight: 500;
     font-size: clamp(40px, 6vw, 72px); line-height: 1.08;
     letter-spacing: -0.03em; color: var(--ink); margin-bottom: 20px;
   }
@@ -126,7 +126,7 @@ $jsonld = json_encode([
     color: var(--red); margin-bottom: 24px;
   }
   .eb-hero-title {
-    font-family: var(--font-sans); font-weight: 700;
+    font-family: var(--font-sans); font-weight: 500;
     font-size: clamp(48px, 8vw, 96px); line-height: 1.0;
     letter-spacing: -0.04em; color: var(--ink);
     margin-bottom: 20px;
@@ -137,7 +137,7 @@ $jsonld = json_encode([
   }
   .eb-price-row { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
   .eb-price {
-    font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
+    font-size: 24px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink);
   }
   .eb-chapter-count {
     font-size: 14px; color: var(--ink-3);
@@ -242,7 +242,7 @@ $jsonld = json_encode([
   }
   .eb-stat { border-top: 2px solid var(--red); padding-top: 14px; }
   .eb-stat-num {
-    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+    font-size: 24px; font-weight: 500; letter-spacing: -0.02em;
     color: var(--ink); margin-bottom: 4px;
   }
   .eb-stat-desc { font-size: 14px; color: var(--ink-3); line-height: 1.4; }

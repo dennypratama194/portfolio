@@ -943,7 +943,7 @@
       color: var(--red); margin-bottom: 24px;
     }
     .as-title {
-      font-size: 20px; font-weight: 700; letter-spacing: -0.025em;
+      font-size: 20px; font-weight: 500; letter-spacing: -0.025em;
       color: var(--ink); margin-bottom: 12px; line-height: 1.2;
     }
     .as-desc { font-size: 14px; color: var(--ink-3); line-height: 1.65; }
@@ -1401,8 +1401,14 @@
       #testimonials { padding: 80px 24px; }
       .testi-top { margin-bottom: 48px; }
       .testi-counter { display: none; }
-      .testi-slide { grid-template-columns: 1fr; gap: 24px; }
-      .testi-portrait { width: 64px; height: 64px; font-size: 16px; }
+      .testi-slide { grid-template-columns: 1fr; row-gap: 24px; }
+      .testi-portrait {
+        grid-column: auto;
+        width: 96px;
+        aspect-ratio: 1 / 1;
+        font-size: 18px;
+      }
+      .testi-content { grid-column: auto; }
       .testi-quote { font-size: 24px; }
       .testi-mark { font-size: 48px; }
     }
@@ -1425,14 +1431,20 @@
       font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--ink);
+      color: var(--ink-3);
+      white-space: nowrap;
       display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
-    .testi-eyebrow-mark { color: var(--red); font-size: 14px; line-height: 1; }
+    .testi-eyebrow::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--red);
+    }
     .testi-counter {
       justify-self: center;
       font-family: var(--font-mono);
@@ -1475,8 +1487,8 @@
     }
     .testi-slide {
       display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 48px;
+      grid-template-columns: repeat(12, 1fr);
+      column-gap: 32px;
       align-items: start;
       opacity: 0;
       visibility: hidden;
@@ -1492,20 +1504,22 @@
       pointer-events: auto;
     }
     .testi-portrait {
-      width: 120px;
-      height: 120px;
+      grid-column: span 2;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       background: var(--ink);
       color: var(--paper);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-mono);
-      font-size: 20px;
+      font-size: 24px;
       font-weight: 500;
       letter-spacing: 0.08em;
       user-select: none;
     }
     .testi-content {
+      grid-column: 3 / span 8;
       display: flex;
       flex-direction: column;
       gap: 48px;
@@ -2088,7 +2102,7 @@ html.pt-leaving body { pointer-events: none; }
 .preloader-year {
   font-family: var(--font-sans);
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
 }
 

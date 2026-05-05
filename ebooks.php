@@ -133,7 +133,7 @@ $products = $pdo->query(
 .eb-list-title {
   font-family: var(--font-sans);
   font-size: clamp(24px, 2.2vw, 28px);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--ink);

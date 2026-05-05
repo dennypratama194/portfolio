@@ -253,7 +253,7 @@ $page_title = htmlspecialchars($chapter['title'])
       color: var(--text-3); margin-bottom: 20px;
     }
     #read-article h1 {
-      font-family: var(--font-sans); font-weight: 700;
+      font-family: var(--font-sans); font-weight: 500;
       font-size: clamp(36px, 5vw, 52px); line-height: 1.1;
       letter-spacing: -0.03em; color: var(--text);
       margin-bottom: 48px;
@@ -267,7 +267,7 @@ $page_title = htmlspecialchars($chapter['title'])
     .read-body p   { margin-bottom: 1em; }
     .read-body p:has(> br:only-child) { margin-bottom: 8px; line-height: 0; }
     .read-body h2  {
-      font-family: var(--font-sans); font-weight: 700;
+      font-family: var(--font-sans); font-weight: 500;
       font-size: 1.9rem; line-height: 1.2; letter-spacing: -0.02em;
       color: var(--text); margin: 2.2em 0 0.7em;
     }
@@ -337,7 +337,7 @@ $page_title = htmlspecialchars($chapter['title'])
       font-size: 24px; margin: 0 auto 20px;
     }
     .rc-title {
-      font-family: var(--font-sans); font-weight: 700;
+      font-family: var(--font-sans); font-weight: 500;
       font-size: 1.8rem; letter-spacing: -0.02em;
       color: var(--text); margin-bottom: 12px;
     }
