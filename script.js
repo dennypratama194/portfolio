@@ -520,48 +520,49 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollTrigger: {
           trigger: aboutEl,
           start: 'top 25%',
-          end:   '+=50%',
-          scrub: true,
+          end:   '+=80%',
+          scrub: 0.8,
           invalidateOnRefresh: true,
           onUpdate: function (self) {
-            aboutEl.classList.toggle('in-dark', self.progress > 0.5);
+            aboutEl.classList.toggle('in-dark', self.progress > 0.7);
           },
         },
       });
 
-      // bg
-      tl.to([document.body, aboutEl], { backgroundColor: '#0D0C09', ease: E }, 0);
+      // Phase 1 (0 → 0.55): bg darkens. Text holds dark.
+      tl.to([document.body, aboutEl],
+        { backgroundColor: '#0D0C09', ease: E, duration: 0.55 },
+      0);
 
-      // strong text (manifesto, big stats, capability titles, bold spans)
+      // Phase 2 (0.45 → 1): text inverts to light, after bg is mostly dark.
+      // Slight overlap so the two phases feel connected, not staged.
+      const TEXT_AT = 0.45;
+      const TEXT_DUR = 0.55;
+
       tl.to(
         '#about .manifesto-text, #about .stat-num, #about .bio-text strong, #about .capg-title',
-        { color: 'rgba(255,255,255,0.9)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.9)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
 
-      // body copy
       tl.to('#about .bio-text',
-        { color: 'rgba(255,255,255,0.6)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.6)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
 
-      // soft tertiary (stat descriptions, capability arrows)
       tl.to('#about .stat-desc, #about .capg-arrow',
-        { color: 'rgba(255,255,255,0.4)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.4)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
 
-      // faintest (eyebrows, quote, labels)
       tl.to('#about .manifesto-label, #about .bio-label, #about .about-quote',
-        { color: 'rgba(255,255,255,0.35)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.35)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
 
-      // marquee fill text behind capability cards
       tl.to('#about .capg-marquee-track',
-        { color: 'rgba(255,255,255,0.07)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.07)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
 
-      // pill default state (hover state handled by .in-dark class)
       tl.to('#about .capg-pill',
-        { color: 'rgba(255,255,255,0.5)', ease: E },
-      0);
+        { color: 'rgba(255,255,255,0.5)', ease: E, duration: TEXT_DUR },
+      TEXT_AT);
     }
 
     // Approach — sticky scroll switcher
