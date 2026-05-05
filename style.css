@@ -1670,7 +1670,7 @@
       .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto; min-height: auto; }
       .bc-stats { grid-row: auto; grid-template-columns: 1fr 1fr; display: grid; gap: 2px; padding: 0; }
       .bento-stat { padding: 28px 24px; }
-      .bc-testi { grid-row: auto; min-height: 360px; }
+      .bc-testi { grid-row: auto; min-height: 280px; }
       .bc-clients, .bc-cta { grid-row: auto; }
       .cl-header { flex-direction: column; gap: 8px; padding: 32px 24px 24px; }
       .cl-desc { text-align: left; }
@@ -1692,11 +1692,11 @@
       grid-template-rows: 1fr 1fr;
       gap: 2px;
       background: rgba(236,234,226,0.18);
-      min-height: 560px;
+      min-height: 440px;
     }
     .bento-cell {
       background: #1a1916;
-      padding: 40px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
     }
@@ -1705,12 +1705,13 @@
     .bc-stats {
       grid-row: 1 / 3;
       justify-content: space-between;
+      gap: 24px;
     }
     .bento-stat { display: flex; flex-direction: column; gap: 8px; }
     .bs-num {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(40px, 4vw, 56px);
+      font-size: clamp(32px, 3vw, 48px);
       color: var(--paper);
       line-height: 1;
       font-weight: 300;
