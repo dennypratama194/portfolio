@@ -33,17 +33,24 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 </div>
 <script>
 (function(){
-  /* TODO before production: re-enable 4h cooldown + prefers-reduced-motion check */
   var pre = document.getElementById('preloader');
   if (!pre) return;
 
-  // Only show on first homepage visit per session — skip on return navigation
+  // Skip if user prefers reduced motion
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    pre.parentNode && pre.parentNode.removeChild(pre);
+    return;
+  }
+
+  // Show once every 4 hours via localStorage cooldown
+  var COOLDOWN = 4 * 60 * 60 * 1000;
   try {
-    if (sessionStorage.getItem('preloaderSeen') === '1') {
+    var last = parseInt(localStorage.getItem('preloaderTs') || '0', 10);
+    if (Date.now() - last < COOLDOWN) {
       pre.parentNode && pre.parentNode.removeChild(pre);
       return;
     }
-    sessionStorage.setItem('preloaderSeen', '1');
+    localStorage.setItem('preloaderTs', String(Date.now()));
   } catch (e) { /* private mode — fall through and play once */ }
 
   document.documentElement.classList.add('preload-lock');
@@ -87,7 +94,8 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
     <div class="hero-year">2026</div>
 
     <h1 class="hero-type">
-      <span class="hero-line-1">Your product deserves</span>
+      <span class="hero-line-1">Your product</span>
+      <span class="hero-line-1">deserves</span>
       <div class="hero-line-2">
         <span class="outline-word">design that converts.</span>
       </div>
