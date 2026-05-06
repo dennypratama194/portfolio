@@ -315,20 +315,20 @@
       display: block;
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(80px, 13.5vw, 192px);
+      font-size: clamp(48px, 7.5vw, 112px);
       font-weight: 400;
       letter-spacing: -0.045em;
-      line-height: 0.88;
+      line-height: 0.9;
       color: var(--ink);
       transform: translateY(0);
     }
     .hero-line-2 {
       display: flex; align-items: flex-end; gap: 0.18em;
       font-family: var(--font-sans);
-      font-size: clamp(80px, 13.5vw, 192px);
+      font-size: clamp(48px, 7.5vw, 112px);
       font-weight: 400;
       letter-spacing: -0.045em;
-      line-height: 0.88;
+      line-height: 0.9;
       color: var(--ink);
     }
     .hero-line-2 .outline-word {
@@ -580,7 +580,7 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: rgba(236,234,226,0.45);
+      color: rgba(236,234,226,0.72);
       margin-top: 8px;
     }
 
@@ -1671,7 +1671,7 @@
       #hero { padding: 0 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
       .hero-year { display: none; }
-      .hero-line-1, .hero-line-2 { font-size: clamp(48px, 16vw, 80px); line-height: 0.9; }
+      .hero-line-1, .hero-line-2 { font-size: clamp(36px, 11vw, 56px); line-height: 0.92; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
       .scroll-cue { display: none; }
       .hero-desc { font-size: 16px; max-width: 100%; }
@@ -1739,7 +1739,7 @@
     }
 
     @media (max-width: 480px) {
-      .hero-line-1, .hero-line-2 { font-size: clamp(48px, 17vw, 64px); }
+      .hero-line-1, .hero-line-2 { font-size: clamp(32px, 12vw, 48px); }
       .stats-block { grid-template-columns: 1fr; }
       .stat-cell { padding: 20px 16px; }
     }
