@@ -53,7 +53,6 @@
                   height 0.35s cubic-bezier(0.23,1,0.32,1),
                   background 0.35s,
                   border-color 0.35s;
-      mix-blend-mode: multiply;
     }
     #cursor-dot {
       position: fixed;
@@ -575,6 +574,14 @@
       letter-spacing: -0.01em;
       line-height: 1;
       color: var(--paper);
+    }
+    .wc-type {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(236,234,226,0.45);
+      margin-top: 8px;
     }
 
     /* ── Grid positions — staggered, no overlap ── */
@@ -1576,18 +1583,27 @@
     .pm-recaptcha-note a { color: rgba(236,234,226,0.35); text-decoration: underline; text-underline-offset: 2px; }
 
     /* cursor on dark sections (CTA, footer, about dark state) and modal */
+    /* cursor on dark sections */
     body.on-dark #cursor-ring,
     body.modal-open #cursor-ring,
-    body:has(#about.in-dark) #cursor-ring {
-      mix-blend-mode: normal;
+    body:has(#about.in-dark) #cursor-ring,
+    body:has(#capabilities:hover) #cursor-ring,
+    body:has(#testimonials:hover) #cursor-ring,
+    body:has(#clients:hover) #cursor-ring {
       border-color: rgba(236,234,226,0.6);
     }
     body.on-dark #cursor-dot,
     body.modal-open #cursor-dot,
-    body:has(#about.in-dark) #cursor-dot { background: var(--paper); }
+    body:has(#about.in-dark) #cursor-dot,
+    body:has(#capabilities:hover) #cursor-dot,
+    body:has(#testimonials:hover) #cursor-dot,
+    body:has(#clients:hover) #cursor-dot { background: var(--paper); }
     body.on-dark.cursor-hover #cursor-ring,
     body.modal-open.cursor-hover #cursor-ring,
-    body:has(#about.in-dark).cursor-hover #cursor-ring {
+    body:has(#about.in-dark).cursor-hover #cursor-ring,
+    body:has(#capabilities:hover).cursor-hover #cursor-ring,
+    body:has(#testimonials:hover).cursor-hover #cursor-ring,
+    body:has(#clients:hover).cursor-hover #cursor-ring {
       background: var(--red); border-color: var(--red);
     }
 

@@ -13,8 +13,8 @@ $bp_stmt = $pdo->query(
 );
 $bp_posts = $bp_stmt->fetchAll();
 
-$title       = 'Denny Pratama — Design is Conviction';
-$description = 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.';
+$title       = 'Denny Pratama — UI/UX Designer & Developer for Startups';
+$description = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
 $canonical   = 'https://dennypratama.com';
 $og_image    = 'https://dennypratama.com/assets/og-image.png';
 ?>
@@ -82,28 +82,27 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
   <section id="hero">
     <div class="hero-overline">
       <div class="hero-overline-dot"></div>
-      <span class="hero-overline-text">Denny Pratama · UIUX Designer · AI Enthusiast</span>
+      <span class="hero-overline-text">Available for new projects · Indonesia-based, worldwide</span>
     </div>
     <div class="hero-year">2026</div>
 
     <h1 class="hero-type">
-      <span class="hero-line-1">Design is</span>
+      <span class="hero-line-1">Your product deserves</span>
       <div class="hero-line-2">
-        <span class="outline-word">conviction.</span>
+        <span class="outline-word">design that converts.</span>
       </div>
     </h1>
 
     <div class="hero-bottom">
       <div class="hero-bottom-left">
         <p class="hero-desc">
-          I bridge the gap between visual craft and technical execution to build 
-          digital products that look exceptional and drive measurable results.
+          I'm Denny — a UI/UX designer and developer who turns rough ideas into polished products people actually want to use. No bloated agencies, no handoff gaps. One person, full stack, start to ship.
         </p>
         <div class="hero-ctas">
-          <a class="btn-hero-primary" href="#work">View Selected Work</a>
+          <a class="btn-hero-primary" href="#work">See the work</a>
           <a class="btn-hero-ghost js-open-modal" href="#">
             <span class="arrow">↗</span>
-            Discuss your project
+            Get a free consult
           </a>
         </div>
       </div>
@@ -144,7 +143,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
         <span class="section-title-sm">Selected Work</span>
       </div>
       <h2 class="work-title">The work.</h2>
-      <p class="work-subtitle">Cases where design became the deciding factor.</p>
+      <p class="work-subtitle">Projects where the design decision directly moved the business metric.</p>
     </div>
 
     <div class="work-scattered">
@@ -155,6 +154,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <div class="wc-overlay">
             <span class="wc-num">01</span>
             <span class="wc-name">Xertra</span>
+            <span class="wc-type">SaaS Platform · Dashboard Redesign</span>
           </div>
         </div>
       </a>
@@ -165,6 +165,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <div class="wc-overlay">
             <span class="wc-num">02</span>
             <span class="wc-name">Wordsburg</span>
+            <span class="wc-type">Content Platform · UI/UX & Dev</span>
           </div>
         </div>
       </a>
@@ -175,6 +176,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <div class="wc-overlay">
             <span class="wc-num">03</span>
             <span class="wc-name">Brenom Systems</span>
+            <span class="wc-type">Enterprise Software · UI Overhaul</span>
           </div>
         </div>
       </a>
@@ -185,6 +187,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <div class="wc-overlay">
             <span class="wc-num">04</span>
             <span class="wc-name">Digital Revo</span>
+            <span class="wc-type">Digital Agency · Web Design & Build</span>
           </div>
         </div>
       </a>
@@ -195,6 +198,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <div class="wc-overlay">
             <span class="wc-num">05</span>
             <span class="wc-name">MoRe</span>
+            <span class="wc-type">Creative Agency · Brand Identity & Web</span>
           </div>
         </div>
       </a>
@@ -214,7 +218,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <span class="accent">Both ways.</span>
         </h2>
         <blockquote class="about-quote">
-          "Life is full of learning; when you stop learning,<br/>you stop living."
+          "The best design work I've ever done started with someone saying 'I don't know what I need yet.'"
         </blockquote>
       </div>
 
@@ -235,7 +239,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           </div>
           <div class="stat-cell">
             <div class="stat-num">∞</div>
-            <div class="stat-desc">Commitment to craft over convenience</div>
+            <div class="stat-desc">Revision rounds until you love it</div>
           </div>
         </div>
 
@@ -251,9 +255,8 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
         <div class="bio-block">
           <div class="bio-label">Philosophy</div>
           <p class="bio-text">
-            Design isn't decoration — it's <strong>decision-making made visible</strong>.
-            I build products that are minimal not from laziness, but from discipline.
-            Every element that remains is there because it earns its place.
+            Design isn't decoration — it's the difference between a product that <strong>sells itself</strong> and one that needs a sales team to explain it.
+            I build products that speak for themselves. Every element that remains is there because it earns its place.
           </p>
         </div>
 
@@ -324,7 +327,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
   </section><!-- /#about -->
 
   <section id="testimonials">
-    <div class="approach-eyebrow testi-eyebrow">03 — Social Proof</div>
+    <div class="approach-eyebrow testi-eyebrow">03 — What Clients Say</div>
     <div class="bento-grid">
 
       <!-- Stats -->
@@ -334,7 +337,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
           <span class="bs-label">Years of experience</span>
         </div>
         <div class="bento-stat">
-          <span class="bs-num">40<span class="bs-red">+</span></span>
+          <span class="bs-num">60<span class="bs-red">+</span></span>
           <span class="bs-label">Projects delivered</span>
         </div>
         <div class="bento-stat">
@@ -408,8 +411,8 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
       <!-- CTA -->
       <div class="bento-cell bc-cta">
-        <p class="bc-cta-text">Have a project in&nbsp;mind?</p>
-        <button class="bc-cta-btn js-open-modal">Start a project &rarr;</button>
+        <p class="bc-cta-text">Most projects start with a 15-minute call.</p>
+        <button class="bc-cta-btn js-open-modal">Let's talk &rarr;</button>
       </div>
 
     </div>
@@ -455,7 +458,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
   </section>
 
   <section id="approach">
-    <h2 class="sr-only">My Process</h2>
+    <h2 class="sr-only">How I Work: From Brief to Shipped Product</h2>
 
     <div class="approach-layout" id="approach-layout">
 
@@ -535,7 +538,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
       <div class="bp-eyebrow">06 — Writing</div>
       <a class="bp-view-all" href="/blog">View all →</a>
     </div>
-    <h2 class="bp-title">Thoughts &amp; ideas.</h2>
+    <h2 class="bp-title">Writing that makes you a better buyer of design.</h2>
     <div class="bp-grid" id="bp-grid">
       <?php foreach ($bp_posts as $bp):
         $bp_img = $bp['featured_image'] ? '/admin/uploads/' . $bp['featured_image'] : null;
@@ -572,12 +575,12 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
       <div class="cta-row">
         <p class="cta-desc">
-          If you have a product, brand, or idea that deserves design at this level —
-          let's talk about what it could become.
+          I take on a small number of projects at a time so each one gets full attention.
+          If you're building something that deserves that — let's find out if we're a fit.
         </p>
         <div class="cta-btns">
-          <a class="btn-cta-main js-open-modal" href="#">Start a project →</a>
-          <a class="btn-cta-outline" href="https://dribbble.com/dennypratama">View portfolio</a>
+          <a class="btn-cta-main js-open-modal" href="#">Start the conversation →</a>
+          <a class="btn-cta-outline" href="https://dribbble.com/dennypratama">See the portfolio</a>
         </div>
       </div>
     </div>
