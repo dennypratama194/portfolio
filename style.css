@@ -88,7 +88,7 @@
     nav.scrolled {
       mix-blend-mode: normal;
       padding: 16px var(--pad-x);
-      background: rgba(236,234,226,0.75);
+      background: rgba(249,249,249,0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       box-shadow: 0 1px 0 var(--border);
@@ -1649,7 +1649,7 @@
       #cursor-ring, #cursor-dot { display: none; }
       body { cursor: auto; }
 
-      nav { padding: 20px 24px; background: rgba(236,234,226,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
+      nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
       #hero { padding: 0 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
       .hero-year { display: none; }
@@ -1737,7 +1737,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 2px;
-      background: rgba(236,234,226,0.18);
+      background: var(--ink);
     }
     .cl-cell {
       background: #1a1916;
@@ -1798,7 +1798,7 @@
       grid-template-columns: 1fr 2fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 2px;
-      background: rgba(236,234,226,0.18);
+      background: var(--ink);
       height: 60vh;
       min-height: 400px;
       border-bottom: 2px solid rgba(236,234,226,0.18);
