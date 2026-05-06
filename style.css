@@ -1756,6 +1756,10 @@
       flex-direction: column;
       padding: 40px;
     }
+    .cl-eyebrow {
+      font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(236,234,226,0.4); margin-bottom: 16px; display: block;
+    }
     .cl-headline {
       font-family: var(--font-sans);
       font-size: clamp(24px, 2.5vw, 40px);
@@ -1795,6 +1799,9 @@
       padding: 48px var(--pad-x) 0;
       background: var(--ink);
     }
+    .testi-eyebrow {
+      color: rgba(236,234,226,0.4); margin-bottom: 32px;
+    }
     .bento-grid {
       display: grid;
       grid-template-columns: 1fr 2fr 1fr;
@@ -1803,7 +1810,7 @@
       background: var(--ink);
       height: 60vh;
       min-height: 400px;
-      border-bottom: none;
+      border-bottom: 2px solid var(--ink);
     }
     .bento-cell {
       background: #1a1916;

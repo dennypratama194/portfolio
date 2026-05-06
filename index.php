@@ -324,6 +324,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
   </section><!-- /#about -->
 
   <section id="testimonials">
+    <div class="approach-eyebrow testi-eyebrow">03 — Social Proof</div>
     <div class="bento-grid">
 
       <!-- Stats -->
@@ -417,6 +418,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
   <section id="clients">
     <div class="cl-grid">
       <div class="cl-cell cl-cell--text">
+        <span class="cl-eyebrow">04 — Clients</span>
         <span class="cl-headline">Brands I've<br>partnered<br>with.</span>
       </div>
       <div class="cl-cell">
@@ -459,7 +461,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
       <!-- Left: sticky step info -->
       <div class="approach-left">
-        <div class="approach-eyebrow">03 — Process</div>
+        <div class="approach-eyebrow">05 — Process</div>
 
         <div class="approach-steps-wrap">
 
