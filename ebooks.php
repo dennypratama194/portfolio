@@ -3,6 +3,16 @@ require_once __DIR__ . '/api/db.php';
 
 $title       = 'Ebooks — Denny Pratama';
 $description = 'Practical ebooks on UI/UX design, development, and AI by Denny Pratama.';
+$canonical   = 'https://dennypratama.com/ebooks';
+$og_image    = 'https://dennypratama.com/assets/og-image.png';
+$jsonld      = json_encode([
+    '@context'    => 'https://schema.org',
+    '@type'       => 'CollectionPage',
+    'name'        => 'Ebooks — Denny Pratama',
+    'description' => $description,
+    'url'         => $canonical,
+    'author'      => ['@type' => 'Person', 'name' => 'Denny Pratama', 'url' => 'https://dennypratama.com'],
+]);
 
 $products = $pdo->query(
     'SELECT id, title, slug, description, price, cover_image,

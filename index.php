@@ -15,6 +15,8 @@ $bp_posts = $bp_stmt->fetchAll();
 
 $title       = 'Denny Pratama — Design is Conviction';
 $description = 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.';
+$canonical   = 'https://dennypratama.com';
+$og_image    = 'https://dennypratama.com/assets/og-image.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,12 +86,12 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
     </div>
     <div class="hero-year">2026</div>
 
-    <div class="hero-type">
+    <h1 class="hero-type">
       <span class="hero-line-1">Design is</span>
       <div class="hero-line-2">
         <span class="outline-word">conviction.</span>
       </div>
-    </div>
+    </h1>
 
     <div class="hero-bottom">
       <div class="hero-bottom-left">
@@ -149,7 +151,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/xertra/500/617" alt="Xertra mockup placeholder" loading="lazy"/>
+          <img class="wc-img" src="https://picsum.photos/seed/xertra/500/617" alt="Xertra mockup placeholder" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">01</span>
             <span class="wc-name">Xertra</span>
@@ -159,7 +161,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/wordsburg/500/617" alt="Wordsburg mockup placeholder" loading="lazy"/>
+          <img class="wc-img" src="https://picsum.photos/seed/wordsburg/500/617" alt="Wordsburg mockup placeholder" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">02</span>
             <span class="wc-name">Wordsburg</span>
@@ -169,7 +171,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/brenom/500/617" alt="Brenom Systems mockup placeholder" loading="lazy"/>
+          <img class="wc-img" src="https://picsum.photos/seed/brenom/500/617" alt="Brenom Systems mockup placeholder" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">03</span>
             <span class="wc-name">Brenom Systems</span>
@@ -179,7 +181,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/digitalrevo/500/617" alt="Digital Revo mockup placeholder" loading="lazy"/>
+          <img class="wc-img" src="https://picsum.photos/seed/digitalrevo/500/617" alt="Digital Revo mockup placeholder" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">04</span>
             <span class="wc-name">Digital Revo</span>
@@ -189,7 +191,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/more/500/617" alt="MoRe mockup placeholder" loading="lazy"/>
+          <img class="wc-img" src="https://picsum.photos/seed/more/500/617" alt="MoRe mockup placeholder" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">05</span>
             <span class="wc-name">MoRe</span>
@@ -400,7 +402,7 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
 
       <!-- Image cell -->
       <div class="bento-cell bc-clients">
-        <img src="https://picsum.photos/seed/denny/400/560" alt="Portfolio visual" class="bc-img" loading="lazy"/>
+        <img src="https://picsum.photos/seed/denny/400/560" alt="Portfolio visual" class="bc-img" loading="lazy" width="400" height="560"/>
       </div>
 
       <!-- CTA -->
@@ -418,34 +420,34 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
         <span class="cl-headline">Brands I've<br>partnered<br>with.</span>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-xertra.png" alt="Xertra" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-xertra.png" alt="Xertra" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-ortex.png" alt="Ortex" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-ortex.png" alt="Ortex" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-more.png" alt="MoRe Creative Agency" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-more.png" alt="MoRe Creative Agency" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-labme.png" alt="LAB.ME" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-labme.png" alt="LAB.ME" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-socialbee.png" alt="Socialbee" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-socialbee.png" alt="Socialbee" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-edufarmers.png" alt="Edufarmers" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-edufarmers.png" alt="Edufarmers" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-ispapp.png" alt="ISPApp" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-ispapp.png" alt="ISPApp" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy"/>
+        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
     </div>
   </section>
@@ -510,16 +512,16 @@ $description = 'UI/UX Designer & Developer based in Indonesia. I build digital p
       <!-- Right: sticky dummy images -->
       <div class="approach-right">
         <div class="approach-img is-active" data-step="0">
-          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="Discover step placeholder" loading="lazy"/>
+          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="Discover step placeholder" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="1">
-          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="Define step placeholder" loading="lazy"/>
+          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="Define step placeholder" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="2">
-          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="Design step placeholder" loading="lazy"/>
+          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="Design step placeholder" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="3">
-          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Deliver step placeholder" loading="lazy"/>
+          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Deliver step placeholder" loading="lazy" width="900" height="1100"/>
         </div>
       </div>
 

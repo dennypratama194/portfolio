@@ -11,6 +11,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+/* ── Rate limiting: max 5 submissions per IP per hour ── */
+$rate_dir = __DIR__ . '/logs/ratelimit';
+if (!is_dir($rate_dir)) {
+    mkdir($rate_dir, 0755, true);
+}
+$ip_key    = hash('sha256', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$rate_file = $rate_dir . '/contact_' . $ip_key . '.json';
+$one_hour_ago = time() - 3600;
+$timestamps   = [];
+
+if (file_exists($rate_file)) {
+    $stored = json_decode(file_get_contents($rate_file), true);
+    if (is_array($stored)) {
+        $timestamps = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
+    }
+}
+if (count($timestamps) >= 5) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'message' => 'Too many requests, please try again later']);
+    exit;
+}
+$timestamps[] = time();
+file_put_contents($rate_file, json_encode($timestamps), LOCK_EX);
+
 $data  = json_decode(file_get_contents('php://input'), true);
 $token = trim($data['recaptcha_token'] ?? '');
 $name  = trim($data['name']    ?? '');
@@ -21,6 +45,12 @@ $enquiry = trim($data['enquiry'] ?? '');
 if (!$name || !$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    exit;
+}
+
+if (!$enquiry) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Message is required']);
     exit;
 }
 

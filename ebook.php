@@ -54,20 +54,41 @@ $og_image    = $cover_url
 $og_type     = 'product';
 $canonical   = 'https://dennypratama.com/ebook/' . rawurlencode($slug);
 
-/* ── JSON-LD Product schema ── */
+/* ── JSON-LD: Product + FAQPage + BreadcrumbList ── */
 $jsonld = json_encode([
-    '@context'    => 'https://schema.org',
-    '@type'       => 'Product',
-    'name'        => $product['title'],
-    'description' => $product['tagline'] ?: $product['title'],
-    'image'       => $og_image,
-    'url'         => $canonical,
-    'offers'      => [
-        '@type'         => 'Offer',
-        'price'         => (string)(int)$product['price'],
-        'priceCurrency' => 'IDR',
-        'availability'  => 'https://schema.org/InStock',
-        'seller'        => ['@type' => 'Person', 'name' => 'Denny Pratama'],
+    '@context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type'       => 'Product',
+            'name'        => $product['title'],
+            'description' => $product['tagline'] ?: $product['title'],
+            'image'       => $og_image,
+            'url'         => $canonical,
+            'offers'      => [
+                '@type'         => 'Offer',
+                'price'         => (string)(int)$product['price'],
+                'priceCurrency' => 'IDR',
+                'availability'  => 'https://schema.org/InStock',
+                'seller'        => ['@type' => 'Person', 'name' => 'Denny Pratama'],
+            ],
+        ],
+        [
+            '@type' => 'FAQPage',
+            'mainEntity' => [
+                ['@type' => 'Question', 'name' => 'How do I access the ebook after purchase?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Instantly — right after payment, you\'ll receive an email with a personal magic link. Click it and you\'re reading. No account, no password, no app to download.']],
+                ['@type' => 'Question', 'name' => 'Can I read it on my phone?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Yes. The reading experience is fully responsive and designed to work on any device — phone, tablet, or desktop.']],
+                ['@type' => 'Question', 'name' => 'What if I lose the email?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'No problem. Go to /ebook/recover, enter your email, and a fresh magic link will be sent to you immediately.']],
+                ['@type' => 'Question', 'name' => 'Is this a PDF?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'No. It\'s a web-based reading experience — cleaner, faster, and readable on any screen without downloading a file.']],
+            ],
+        ],
+        [
+            '@type'           => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => 'https://dennypratama.com'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Ebooks', 'item' => 'https://dennypratama.com/ebooks'],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $product['title'], 'item' => $canonical],
+            ],
+        ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>

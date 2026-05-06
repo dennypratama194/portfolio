@@ -9,7 +9,8 @@ $stmt = $pdo->query(
      FROM posts
      WHERE is_published = 1
         OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW())
-     ORDER BY COALESCE(published_at, scheduled_at) DESC'
+     ORDER BY COALESCE(published_at, scheduled_at) DESC
+     LIMIT 100'
 );
 
 $posts = $stmt->fetchAll();

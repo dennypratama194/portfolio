@@ -16,11 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_FILES['image'])) {
     exit;
 }
 
-$file    = $_FILES['image'];
-$allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-$mime    = mime_content_type($file['tmp_name']);
+require __DIR__ . '/../api/helpers.php';
 
-if (!in_array($mime, $allowed)) {
+$file = $_FILES['image'];
+
+if (!isAllowedImage($file['tmp_name'])) {
     http_response_code(415);
     echo json_encode(['error' => 'Invalid file type']);
     exit;

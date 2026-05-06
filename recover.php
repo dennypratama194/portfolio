@@ -1,6 +1,8 @@
 <?php
 $title       = 'Recover Access — Denny Pratama';
 $description = 'Lost your ebook access link? Enter your email and we\'ll resend all your purchase links instantly.';
+$canonical   = 'https://dennypratama.com/ebook/recover';
+$og_image    = 'https://dennypratama.com/assets/og-image.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">

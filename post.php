@@ -39,16 +39,32 @@ $description = $post['excerpt']
 $canonical   = 'https://dennypratama.com/post?slug=' . urlencode($post['slug']);
 $og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/og-image.png';
 $og_type     = 'article';
-$jsonld      = json_encode([
-    '@context'      => 'https://schema.org',
-    '@type'         => 'BlogPosting',
-    'headline'      => $post['title'],
-    'description'   => $post['excerpt'],
-    'author'        => ['@type' => 'Person', 'name' => 'Denny Pratama'],
-    'datePublished' => $post['published_at'],
-    'url'           => $canonical,
-    'image'         => $og_image,
+$jsonld = json_encode([
+    '@context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type'         => 'BlogPosting',
+            'headline'      => $post['title'],
+            'description'   => $post['excerpt'],
+            'author'        => ['@type' => 'Person', 'name' => 'Denny Pratama', 'url' => 'https://dennypratama.com', 'image' => 'https://dennypratama.com/assets/logo.png'],
+            'datePublished' => $post['published_at'],
+            'url'           => $canonical,
+            'image'         => $og_image,
+        ],
+        [
+            '@type'           => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => 'https://dennypratama.com'],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => 'https://dennypratama.com/blog'],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $post['title'], 'item' => $canonical],
+            ],
+        ],
+    ],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+/* Reading time: ~200 wpm */
+$word_count   = str_word_count(strip_tags($post['body'] ?? ''));
+$reading_mins = max(1, (int) round($word_count / 200));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,15 +86,29 @@ $jsonld      = json_encode([
         <span><?= escHtml(formatDate($post['published_at'])) ?></span>
       </div>
       <h1 class="post-hero-title"><?= escHtml($post['title']) ?></h1>
+      <div class="post-hero-reading-time"><?= $reading_mins ?> min read</div>
     </div>
 
     <?php if ($featured_image_url): ?>
       <img class="post-featured-img"
            src="<?= escHtml($featured_image_url) ?>"
-           alt="<?= escHtml($post['title']) ?>"/>
+           alt="<?= escHtml($post['title']) ?>"
+           loading="eager"
+           fetchpriority="high"
+           width="1200" height="630"/>
     <?php endif; ?>
 
     <div class="post-body"><?= $post['body'] /* admin-only Quill HTML */ ?></div>
+
+    <div class="post-share">
+      <span class="post-share-label">Share</span>
+      <a class="post-share-link"
+         href="https://twitter.com/intent/tweet?url=<?= rawurlencode($canonical) ?>&text=<?= rawurlencode($post['title']) ?>"
+         target="_blank" rel="noopener noreferrer">Twitter / X</a>
+      <a class="post-share-link"
+         href="https://www.linkedin.com/sharing/share-offsite/?url=<?= rawurlencode($canonical) ?>"
+         target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
 
     <div class="post-cta">
       <p class="post-cta-label">Enjoyed this? Let's build something.</p>

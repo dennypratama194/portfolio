@@ -1,6 +1,8 @@
 <?php
 $title       = 'My Library — Denny Pratama';
 $description = 'Access all your purchased ebooks from Denny Pratama in one place.';
+$canonical   = 'https://dennypratama.com/my-library';
+$og_image    = 'https://dennypratama.com/assets/og-image.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">

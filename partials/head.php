@@ -21,6 +21,10 @@
   <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'website') ?>"/>
   <meta property="og:site_name" content="Denny Pratama"/>
   <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="<?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?>"/>
+  <meta name="twitter:description" content="<?= htmlspecialchars($description ?? 'UI/UX Designer & Developer building digital products where aesthetics and function refuse to compromise.') ?>"/>
+  <meta name="twitter:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/og-image.png') ?>"/>
+  <meta name="twitter:creator" content="@dennypratama"/>
 
   <!-- Canonical -->
   <link rel="canonical" href="<?= htmlspecialchars($canonical ?? 'https://dennypratama.com' . strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>"/>
@@ -28,13 +32,16 @@
   <!-- JSON-LD -->
   <script type="application/ld+json">
   <?= $jsonld ?? json_encode([
-    '@context' => 'https://schema.org',
-    '@type'    => 'Person',
-    'name'     => 'Denny Pratama',
-    'url'      => 'https://dennypratama.com',
-    'jobTitle' => 'UI/UX Designer & Developer',
-    'image'    => 'https://dennypratama.com/assets/logo.png',
-    'sameAs'   => [
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Person',
+    'name'        => 'Denny Pratama',
+    'url'         => 'https://dennypratama.com',
+    'jobTitle'    => 'UI/UX Designer & Developer',
+    'description' => 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.',
+    'image'       => 'https://dennypratama.com/assets/logo.png',
+    'email'       => 'dennypratama194@gmail.com',
+    'knowsAbout'  => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'AI'],
+    'sameAs'      => [
       'https://dribbble.com/dennypratama',
       'https://www.linkedin.com/in/denny-pratama-740a14151/',
       'https://instagram.com/dennypratama',
@@ -50,16 +57,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 
-  <!-- Preload critical CSS -->
-  <link rel="preload" href="/style.css?v=53" as="style"/>
-
   <!-- Fonts — non-blocking via print media swap trick -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=53"/>
+  <link rel="stylesheet" href="/style.css?v=56"/>
 
   <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

@@ -4,5 +4,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /admin/uploads/
+Disallow: /read/
 
 Sitemap: https://dennypratama.com/sitemap.xml

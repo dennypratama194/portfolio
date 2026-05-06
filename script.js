@@ -61,14 +61,20 @@ document.addEventListener('mousemove', e => {
   dot.style.left = dX + 'px'; dot.style.top = dY + 'px';
 });
 function lerpCursor() {
-  rX += (dX - rX) * 0.12; rY += (dY - rY) * 0.12;
-  ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+  const nx = rX + (dX - rX) * 0.12;
+  const ny = rY + (dY - rY) * 0.12;
+  if (Math.abs(nx - rX) > 0.1 || Math.abs(ny - rY) > 0.1) {
+    rX = nx; rY = ny;
+    ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+  } else {
+    rX = nx; rY = ny;
+  }
   requestAnimationFrame(lerpCursor);
 }
 lerpCursor();
-document.querySelectorAll('a, button, .wc, .cap-item, .stat-cell').forEach(el => {
-  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+/* Single delegated listener — avoids attaching handlers to 100+ elements */
+document.addEventListener('mouseover', e => {
+  document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell'));
 });
 
 /* ── NAV BURGER / OVERLAY ── */
@@ -109,13 +115,27 @@ if (burger && navOverlay) {
 /* ── NAV SCROLL BLUR ── */
 const navEl = document.querySelector('nav');
 const navDarkEls = document.querySelectorAll('#about, #testimonials, #clients, #cta, footer');
+
+/* Cache section offsets on load+resize to avoid getBoundingClientRect on every scroll */
+let navH = navEl ? navEl.offsetHeight : 60;
+let navSectionCache = [];
+function cacheNavSections() {
+  navH = navEl ? navEl.offsetHeight : 60;
+  const scrollY = window.scrollY;
+  navSectionCache = Array.from(navDarkEls).map(el => ({
+    top: el.offsetTop,
+    bottom: el.offsetTop + el.offsetHeight,
+  }));
+}
+cacheNavSections();
+window.addEventListener('resize', cacheNavSections, { passive: true });
+
 function updateNavDark() {
-  navEl.classList.toggle('scrolled', window.scrollY > 40);
-  const navH = navEl.offsetHeight;
-  let onDark = false;
-  navDarkEls.forEach(el => {
-    const r = el.getBoundingClientRect();
-    if (r.top < navH && r.bottom > 0) onDark = true;
+  const scrollY = window.scrollY;
+  navEl.classList.toggle('scrolled', scrollY > 40);
+  const onDark = navSectionCache.some(({ top, bottom }) => {
+    const rTop = top - scrollY;
+    return rTop < navH && (bottom - scrollY) > 0;
   });
   document.body.classList.toggle('nav-on-dark', onDark);
 }
@@ -125,15 +145,24 @@ updateNavDark();
 /* ── SCROLL FADE BOTTOM THEME ── */
 const fadEl = document.querySelector('.scroll-fade-bottom');
 if (fadEl) {
-  const darkEls = document.querySelectorAll('#cta, footer');
+  let fadeSectionCache = [];
+  function cacheFadeSections() {
+    fadeSectionCache = Array.from(document.querySelectorAll('#cta, footer')).map(el => ({
+      top: el.offsetTop,
+      bottom: el.offsetTop + el.offsetHeight,
+    }));
+  }
+  cacheFadeSections();
+  window.addEventListener('resize', cacheFadeSections, { passive: true });
+
   function updateFade() {
+    const scrollY = window.scrollY;
     const vh = window.innerHeight;
-    const atBottom = window.scrollY + vh >= document.body.scrollHeight - 40;
+    const atBottom = scrollY + vh >= document.body.scrollHeight - 40;
     fadEl.style.opacity = atBottom ? '0' : '1';
-    let isDark = false;
-    darkEls.forEach(el => {
-      const r = el.getBoundingClientRect();
-      if (r.top < vh && r.bottom > vh * 0.5) isDark = true;
+    const isDark = fadeSectionCache.some(({ top, bottom }) => {
+      const rTop = top - scrollY;
+      return rTop < vh && (bottom - scrollY) > vh * 0.5;
     });
     fadEl.classList.toggle('is-dark', isDark);
   }
@@ -161,8 +190,10 @@ document.querySelectorAll('section').forEach(s => io.observe(s));
 
 /* ── MAGNETIC BUTTONS ── */
 document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
+  let r = { left: 0, top: 0, width: 0, height: 0 };
+  /* Cache rect on hover start — not on every mousemove */
+  btn.addEventListener('mouseenter', () => { r = btn.getBoundingClientRect(); });
   btn.addEventListener('mousemove', e => {
-    const r = btn.getBoundingClientRect();
     const x = (e.clientX - r.left - r.width  / 2) * 0.22;
     const y = (e.clientY - r.top  - r.height / 2) * 0.22;
     btn.style.transform = 'translate(' + x + 'px,' + y + 'px)';
