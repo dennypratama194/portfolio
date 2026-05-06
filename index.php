@@ -96,8 +96,9 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
     <h1 class="hero-type">
       <span class="hero-line-1">Your product</span>
       <span class="hero-line-1">deserves</span>
+      <span class="hero-line-1">design that</span>
       <div class="hero-line-2">
-        <span class="outline-word">design that converts.</span>
+        <span class="outline-word">converts.</span>
       </div>
     </h1>
 
