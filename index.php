@@ -538,7 +538,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
       <div class="bp-eyebrow">06 — Writing</div>
       <a class="bp-view-all" href="/blog">View all →</a>
     </div>
-    <h2 class="bp-title">Writing that makes you a better buyer of design.</h2>
+    <h2 class="bp-title">The thinking behind better products.</h2>
     <div class="bp-grid" id="bp-grid">
       <?php foreach ($bp_posts as $bp):
         $bp_img = $bp['featured_image'] ? '/admin/uploads/' . $bp['featured_image'] : null;

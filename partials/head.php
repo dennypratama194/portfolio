@@ -63,7 +63,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=59"/>
+  <link rel="stylesheet" href="/style.css?v=62"/>
 
   <!-- GSAP + ScrollTrigger via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

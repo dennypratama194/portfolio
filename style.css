@@ -354,7 +354,7 @@
 
     .hero-desc {
       font-size: 16px; font-weight: 300; line-height: 1.7;
-      color: var(--ink-2); max-width: 360px;
+      color: var(--ink-2); max-width: 520px;
     }
     .hero-ctas { display: flex; gap: 12px; align-items: center; }
     .btn-hero-primary {
@@ -555,7 +555,7 @@
     /* Text overlay — bottom-left of card */
     .wc-overlay {
       position: absolute;
-      bottom: 20px; left: 20px;
+      bottom: 20px; left: 20px; right: 20px;
       z-index: 2;
     }
     .wc-num {
@@ -1790,6 +1790,8 @@
       transition: filter 0.25s;
     }
     .cl-cell:hover .cl-logo { filter: invert(1) brightness(0.85); }
+    .cl-logo[alt="Wordsburg"],
+    .cl-logo[alt="Mariwisata"] { max-width: 160px; max-height: 52px; }
 
     @media (max-width: 1024px) {
       .cl-grid { grid-template-columns: 1fr 1fr 1fr; }
