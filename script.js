@@ -308,22 +308,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── 1. HERO TEXT REVEAL ──────────────────────────────────────────────────────
   (function () {
-    const heroLine1   = document.querySelector('.hero-line-1');
+    const heroLines   = document.querySelectorAll('.hero-line-1');
     const heroOutline = document.querySelector('.hero-line-2 .outline-word');
     const heroDesc    = document.querySelector('.hero-desc');
     const heroCtas    = document.querySelector('.hero-ctas');
 
-    // Split .hero-line-1 text into individual word <span>s
-    if (heroLine1) {
-      const words = heroLine1.textContent.trim().split(/\s+/);
-      heroLine1.innerHTML = words
+    // Split every .hero-line-1 into individual word <span>s
+    heroLines.forEach(function (line) {
+      const words = line.textContent.trim().split(/\s+/);
+      line.innerHTML = words
         .map(w => '<span class="gsap-word" style="display:inline-block">' + w + '</span>')
         .join(' ');
-    }
+    });
 
-    // Collect headline word elements: split words + the outline word as one unit
+    // Collect all word spans across every line + the outline word
     const wordEls = [];
-    if (heroLine1)   wordEls.push(...heroLine1.querySelectorAll('.gsap-word'));
+    heroLines.forEach(function (line) {
+      wordEls.push(...line.querySelectorAll('.gsap-word'));
+    });
     if (heroOutline) wordEls.push(heroOutline);
 
     if (wordEls.length) {
