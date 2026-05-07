@@ -27,6 +27,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
         </p>
 
         <form class="form-stack" id="lib-form" novalidate>
+          <label for="lib-email" class="sr-only">Email address</label>
           <input type="email" id="lib-email" name="email" class="form-input"
                  placeholder="you@example.com" autocomplete="email" required/>
           <button type="submit" class="form-btn" id="lib-btn">
@@ -259,7 +260,7 @@ main { flex: 1; display: flex; align-items: center; }
 })();
 </script>
 
-  <script src="/script.js?v=13" defer></script>
+  <script src="/script.js?v=16" defer></script>
   <script>var PAGE='my-library',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

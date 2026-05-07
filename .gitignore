@@ -2,3 +2,11 @@
 api/.secrets.php
 api/.admin_hash
 api/.auto_post_config.json
+
+# Generated server-side data
+api/logs/
+admin/uploads/
+
+# OS
+.DS_Store
+Thumbs.db

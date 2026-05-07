@@ -359,7 +359,7 @@
     .hero-ctas { display: flex; gap: 12px; align-items: center; }
     .btn-hero-primary {
       display: inline-flex; align-items: center; gap: 12px;
-      padding: 17px 36px;
+      padding: 16px 32px;
       background: var(--ink);
       color: var(--paper);
       font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
@@ -459,6 +459,8 @@
       font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
     }
     .section-line { flex: 1; height: 1px; background: var(--border); }
+    .work-header .section-meta { margin-bottom: 0; }
+    .work-header .section-line { max-width: 40px; }
     .section-title-sm {
       font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
     }
@@ -999,7 +1001,7 @@
       background: rgba(255,255,255,0.07);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 100px;
-      padding: 6px 14px;
+      padding: 8px 16px;
       transition: color 0.25s, background 0.25s, border-color 0.25s;
     }
     .capg-card:hover .capg-pill {
@@ -1622,7 +1624,7 @@
       .pm-form, .pm-success { padding: 40px 0; }
       .pm-title      { font-size: clamp(40px, 12vw, 64px); margin-bottom: 36px; }
       .pm-input      { font-size: 18px; }
-      .pm-btn-send   { margin-top: 36px; padding: 15px 36px; align-self: stretch; text-align: center; justify-content: center; }
+      .pm-btn-send   { margin-top: 36px; padding: 16px 32px; align-self: stretch; text-align: center; justify-content: center; }
 
       /* Nav overlay — mobile */
       .nav-overlay {
@@ -2376,7 +2378,7 @@
   align-items: flex-start;
   gap: 12px;
   margin-top: 20px;
-  padding: 15px 18px;
+  padding: 16px 20px;
   font-size: 14px;
   line-height: 1.55;
 }

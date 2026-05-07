@@ -63,8 +63,13 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=64"/>
+  <link rel="stylesheet" href="/style.css?v=65"/>
 
-  <!-- GSAP + ScrollTrigger via CDN -->
+  <!-- reCAPTCHA v3 site key (public; consumed by script.js) -->
+  <meta name="recaptcha-site-key" content="6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"/>
+
+  <!-- GSAP + ScrollTrigger via CDN — only when the page declares it needs them -->
+  <?php if (!empty($needs_gsap)): ?>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <?php endif; ?>

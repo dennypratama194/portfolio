@@ -1,6 +1,12 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+
+require __DIR__ . '/helpers.php';
+if (!rateLimit('posts_list', 200)) {
+    http_response_code(429);
+    echo json_encode(['error' => 'rate_limited']);
+    exit;
+}
 
 require __DIR__ . '/db.php';
 

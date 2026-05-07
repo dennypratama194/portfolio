@@ -84,7 +84,8 @@ PROMPT;
     curl_close($ch);
 
     if ($curl_err) {
-        respond(502, ['ok' => false, 'error' => 'Claude API failed: ' . $curl_err]);
+        autoPostLog('Claude API curl error: ' . $curl_err);
+        respond(502, ['ok' => false, 'error' => 'Generation failed.']);
     }
 
     $claude_resp = json_decode($claude_raw, true);
@@ -94,7 +95,8 @@ PROMPT;
     $post_data   = json_decode(trim($raw_content), true);
 
     if (!$post_data || empty($post_data['title']) || empty($post_data['body'])) {
-        respond(502, ['ok' => false, 'error' => 'Claude returned invalid content.', 'raw' => substr($raw_content, 0, 300)]);
+        autoPostLog('Claude returned invalid content. Raw (first 500 chars): ' . substr($raw_content, 0, 500));
+        respond(502, ['ok' => false, 'error' => 'Generation failed.']);
     }
 
     /* Sanitize and build slug */
@@ -214,4 +216,10 @@ function respond(int $code, array $data): void {
     if (!$is_cli) http_response_code($code);
     echo json_encode($data) . "\n";
     exit;
+}
+
+function autoPostLog(string $msg): void {
+    $dir = __DIR__ . '/logs';
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
+    @file_put_contents($dir . '/auto-post.log', '[' . date('c') . '] ' . $msg . "\n", FILE_APPEND | LOCK_EX);
 }

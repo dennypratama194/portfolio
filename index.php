@@ -17,6 +17,7 @@ $title       = 'Denny Pratama — UI/UX Designer & Developer for Startups';
 $description = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
 $canonical   = 'https://dennypratama.com';
 $og_image    = 'https://dennypratama.com/assets/og-image.png';
+$needs_gsap  = true;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -146,9 +147,9 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
   <section id="work">
     <div class="work-header">
-      <div class="section-meta" style="margin-bottom:0;">
+      <div class="section-meta">
         <span class="section-num">01</span>
-        <div class="section-line" style="max-width:40px;"></div>
+        <div class="section-line"></div>
         <span class="section-title-sm">Selected Work</span>
       </div>
       <h2 class="work-title">The work.</h2>
@@ -600,7 +601,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=15" defer></script>
+  <script src="/script.js?v=16" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

@@ -24,6 +24,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
       </p>
 
       <form class="form-stack" id="recover-form" novalidate>
+        <label for="recover-email" class="sr-only">Email address</label>
         <input
           type="email"
           id="recover-email"
@@ -139,7 +140,7 @@ main { flex: 1; display: flex; align-items: center; }
 })();
 </script>
 
-  <script src="/script.js?v=13" defer></script>
+  <script src="/script.js?v=16" defer></script>
   <script>var PAGE='recover',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

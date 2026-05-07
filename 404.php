@@ -33,7 +33,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=15" defer></script>
+<script src="/script.js?v=16" defer></script>
 <script>var PAGE='404',SLUG=null;</script>
 <script src="/api/tracker.js" defer></script>
 </body>

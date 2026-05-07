@@ -91,6 +91,8 @@ $jsonld = json_encode([
         ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+$needs_gsap = true;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -590,7 +592,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=13" defer></script>
+<script src="/script.js?v=16" defer></script>
 <script>
   /* ── Ebook page GSAP animations ── */
   document.addEventListener('DOMContentLoaded', function () {

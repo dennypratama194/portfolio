@@ -43,3 +43,33 @@ function isAllowedImage(string $tmp_path): bool {
     $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     return in_array(getUploadMime($tmp_path), $allowed, true);
 }
+
+/**
+ * Sliding-window IP rate limit (filesystem-backed).
+ * Returns true if the request is allowed, false if the bucket is exhausted.
+ *
+ * Usage:
+ *   if (!rateLimit('posts_list', 200)) { http_response_code(429); exit; }
+ */
+function rateLimit(string $bucket, int $max, int $window_sec = 3600): bool {
+    $ip       = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $rate_dir = __DIR__ . '/logs/ratelimit';
+    if (!is_dir($rate_dir)) @mkdir($rate_dir, 0755, true);
+
+    $file       = $rate_dir . '/' . preg_replace('/[^a-z0-9_]/i', '', $bucket) . '_' . hash('sha256', $ip) . '.json';
+    $now        = time();
+    $cutoff     = $now - $window_sec;
+    $timestamps = [];
+
+    if (file_exists($file)) {
+        $stored = json_decode(@file_get_contents($file), true);
+        if (is_array($stored)) {
+            $timestamps = array_values(array_filter($stored, fn($t) => is_int($t) && $t > $cutoff));
+        }
+    }
+    if (count($timestamps) >= $max) return false;
+
+    $timestamps[] = $now;
+    @file_put_contents($file, json_encode($timestamps), LOCK_EX);
+    return true;
+}

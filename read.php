@@ -85,7 +85,13 @@ $page_title = htmlspecialchars($chapter['title'])
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <!-- No-index: reader pages are private, token-gated -->
   <meta name="robots" content="noindex, nofollow"/>
+  <meta name="referrer" content="no-referrer"/>
   <title><?= $page_title ?></title>
+
+  <!-- Minimal OG (page is noindex; OG just makes accidental share previews look right) -->
+  <meta property="og:title" content="<?= $page_title ?>"/>
+  <meta property="og:image" content="https://dennypratama.com/assets/og-image.png"/>
+  <meta property="og:type" content="article"/>
 
   <!-- Theme before paint — prevents flash of wrong color scheme -->
   <script>

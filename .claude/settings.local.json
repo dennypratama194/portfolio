@@ -22,7 +22,18 @@
       "Bash(curl -sL https://fluid.glass -A \"Mozilla/5.0\")",
       "Bash(awk '/Instrument Serif/{print NR\":\"$0; for\\(i=1;i<=4;i++\\) print NR-i\":\"prev[i]} {for\\(i=4;i>0;i--\\) prev[i]=prev[i-1]; prev[1]=$0}' style.css)",
       "Bash(sed -i -e 's|font-family: '\\\\''Inter'\\\\'', sans-serif;|font-family: var\\(--font-sans\\);|g' -e 's|font-family: '\\\\''Inter'\\\\'', system-ui, sans-serif;|font-family: var\\(--font-sans\\);|g' admin/theme.css admin/auto-post.php admin/ebook-chapters.php admin/ebook-edit.php admin/ebook-purchases.php admin/edit.php admin/login.php)",
-      "Bash(grep -nE \"'Inter'\" admin/*.css admin/*.php)"
+      "Bash(grep -nE \"'Inter'\" admin/*.css admin/*.php)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\ADMIN\\\\portfolio\" -Recurse -File)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ADMIN\\\\portfolio\" -Recurse -File -Name)",
+      "Bash(Select-Object -First 50)",
+      "Bash(grep -n \"implode.*WHERE\\\\|WHERE.*\\\\$\\\\|SELECT.*\\\\$\\\\|INSERT.*\\\\$\" \"c:\\\\Users\\\\ADMIN\\\\portfolio\\\\admin\\\\ebook-purchases.php\")",
+      "Bash(ls \"c:/Users/ADMIN/.claude/skills/\" 2>&1 | head -10)",
+      "Read(//c/Users/ADMIN/.claude/**)",
+      "Bash(mkdir -p \"c:/Users/ADMIN/portfolio/.claude/skills/prod-audit\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\ADMIN\\portfolio\\.claude\\skills"
     ]
   }
 }

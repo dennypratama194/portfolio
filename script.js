@@ -3,9 +3,10 @@
   const html = document.documentElement;
   const LEAVE_MS  = 550;
   const REVEAL_MS = 700;
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Inbound: if arriving from a transition, slide curtain off bottom on next frame
-  if (html.classList.contains('pt-arriving')) {
+  if (!reducedMotion && html.classList.contains('pt-arriving')) {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         html.classList.add('pt-revealing');
@@ -14,9 +15,12 @@
         }, REVEAL_MS + 50);
       });
     });
+  } else if (reducedMotion) {
+    html.classList.remove('pt-arriving');
   }
 
   function shouldIntercept(a, e) {
+    if (reducedMotion) return false;
     if (e.defaultPrevented) return false;
     if (e.button !== 0) return false;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
@@ -28,6 +32,7 @@
     if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return false;
     let url;
     try { url = new URL(a.href, location.href); } catch (err) { return false; }
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
     if (url.origin !== location.origin) return false;
     // Same path + only a hash change → let browser handle scroll
     if (url.pathname === location.pathname && url.search === location.search && url.hash) return false;
@@ -49,6 +54,14 @@
     if (e.persisted) {
       html.classList.remove('pt-leaving', 'pt-arriving', 'pt-revealing');
     }
+  });
+
+  // If page is hidden without navigating (back-forward cache, tab switch, cancelled nav),
+  // clear the marker so a later refresh doesn't show a phantom curtain.
+  window.addEventListener('pagehide', function () {
+    try {
+      if (!html.classList.contains('pt-leaving')) sessionStorage.removeItem('pt');
+    } catch (err) {}
   });
 })();
 
@@ -211,7 +224,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   const formEl      = document.getElementById('pm-form');
   const successEl   = document.getElementById('pm-success');
 
-  const RECAPTCHA_SITE_KEY = '6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ';
+  const RECAPTCHA_SITE_KEY = (document.querySelector('meta[name="recaptcha-site-key"]') || {}).content || '';
   let recaptchaLoaded = false;
 
   function loadRecaptcha() {
