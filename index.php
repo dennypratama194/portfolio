@@ -121,16 +121,6 @@ $jsonld        = json_encode([
       </div>
     </h1>
 
-    <div class="hero-trust" aria-label="Trusted by">
-      <span class="hero-trust-label">Trusted by</span>
-      <div class="hero-trust-logos">
-        <img src="/assets/client-xertra.png" alt="Xertra" class="hero-trust-logo" width="80" height="30" loading="eager"/>
-        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="hero-trust-logo" width="80" height="30" loading="eager"/>
-        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="hero-trust-logo" width="80" height="30" loading="eager"/>
-        <img src="/assets/client-ortex.png" alt="Ortex" class="hero-trust-logo" width="80" height="30" loading="eager"/>
-      </div>
-    </div>
-
     <div class="hero-bottom">
       <div class="hero-bottom-left">
         <p class="hero-desc">

@@ -392,35 +392,6 @@
     }
     .btn-hero-ghost:hover .arrow { transform: rotate(45deg); }
 
-    /* hero credibility block */
-    .hero-trust {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      position: absolute;
-      top: 48px;
-      right: var(--pad-x);
-      z-index: 2;
-    }
-    .hero-trust-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-    }
-    .hero-trust-logos {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .hero-trust-logo {
-      max-width: 80px;
-      height: auto;
-      opacity: 0.55;
-      filter: grayscale(100%);
-      object-fit: contain;
-    }
 
     /* scroll line */
     .scroll-cue {
@@ -1703,8 +1674,7 @@
       nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
       #hero { padding: 0 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
-      .hero-trust { display: none; }
-      .hero-year { display: none; }
+.hero-year { display: none; }
       .hero-line-1, .hero-line-2 { font-size: clamp(28px, 9vw, 44px); line-height: 0.92; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
       .scroll-cue { display: none; }
