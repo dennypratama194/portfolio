@@ -12,6 +12,9 @@
   </script>
   <title><?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?></title>
   <meta name="description" content="<?= htmlspecialchars($description ?? 'Denny Pratama — UI/UX Designer & Developer based in Indonesia. Building digital products where aesthetics and function refuse to compromise.') ?>"/>
+  <?php if (!empty($meta_keywords)): ?>
+  <meta name="keywords" content="<?= htmlspecialchars($meta_keywords) ?>"/>
+  <?php endif; ?>
 
   <!-- Open Graph -->
   <meta property="og:title" content="<?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?>"/>
@@ -37,8 +40,8 @@
     'name'        => 'Denny Pratama',
     'url'         => 'https://dennypratama.com',
     'jobTitle'    => 'UI/UX Designer & Developer',
-    'description' => 'UI/UX Designer & Developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise on each other.',
-    'image'       => 'https://dennypratama.com/assets/logo.png',
+    'description' => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
+    'image'       => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
     'email'       => 'dennypratama194@gmail.com',
     'knowsAbout'  => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'AI'],
     'sameAs'      => [

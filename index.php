@@ -6,18 +6,36 @@ $bp_stmt = $pdo->query(
     'SELECT title, slug, excerpt, featured_image,
             COALESCE(published_at, scheduled_at) AS published_at
      FROM posts
-     WHERE is_published = 1
-        OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW())
+     WHERE (is_published = 1
+        OR (scheduled_at IS NOT NULL AND scheduled_at <= NOW()))
+       AND slug != \'empty-states-ux-design-losing-users\'
      ORDER BY COALESCE(published_at, scheduled_at) DESC
      LIMIT 3'
 );
 $bp_posts = $bp_stmt->fetchAll();
 
-$title       = 'Denny Pratama — UI/UX Designer & Developer for Startups';
-$description = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
-$canonical   = 'https://dennypratama.com';
-$og_image    = 'https://dennypratama.com/assets/og-image.png';
-$needs_gsap  = true;
+$title         = 'Denny Pratama — UI/UX Designer & Developer for Startups';
+$description   = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
+$canonical     = 'https://dennypratama.com';
+$og_image      = 'https://dennypratama.com/assets/og-image.png';
+$needs_gsap    = true;
+$meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designer and developer, startup product design, web designer Indonesia, UI designer for hire';
+$jsonld        = json_encode([
+    '@context'    => 'https://schema.org',
+    '@type'       => 'Person',
+    'name'        => 'Denny Pratama',
+    'url'         => 'https://dennypratama.com',
+    'jobTitle'    => 'UI/UX Designer & Developer',
+    'description' => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
+    'image'       => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+    'email'       => 'dennypratama194@gmail.com',
+    'knowsAbout'  => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'AI'],
+    'sameAs'      => [
+        'https://dribbble.com/dennypratama',
+        'https://www.linkedin.com/in/denny-pratama-740a14151/',
+        'https://instagram.com/dennypratama',
+    ],
+]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,22 +115,32 @@ $needs_gsap  = true;
     <h1 class="hero-type">
       <span class="hero-line-1">Your product</span>
       <span class="hero-line-1">deserves</span>
-      <span class="hero-line-1">design that</span>
+      <span class="hero-line-1">UI/UX design</span>
       <div class="hero-line-2">
-        <span class="outline-word">converts.</span>
+        <span class="outline-word">that converts.</span>
       </div>
     </h1>
+
+    <div class="hero-trust" aria-label="Trusted by">
+      <span class="hero-trust-label">Trusted by</span>
+      <div class="hero-trust-logos">
+        <img src="/assets/client-xertra.png" alt="Xertra" class="hero-trust-logo" width="80" height="30" loading="eager"/>
+        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="hero-trust-logo" width="80" height="30" loading="eager"/>
+        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="hero-trust-logo" width="80" height="30" loading="eager"/>
+        <img src="/assets/client-ortex.png" alt="Ortex" class="hero-trust-logo" width="80" height="30" loading="eager"/>
+      </div>
+    </div>
 
     <div class="hero-bottom">
       <div class="hero-bottom-left">
         <p class="hero-desc">
-          I'm Denny — a UI/UX designer and developer who turns rough ideas into polished products people actually want to use. No bloated agencies, no handoff gaps. One person, full stack, start to ship.
+          I design and build — so there are no handoff gaps, no agency overhead, and no lost context between Figma and the browser. One person. Full stack. Shipped.
         </p>
         <div class="hero-ctas">
           <a class="btn-hero-primary" href="#work">See the work</a>
           <a class="btn-hero-ghost js-open-modal" href="#">
             <span class="arrow">↗</span>
-            Get a free consult
+            Book a 15-min call →
           </a>
         </div>
       </div>
@@ -160,7 +188,7 @@ $needs_gsap  = true;
 
       <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/xertra/500/617" alt="Xertra mockup placeholder" loading="lazy" width="500" height="617"/>
+          <img class="wc-img" src="https://picsum.photos/seed/xertra/500/617" alt="Xertra SaaS dashboard redesign by Denny Pratama" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">01</span>
             <span class="wc-name">Xertra</span>
@@ -171,7 +199,7 @@ $needs_gsap  = true;
 
       <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/wordsburg/500/617" alt="Wordsburg mockup placeholder" loading="lazy" width="500" height="617"/>
+          <img class="wc-img" src="https://picsum.photos/seed/wordsburg/500/617" alt="Wordsburg content platform UI/UX design by Denny Pratama" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">02</span>
             <span class="wc-name">Wordsburg</span>
@@ -182,7 +210,7 @@ $needs_gsap  = true;
 
       <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/brenom/500/617" alt="Brenom Systems mockup placeholder" loading="lazy" width="500" height="617"/>
+          <img class="wc-img" src="https://picsum.photos/seed/brenom/500/617" alt="Brenom Systems enterprise software UI overhaul by Denny Pratama" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">03</span>
             <span class="wc-name">Brenom Systems</span>
@@ -193,7 +221,7 @@ $needs_gsap  = true;
 
       <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/digitalrevo/500/617" alt="Digital Revo mockup placeholder" loading="lazy" width="500" height="617"/>
+          <img class="wc-img" src="https://picsum.photos/seed/digitalrevo/500/617" alt="Digital Revo agency website design and build by Denny Pratama" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">04</span>
             <span class="wc-name">Digital Revo</span>
@@ -204,7 +232,7 @@ $needs_gsap  = true;
 
       <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/more/500/617" alt="MoRe mockup placeholder" loading="lazy" width="500" height="617"/>
+          <img class="wc-img" src="https://picsum.photos/seed/more/500/617" alt="MoRe creative agency brand identity and web design by Denny Pratama" loading="lazy" width="500" height="617"/>
           <div class="wc-overlay">
             <span class="wc-num">05</span>
             <span class="wc-name">MoRe</span>
@@ -240,23 +268,23 @@ $needs_gsap  = true;
             <div class="stat-desc">Projects delivered, end to end</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num">3<span class="red">+</span></div>
-            <div class="stat-desc">Industries — agency, product, brand</div>
+            <div class="stat-num">5<span class="red">+</span></div>
+            <div class="stat-desc">Years shipping digital products</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num">2<span class="red">×</span></div>
-            <div class="stat-desc">Disciplines in one person: design + dev</div>
+            <div class="stat-num">100<span class="red">%</span></div>
+            <div class="stat-desc">Client satisfaction rate</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num">∞</div>
-            <div class="stat-desc">Revision rounds until you love it</div>
+            <div class="stat-num">5<span class="red">★</span></div>
+            <div class="stat-desc">Average client rating</div>
           </div>
         </div>
 
         <div class="bio-block">
           <div class="bio-label">Background</div>
           <p class="bio-text">
-            I'm Denny Pratama — a <strong>UI/UX designer and developer</strong> based in Indonesia.
+            I'm Denny Pratama — a <strong>freelance UI/UX designer and developer</strong> based in Indonesia.
             I work at the intersection where visual craft meets technical execution.
             Most people do one or the other. I do both, because the gap between them is where the best work lives.
           </p>
@@ -372,8 +400,11 @@ $needs_gsap  = true;
             <span class="bento-dot"></span>
           </div>
           <blockquote class="bt-quote">&ldquo;Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: Launched MVP in 6 weeks</span>
           <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">AF</div>
+            <div class="bt-avatar">
+              <img src="/assets/testimonial-ahmad-fauzi.jpg" alt="Ahmad Fauzi, Founder of Xertra" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='AF';"/>
+            </div>
             <div class="bt-author-info">
               <span class="bt-name">Ahmad Fauzi</span>
               <span class="bt-role">Founder, Xertra</span>
@@ -388,8 +419,11 @@ $needs_gsap  = true;
             <span class="bento-dot"></span>
           </div>
           <blockquote class="bt-quote">&ldquo;The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: Significant lift in user engagement post-redesign</span>
           <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">SC</div>
+            <div class="bt-avatar">
+              <img src="/assets/testimonial-sarah-chen.jpg" alt="Sarah Chen, Product Lead at Wordsburg" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='SC';"/>
+            </div>
             <div class="bt-author-info">
               <span class="bt-name">Sarah Chen</span>
               <span class="bt-role">Product Lead, Wordsburg</span>
@@ -404,8 +438,11 @@ $needs_gsap  = true;
             <span class="bento-dot is-active"></span>
           </div>
           <blockquote class="bt-quote">&ldquo;He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: Brand identity still in active use 2+ years later</span>
           <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">RA</div>
+            <div class="bt-avatar">
+              <img src="/assets/testimonial-rizky-ananda.jpg" alt="Rizky Ananda, Creative Director at MoRe" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='RA';"/>
+            </div>
             <div class="bt-author-info">
               <span class="bt-name">Rizky Ananda</span>
               <span class="bt-role">Creative Director, MoRe</span>
@@ -416,7 +453,7 @@ $needs_gsap  = true;
 
       <!-- Image cell -->
       <div class="bento-cell bc-clients">
-        <img src="https://picsum.photos/seed/denny/400/560" alt="Portfolio visual" class="bc-img" loading="lazy" width="400" height="560"/>
+        <img src="https://picsum.photos/seed/denny/400/560" alt="Denny Pratama — UI/UX designer and developer portfolio" class="bc-img" loading="lazy" width="400" height="560"/>
       </div>
 
       <!-- CTA -->
@@ -468,7 +505,7 @@ $needs_gsap  = true;
   </section>
 
   <section id="approach">
-    <h2 class="sr-only">How I Work: From Brief to Shipped Product</h2>
+    <h2 class="sr-only">From vague idea to live product — here's exactly how it works.</h2>
 
     <div class="approach-layout" id="approach-layout">
 
@@ -481,7 +518,7 @@ $needs_gsap  = true;
           <div class="approach-step is-active" data-step="0">
             <div class="as-kicker">
               <span class="as-num">01</span>
-              <span class="as-tag">Discover</span>
+              <h3 class="as-tag">Discover</h3>
             </div>
             <div class="as-title">No assumptions.</div>
             <div class="as-desc">Deep research into your users, market, and goals before a single pixel is touched.</div>
@@ -490,7 +527,7 @@ $needs_gsap  = true;
           <div class="approach-step" data-step="1">
             <div class="as-kicker">
               <span class="as-num">02</span>
-              <span class="as-tag">Define</span>
+              <h3 class="as-tag">Define</h3>
             </div>
             <div class="as-title">Clarity first.</div>
             <div class="as-desc">Strategy, IA, and wireframes locked before visual design begins. Prevents expensive rework.</div>
@@ -499,7 +536,7 @@ $needs_gsap  = true;
           <div class="approach-step" data-step="2">
             <div class="as-kicker">
               <span class="as-num">03</span>
-              <span class="as-tag">Design</span>
+              <h3 class="as-tag">Design</h3>
             </div>
             <div class="as-title">Craft, not trend.</div>
             <div class="as-desc">High-fidelity UI with motion, systems, and visual language built to endure — not just impress.</div>
@@ -508,7 +545,7 @@ $needs_gsap  = true;
           <div class="approach-step" data-step="3">
             <div class="as-kicker">
               <span class="as-num">04</span>
-              <span class="as-tag">Deliver</span>
+              <h3 class="as-tag">Deliver</h3>
             </div>
             <div class="as-title">Ship it. Own it.</div>
             <div class="as-desc">Full build or clean handoff. Your product, live and accountable. No disappearing acts.</div>
@@ -527,16 +564,16 @@ $needs_gsap  = true;
       <!-- Right: sticky dummy images -->
       <div class="approach-right">
         <div class="approach-img is-active" data-step="0">
-          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="Discover step placeholder" loading="lazy" width="900" height="1100"/>
+          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="UX discovery and research phase — understanding users and goals" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="1">
-          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="Define step placeholder" loading="lazy" width="900" height="1100"/>
+          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="UX definition phase — strategy, IA and wireframes" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="2">
-          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="Design step placeholder" loading="lazy" width="900" height="1100"/>
+          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="UI design phase — high fidelity mockups and design systems" loading="lazy" width="900" height="1100"/>
         </div>
         <div class="approach-img" data-step="3">
-          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Deliver step placeholder" loading="lazy" width="900" height="1100"/>
+          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Product delivery phase — full build or clean developer handoff" loading="lazy" width="900" height="1100"/>
         </div>
       </div>
 
@@ -585,8 +622,7 @@ $needs_gsap  = true;
 
       <div class="cta-row">
         <p class="cta-desc">
-          I take on a small number of projects at a time so each one gets full attention.
-          If you're building something that deserves that — let's find out if we're a fit.
+          I take on 2–3 projects per quarter so each gets my full focus. If you're building something worth shipping, let's talk before the next slot fills.
         </p>
         <div class="cta-btns">
           <a class="btn-cta-main js-open-modal" href="#">Start the conversation →</a>
