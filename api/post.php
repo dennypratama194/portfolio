@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-<<<<<<< HEAD
+header('Access-Control-Allow-Origin: https://dennypratama.com');
 
 require __DIR__ . '/helpers.php';
 if (!rateLimit('post_single', 600)) {
@@ -8,9 +8,6 @@ if (!rateLimit('post_single', 600)) {
     echo json_encode(['error' => 'rate_limited']);
     exit;
 }
-=======
-header('Access-Control-Allow-Origin: https://dennypratama.com');
->>>>>>> origin/claude/add-legal-documents-zFNpt
 
 require __DIR__ . '/db.php';
 

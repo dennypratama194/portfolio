@@ -75,8 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </aside>
 
-  <main class="main">
-    <div class="top-bar">
+  <main class="main main--narrow">
+    <div class="top-bar top-bar--gap">
       <a class="back-link" href="index.php">← Posts</a>
       <h1>Change Password</h1>
     </div>

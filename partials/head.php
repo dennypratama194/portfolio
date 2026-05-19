@@ -60,23 +60,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 
-<<<<<<< HEAD
-=======
-  <!-- Preload critical CSS -->
-  <link rel="preload" href="/style.css?v=18" as="style"/>
-
->>>>>>> origin/claude/add-legal-documents-zFNpt
   <!-- Fonts — non-blocking via print media swap trick -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-<<<<<<< HEAD
-  <link rel="stylesheet" href="/style.css?v=65"/>
-=======
-  <link rel="stylesheet" href="/style.css?v=18"/>
->>>>>>> origin/claude/add-legal-documents-zFNpt
+  <link rel="stylesheet" href="/style.css?v=66"/>
 
   <!-- reCAPTCHA v3 site key (public; consumed by script.js) -->
   <meta name="recaptcha-site-key" content="6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"/>

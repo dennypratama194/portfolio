@@ -270,8 +270,8 @@ $sched_val = !empty($post['scheduled_at'])
     </div>
   </aside>
 
-  <main class="main">
-    <div class="top-bar">
+  <main class="main main--wide">
+    <div class="top-bar top-bar--gap">
       <a class="back-link" href="index.php">← Posts</a>
       <h1><?= $id ? 'Edit Post' : 'New Post' ?></h1>
     </div>

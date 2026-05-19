@@ -1698,21 +1698,13 @@
       .wc-1 { grid-column: 1 / 3 !important; }
       .wc-name { font-size: 18px; }
 
-<<<<<<< HEAD
       #about { padding: 80px 24px 0; }
       .about-grid { gap: 40px; }
       .manifesto-text { font-size: clamp(32px, 8vw, 56px); }
-=======
-      #about { padding: 80px 24px; }
-      .about-grid { grid-template-columns: 1fr; gap: 40px; }
-      .about-left-sticky { position: static; }
-      .manifesto-text { font-size: clamp(36px, 8vw, 64px); }
->>>>>>> origin/claude/add-legal-documents-zFNpt
       .stats-block { grid-template-columns: 1fr 1fr; gap: 1px; }
       .stat-cell { padding: 24px 16px; }
       .stat-num { font-size: 48px; }
 
-<<<<<<< HEAD
       #approach { height: auto; }
       .approach-layout {
         position: relative; height: auto;
@@ -1735,21 +1727,6 @@
       .approach-step.is-active { position: relative; }
       .approach-right { height: 60vw; margin-left: 0; }
       .approach-dots { display: none; }
-=======
-      #approach { padding: 80px 24px 100px; }
-      .approach-steps { grid-template-columns: 1fr; overflow: hidden; }
-      /* Reset all nth-child border overrides from the tablet breakpoint */
-      .approach-step,
-      .approach-step:nth-child(2),
-      .approach-step:nth-child(3),
-      .approach-step:nth-child(4) {
-        border-right: none;
-        border-top: none;
-        border-bottom: 1px solid var(--border);
-      }
-      .approach-step:last-child,
-      .approach-step:nth-child(4):last-child { border-bottom: none; }
->>>>>>> origin/claude/add-legal-documents-zFNpt
 
       #cta { padding: 80px 24px; }
       .cta-title { font-size: clamp(32px, 9vw, 56px); margin-bottom: 40px; }
@@ -1826,12 +1803,6 @@
       .cl-cell--text { grid-column: 1 / 4; grid-row: auto; }
     }
     @media (max-width: 768px) {
-      #testimonials { padding: 40px 0; }
-      .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto; min-height: auto; }
-      .bc-stats { grid-row: auto; grid-template-columns: 1fr 1fr; display: grid; gap: 2px; padding: 0; }
-      .bento-stat { padding: 28px 24px; }
-      .bc-testi { grid-row: auto; min-height: 280px; }
-      .bc-clients, .bc-cta { grid-row: auto; }
       #clients { padding: 0 var(--pad-x-sm) 40px; }
       .cl-grid { grid-template-columns: 1fr 1fr; }
       .cl-cell--text { grid-column: 1 / 3; grid-row: auto; min-height: 100px; }
@@ -2047,6 +2018,26 @@
       border-color: var(--red);
       color: #fff;
       transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      #testimonials { padding: 40px 0; }
+      .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
+        min-height: auto;
+      }
+      .bc-stats {
+        grid-row: auto;
+        grid-template-columns: 1fr 1fr;
+        display: grid;
+        gap: 2px;
+        padding: 0;
+      }
+      .bento-stat { padding: 28px 24px; }
+      .bc-testi { grid-row: auto; min-height: 280px; }
+      .bc-clients, .bc-cta { grid-row: auto; }
     }
 
     /* ═══════════════════════════════════════

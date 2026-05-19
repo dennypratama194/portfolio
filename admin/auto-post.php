@@ -182,7 +182,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     </div>
   </aside>
 
-  <main class="main">
+  <main class="main main--medium">
     <div class="top-bar">
       <h1>Auto Post</h1>
     </div>
