@@ -115,6 +115,10 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
   const grid = document.getElementById('bp-grid');
   if (!grid) return;
 
+  function esc(s) {
+    return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function formatDate(iso) {
     if (!iso) return '';
     return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -128,11 +132,11 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
       grid.innerHTML = latest.map(p => `
         <a class="bp-card" href="/post?slug=${encodeURIComponent(p.slug)}">
           ${p.featured_image
-            ? `<img class="bp-card-img" src="${p.featured_image}" alt="${p.title}" loading="lazy"/>`
-            : `<div class="bp-card-img"></div>`}
-          <div class="bp-card-meta">${formatDate(p.published_at)}</div>
-          <div class="bp-card-title">${p.title}</div>
-          ${p.excerpt ? `<div class="bp-card-excerpt">${p.excerpt}</div>` : ''}
+            ? `<img class="bp-card-img" src="${esc(p.featured_image)}" alt="${esc(p.title)}" loading="lazy"/>`
+            : `<div class="bp-card-img" role="img" aria-label="${esc(p.title)}"></div>`}
+          <div class="bp-card-meta">${esc(formatDate(p.published_at))}</div>
+          <div class="bp-card-title">${esc(p.title)}</div>
+          ${p.excerpt ? `<div class="bp-card-excerpt">${esc(p.excerpt)}</div>` : ''}
           <div class="bp-card-read">Read →</div>
         </a>
       `).join('');

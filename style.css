@@ -1238,16 +1238,26 @@
       .drag-hint { padding: 16px 24px 0; }
 
       #about { padding: 80px 24px; }
-      .about-grid { gap: 40px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .about-left-sticky { position: static; }
       .manifesto-text { font-size: clamp(36px, 8vw, 64px); }
       .stats-block { grid-template-columns: 1fr 1fr; gap: 1px; }
       .stat-cell { padding: 24px 18px; }
       .stat-num { font-size: 44px; }
 
       #approach { padding: 80px 24px 100px; }
-      .approach-steps { grid-template-columns: 1fr; }
-      .approach-step { border-right: none; border-top: none; border-bottom: 1px solid var(--border); }
-      .approach-step:last-child { border-bottom: none; }
+      .approach-steps { grid-template-columns: 1fr; overflow: hidden; }
+      /* Reset all nth-child border overrides from the tablet breakpoint */
+      .approach-step,
+      .approach-step:nth-child(2),
+      .approach-step:nth-child(3),
+      .approach-step:nth-child(4) {
+        border-right: none;
+        border-top: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .approach-step:last-child,
+      .approach-step:nth-child(4):last-child { border-bottom: none; }
 
       #cta { padding: 80px 24px; }
       .cta-title { font-size: clamp(40px, 10vw, 72px); margin-bottom: 40px; }
