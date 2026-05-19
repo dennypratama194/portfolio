@@ -6,7 +6,13 @@
   </div>
 
   <footer>
-    <span class="footer-copy">© 2026 — All rights reserved</span>
+    <div class="footer-left">
+      <span class="footer-copy">© 2026 — All rights reserved</span>
+      <div class="footer-legal">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-and-conditions">Terms &amp; Conditions</a>
+      </div>
+    </div>
     <div class="footer-socials">
       <a href="https://dribbble.com/dennypratama">Dribbble</a>
       <a href="https://www.linkedin.com/in/denny-pratama-740a14151/">LinkedIn</a>
