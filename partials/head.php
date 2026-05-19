@@ -66,7 +66,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=66"/>
+  <link rel="stylesheet" href="/style.css?v=68"/>
 
   <!-- reCAPTCHA v3 site key (public; consumed by script.js) -->
   <meta name="recaptcha-site-key" content="6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"/>

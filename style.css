@@ -1715,7 +1715,7 @@
         border-right: none; padding: 0 0 48px; margin: 0;
       }
       .approach-eyebrow { margin-bottom: 40px; }
-      .approach-steps-wrap { flex: none; }
+      .approach-steps-wrap { flex: none; display: block; }
       .approach-step {
         position: relative; opacity: 1; transform: none;
         pointer-events: auto;
@@ -2021,7 +2021,7 @@
     }
 
     @media (max-width: 768px) {
-      #testimonials { padding: 40px 0; }
+      #testimonials { padding: 40px 24px; }
       .bento-grid {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
