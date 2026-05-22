@@ -176,7 +176,7 @@ $jsonld        = json_encode([
 
     <div class="work-grid">
 
-      <a class="wc" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
+      <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-top">
           <span class="wc-num">01 / 05</span>
           <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -189,7 +189,7 @@ $jsonld        = json_encode([
         </div>
       </a>
 
-      <a class="wc" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
+      <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-top">
           <span class="wc-num">02 / 05</span>
           <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -202,7 +202,7 @@ $jsonld        = json_encode([
         </div>
       </a>
 
-      <a class="wc" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
         <div class="wc-top">
           <span class="wc-num">03 / 05</span>
           <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -215,7 +215,7 @@ $jsonld        = json_encode([
         </div>
       </a>
 
-      <a class="wc" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
+      <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
         <div class="wc-top">
           <span class="wc-num">04 / 05</span>
           <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
@@ -228,7 +228,7 @@ $jsonld        = json_encode([
         </div>
       </a>
 
-      <a class="wc" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
+      <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
         <div class="wc-top">
           <span class="wc-num">05 / 05</span>
           <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
