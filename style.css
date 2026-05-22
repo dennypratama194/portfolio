@@ -512,6 +512,8 @@
       padding: 0 var(--pad-x) 120px;
     }
     .wc {
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -522,11 +524,23 @@
       text-decoration: none;
       transition: border-color 0.35s, transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.5s;
     }
+    /* Subtle orange glow on hover — sits above the white fill, below the text */
+    .wc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(130% 130% at 100% 100%, rgba(232,50,10,0.14) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(0.23,1,0.32,1);
+      pointer-events: none;
+    }
     .wc:hover {
-      border-color: rgba(13,12,9,0.18);
+      border-color: rgba(232,50,10,0.25);
       transform: translateY(-6px);
       box-shadow: 0 24px 60px rgba(13,12,9,0.08);
     }
+    .wc:hover::before { opacity: 1; }
 
     /* Top row — index + arrow */
     .wc-top {

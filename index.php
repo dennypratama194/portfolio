@@ -399,15 +399,13 @@ $jsonld        = json_encode([
             <span class="bento-dot"></span>
             <span class="bento-dot"></span>
           </div>
-          <blockquote class="bt-quote">&ldquo;Denny's ability to translate a vague brief into a polished, functional product is remarkable. He thinks in systems, not just screens &mdash; and the results speak for themselves.&rdquo;</blockquote>
-          <span class="testimonial-result">Result: Launched MVP in 6 weeks</span>
+          <blockquote class="bt-quote">&ldquo;It&rsquo;s rare to find someone who combines both high-quality design work and very fast delivery at the same time. The collaboration felt effortless from start to finish &mdash; a genuine 10/10 experience.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: First version delivered within hours</span>
           <div class="bt-author">
-            <div class="bt-avatar">
-              <img src="/assets/testimonial-ahmad-fauzi.jpg" alt="Ahmad Fauzi, Founder of Xertra" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='AF';"/>
-            </div>
+            <div class="bt-avatar" aria-hidden="true">&#9733;</div>
             <div class="bt-author-info">
-              <span class="bt-name">Ahmad Fauzi</span>
-              <span class="bt-role">Founder, Xertra</span>
+              <span class="bt-name">Verified Upwork Client</span>
+              <span class="bt-role">SaaS Homepage Design &middot; &#9733; 5.0</span>
             </div>
           </div>
         </article>
