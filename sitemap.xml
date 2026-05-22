@@ -11,30 +11,28 @@
     <priority>0.8</priority>
   </url>
   <url>
-<<<<<<< HEAD
     <loc>https://dennypratama.com/ebooks</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://dennypratama.com/my-library</loc>
-=======
-    <loc>https://dennypratama.com/privacy-policy</loc>
->>>>>>> origin/claude/add-legal-documents-zFNpt
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-<<<<<<< HEAD
     <loc>https://dennypratama.com/ebook/recover</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>
   </url>
-</urlset>
-=======
+  <url>
+    <loc>https://dennypratama.com/privacy-policy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://dennypratama.com/terms-and-conditions</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
 </urlset>
->>>>>>> origin/claude/add-legal-documents-zFNpt

@@ -1,5 +1,8 @@
-# Block direct HTTP access to sensitive files (dot-files and JSON config)
-<FilesMatch "(^\.|\.json$)">
+# Block direct HTTP access to sensitive files (dot-files, JSON config, logs)
+<FilesMatch "(^\.|\.(json|log)$)">
   Order allow,deny
   Deny from all
 </FilesMatch>
+
+# Block the logs directory entirely (contains buyer emails)
+RedirectMatch 404 ^/api/logs/

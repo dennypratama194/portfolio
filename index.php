@@ -402,11 +402,7 @@ $jsonld        = json_encode([
           <blockquote class="bt-quote">&ldquo;It&rsquo;s rare to find someone who combines both high-quality design work and very fast delivery at the same time. The collaboration felt effortless from start to finish &mdash; a genuine 10/10 experience.&rdquo;</blockquote>
           <span class="testimonial-result">Result: First version delivered within hours</span>
           <div class="bt-author">
-            <div class="bt-avatar" aria-hidden="true">&#9733;</div>
-            <div class="bt-author-info">
-              <span class="bt-name">Verified Upwork Client</span>
-              <span class="bt-role">SaaS Homepage Design &middot; &#9733; 5.0</span>
-            </div>
+            <span class="bt-name">Krystof</span>
           </div>
         </article>
 
@@ -416,16 +412,10 @@ $jsonld        = json_encode([
             <span class="bento-dot is-active"></span>
             <span class="bento-dot"></span>
           </div>
-          <blockquote class="bt-quote">&ldquo;The redesign increased our user engagement significantly. Denny is more than a designer &mdash; he's a strategic partner who understands both sides of the product.&rdquo;</blockquote>
-          <span class="testimonial-result">Result: Significant lift in user engagement post-redesign</span>
+          <blockquote class="bt-quote">&ldquo;Fast, flexible, and very easy to communicate with. He understood the direction quickly and made great improvements without overcomplicating things &mdash; the final design was exactly what I needed.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: Final design aligned exactly with the brief</span>
           <div class="bt-author">
-            <div class="bt-avatar">
-              <img src="/assets/testimonial-sarah-chen.jpg" alt="Sarah Chen, Product Lead at Wordsburg" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='SC';"/>
-            </div>
-            <div class="bt-author-info">
-              <span class="bt-name">Sarah Chen</span>
-              <span class="bt-role">Product Lead, Wordsburg</span>
-            </div>
+            <span class="bt-name">Serhii</span>
           </div>
         </article>
 
@@ -435,23 +425,17 @@ $jsonld        = json_encode([
             <span class="bento-dot"></span>
             <span class="bento-dot is-active"></span>
           </div>
-          <blockquote class="bt-quote">&ldquo;He delivered a brand identity that felt timeless from day one. Our team still references it as the gold standard for every new project we take on.&rdquo;</blockquote>
-          <span class="testimonial-result">Result: Brand identity still in active use 2+ years later</span>
+          <blockquote class="bt-quote">&ldquo;Denny created our Figma website mock-ups exactly how we wanted and right on schedule. He addressed all requested changes promptly and communicated clearly throughout. We&rsquo;ll definitely work with him again.&rdquo;</blockquote>
+          <span class="testimonial-result">Result: Figma mock-ups delivered on schedule</span>
           <div class="bt-author">
-            <div class="bt-avatar">
-              <img src="/assets/testimonial-rizky-ananda.jpg" alt="Rizky Ananda, Creative Director at MoRe" class="bt-avatar-img" loading="lazy" width="40" height="40" onerror="this.style.display='none';this.parentElement.setAttribute('aria-hidden','true');this.parentElement.textContent='RA';"/>
-            </div>
-            <div class="bt-author-info">
-              <span class="bt-name">Rizky Ananda</span>
-              <span class="bt-role">Creative Director, MoRe</span>
-            </div>
+            <span class="bt-name">Heloise</span>
           </div>
         </article>
       </div>
 
-      <!-- Image cell -->
+      <!-- Brand panel -->
       <div class="bento-cell bc-clients">
-        <img src="https://picsum.photos/seed/denny/400/560" alt="Denny Pratama — UI/UX designer and developer portfolio" class="bc-img" loading="lazy" width="400" height="560"/>
+        <img src="/assets/logo.png" alt="Denny Pratama" class="bc-brand-logo" width="120" height="40"/>
       </div>
 
       <!-- CTA -->
@@ -559,19 +543,19 @@ $jsonld        = json_encode([
         </div>
       </div>
 
-      <!-- Right: sticky dummy images -->
+      <!-- Right: sticky process visuals -->
       <div class="approach-right">
         <div class="approach-img is-active" data-step="0">
-          <img class="ai-img" src="https://picsum.photos/seed/discover/900/1100" alt="UX discovery and research phase — understanding users and goals" loading="lazy" width="900" height="1100"/>
+          <div class="ai-inner ai-discover" aria-hidden="true"></div>
         </div>
         <div class="approach-img" data-step="1">
-          <img class="ai-img" src="https://picsum.photos/seed/define/900/1100" alt="UX definition phase — strategy, IA and wireframes" loading="lazy" width="900" height="1100"/>
+          <div class="ai-inner ai-define" aria-hidden="true"></div>
         </div>
         <div class="approach-img" data-step="2">
-          <img class="ai-img" src="https://picsum.photos/seed/design/900/1100" alt="UI design phase — high fidelity mockups and design systems" loading="lazy" width="900" height="1100"/>
+          <div class="ai-inner ai-design" aria-hidden="true"></div>
         </div>
         <div class="approach-img" data-step="3">
-          <img class="ai-img" src="https://picsum.photos/seed/deliver/900/1100" alt="Product delivery phase — full build or clean developer handoff" loading="lazy" width="900" height="1100"/>
+          <div class="ai-inner ai-deliver" aria-hidden="true"></div>
         </div>
       </div>
 

@@ -53,6 +53,7 @@ RewriteRule ^([^\.]+)$ $1.html [NC,L]
 RewriteRule ^portfolio(/|$) - [F,L]
 
 # ── Block direct access to internal files / dirs ────
+RewriteRule ^migrations(/|$)           - [F,L]
 RewriteRule ^api/logs(/|$)             - [F,L]
 RewriteRule ^api/\.secrets              - [F,L]
 RewriteRule ^api/\.admin_hash           - [F,L]

@@ -1009,16 +1009,7 @@
       position: absolute;
       inset: 0;
     }
-    .ai-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    /* Dummy visuals */
+    /* Process visuals */
     .ai-discover {
       background: var(--ink);
       background-image:
@@ -1688,42 +1679,12 @@
       margin: 0;
     }
     .bt-author {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       margin-top: 16px;
     }
-    .bt-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(236,234,226,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--paper);
-      flex-shrink: 0;
-      letter-spacing: 0.04em;
-    }
-    .bt-author-info { display: flex; flex-direction: column; gap: 4px; }
     .bt-name {
       font-size: 16px;
       color: var(--paper);
       font-weight: 500;
-    }
-    .bt-role {
-      font-size: 12px;
-      color: rgba(236,234,226,0.4);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .bt-avatar-img {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      display: block;
     }
     .testimonial-result {
       display: block;
@@ -1749,18 +1710,16 @@
 
     /* Image cell */
     .bc-clients {
-      padding: 0;
-      overflow: hidden;
-      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       min-height: 0;
     }
-    .bc-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    .bc-brand-logo {
+      width: 96px;
+      height: auto;
+      filter: invert(1);
+      opacity: 0.45;
     }
 
     /* CTA cell */
