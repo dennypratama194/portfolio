@@ -469,38 +469,12 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Work — scattered cards
+    // Work — cards
     const wcCards = document.querySelectorAll('.wc');
     if (wcCards.length) {
       gsap.from(wcCards, {
         y: 80, opacity: 0, stagger: 0.1, duration: D, ease: EASE,
         scrollTrigger: st(wcCards[0], { start: 'top 90%' }),
-      });
-    }
-
-    // Work — scroll-linked parallax (skipped on reduced-motion + small screens)
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduceMotion) {
-      gsap.matchMedia().add('(min-width: 768px)', function () {
-        // Negative = floats up faster than scroll, positive = sticky/heavier
-        const wcSpeeds = { 'wc-1': -40, 'wc-2': -110, 'wc-3': 50, 'wc-4': -20, 'wc-5': -130 };
-        wcCards.forEach(function (card) {
-          const inner = card.querySelector('.wc-card');
-          if (!inner) return;
-          const speedKey = Array.from(card.classList).find(function (c) { return wcSpeeds[c] !== undefined; });
-          const speed = speedKey ? wcSpeeds[speedKey] : 0;
-          if (speed === 0) return;
-          gsap.to(inner, {
-            y: speed,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.6,
-            },
-          });
-        });
       });
     }
 

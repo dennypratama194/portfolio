@@ -174,60 +174,70 @@ $jsonld        = json_encode([
       <p class="work-subtitle">Projects where the design decision directly moved the business metric.</p>
     </div>
 
-    <div class="work-scattered">
+    <div class="work-grid">
 
-      <a class="wc wc-1" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
-        <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/xertra/500/617" alt="Xertra SaaS dashboard redesign by Denny Pratama" loading="lazy" width="500" height="617"/>
-          <div class="wc-overlay">
-            <span class="wc-num">01</span>
-            <span class="wc-name">Xertra</span>
-            <span class="wc-type">SaaS Platform · Dashboard Redesign</span>
-          </div>
+      <a class="wc" href="https://xertra.com" target="_blank" rel="noopener noreferrer">
+        <div class="wc-top">
+          <span class="wc-num">01 / 05</span>
+          <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="wc-body">
+          <h3 class="wc-name">Xertra</h3>
+          <p class="wc-desc">SaaS platform — dashboard redesign for a faster, clearer product workflow.</p>
+          <div class="wc-divider"></div>
+          <span class="wc-url">xertra.com</span>
         </div>
       </a>
 
-      <a class="wc wc-2" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
-        <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/wordsburg/500/617" alt="Wordsburg content platform UI/UX design by Denny Pratama" loading="lazy" width="500" height="617"/>
-          <div class="wc-overlay">
-            <span class="wc-num">02</span>
-            <span class="wc-name">Wordsburg</span>
-            <span class="wc-type">Content Platform · UI/UX & Dev</span>
-          </div>
+      <a class="wc" href="https://wordsburg.com" target="_blank" rel="noopener noreferrer">
+        <div class="wc-top">
+          <span class="wc-num">02 / 05</span>
+          <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="wc-body">
+          <h3 class="wc-name">Wordsburg</h3>
+          <p class="wc-desc">Content platform — end-to-end UI/UX design and front-end development.</p>
+          <div class="wc-divider"></div>
+          <span class="wc-url">wordsburg.com</span>
         </div>
       </a>
 
-      <a class="wc wc-3" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
-        <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/brenom/500/617" alt="Brenom Systems enterprise software UI overhaul by Denny Pratama" loading="lazy" width="500" height="617"/>
-          <div class="wc-overlay">
-            <span class="wc-num">03</span>
-            <span class="wc-name">Brenom Systems</span>
-            <span class="wc-type">Enterprise Software · UI Overhaul</span>
-          </div>
+      <a class="wc" href="https://brenom-systems-3.vercel.app/" target="_blank" rel="noopener noreferrer">
+        <div class="wc-top">
+          <span class="wc-num">03 / 05</span>
+          <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="wc-body">
+          <h3 class="wc-name">Brenom Systems</h3>
+          <p class="wc-desc">Enterprise software — full interface overhaul for complex internal tooling.</p>
+          <div class="wc-divider"></div>
+          <span class="wc-url">brenom-systems.com</span>
         </div>
       </a>
 
-      <a class="wc wc-4" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
-        <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/digitalrevo/500/617" alt="Digital Revo agency website design and build by Denny Pratama" loading="lazy" width="500" height="617"/>
-          <div class="wc-overlay">
-            <span class="wc-num">04</span>
-            <span class="wc-name">Digital Revo</span>
-            <span class="wc-type">Digital Agency · Web Design & Build</span>
-          </div>
+      <a class="wc" href="https://digitalrevo.id" target="_blank" rel="noopener noreferrer">
+        <div class="wc-top">
+          <span class="wc-num">04 / 05</span>
+          <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="wc-body">
+          <h3 class="wc-name">Digital Revo</h3>
+          <p class="wc-desc">Digital agency — website design and build from brand to launch.</p>
+          <div class="wc-divider"></div>
+          <span class="wc-url">digitalrevo.id</span>
         </div>
       </a>
 
-      <a class="wc wc-5" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
-        <div class="wc-card">
-          <img class="wc-img" src="https://picsum.photos/seed/more/500/617" alt="MoRe creative agency brand identity and web design by Denny Pratama" loading="lazy" width="500" height="617"/>
-          <div class="wc-overlay">
-            <span class="wc-num">05</span>
-            <span class="wc-name">MoRe</span>
-            <span class="wc-type">Creative Agency · Brand Identity & Web</span>
-          </div>
+      <a class="wc" href="https://morecreativeagency.com" target="_blank" rel="noopener noreferrer">
+        <div class="wc-top">
+          <span class="wc-num">05 / 05</span>
+          <svg class="wc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </div>
+        <div class="wc-body">
+          <h3 class="wc-name">MoRe</h3>
+          <p class="wc-desc">Creative agency — brand identity paired with a web presence to match.</p>
+          <div class="wc-divider"></div>
+          <span class="wc-url">morecreativeagency.com</span>
         </div>
       </a>
 
@@ -627,7 +637,7 @@ $jsonld        = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=16" defer></script>
+  <script src="/script.js?v=17" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>
