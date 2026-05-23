@@ -14,10 +14,10 @@
       </div>
     </div>
     <div class="footer-socials">
-      <a href="https://dribbble.com/dennypratama">Dribbble</a>
-      <a href="https://www.linkedin.com/in/denny-pratama-740a14151/">LinkedIn</a>
-      <a href="https://instagram.com/dennypratama">Instagram</a>
-      <a href="https://threads.com/dennypratama">Threads</a>
-      <a href="https://github.com/dennypratama194">Github</a>
+      <a href="https://dribbble.com/dennypratama" target="_blank" rel="noopener noreferrer">Dribbble</a>
+      <a href="https://www.linkedin.com/in/denny-pratama-740a14151/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://www.upwork.com/freelancers/dennypratama194" target="_blank" rel="noopener noreferrer">Upwork</a>
+      <a href="https://threads.com/dennypratama" target="_blank" rel="noopener noreferrer">Threads</a>
+      <a href="https://github.com/dennypratama194" target="_blank" rel="noopener noreferrer">Github</a>
     </div>
   </footer>
