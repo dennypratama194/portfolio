@@ -1201,7 +1201,7 @@
       font-size: 18px; letter-spacing: -0.02em;
       color: rgba(236,234,226,0.4);
     }
-    .footer-copy { font-size: 14px; color: rgba(236,234,226,0.45); letter-spacing: 0.04em; }
+    .footer-copy { font-size: 12px; color: rgba(236,234,226,0.45); letter-spacing: 0.08em; text-transform: uppercase; }
     .footer-socials { display: flex; gap: 28px; }
     .footer-socials a {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -2415,6 +2415,7 @@ html.pt-leaving body { pointer-events: none; }
 .cta-link-divider,
 .footer-copy,
 .footer-socials a,
+.footer-legal a,
 .pm-eyebrow,
 .pm-label,
 .bp-eyebrow,
