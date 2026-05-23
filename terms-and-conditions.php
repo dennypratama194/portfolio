@@ -222,5 +222,8 @@ $canonical   = 'https://dennypratama.com/terms-and-conditions';
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
+<script src="/script.js?v=16" defer></script>
+<script>var PAGE='terms', SLUG=null;</script>
+<script src="/api/tracker.js" defer></script>
 </body>
 </html>

@@ -152,8 +152,15 @@ if ($phase === '2' || $phase === 'all') {
     /* CLI/all mode: $post_id and $image_prompt already set above */
 
     $featured_image = '';
+    $image_error    = '';
 
-    if ($openai_key && $image_prompt) {
+    if (!$openai_key) {
+        $image_error = 'OpenAI API key not configured.';
+        autoPostLog('Phase 2 skipped: ' . $image_error);
+    } elseif (!$image_prompt) {
+        $image_error = 'No image prompt was produced in phase 1.';
+        autoPostLog('Phase 2 skipped: ' . $image_error);
+    } else {
         $ch = curl_init('https://api.openai.com/v1/images/generations');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
@@ -172,29 +179,50 @@ if ($phase === '2' || $phase === 'all') {
                 'Authorization: Bearer ' . $openai_key,
             ],
         ]);
-        $dalle_raw = curl_exec($ch);
+        $dalle_raw  = curl_exec($ch);
+        $dalle_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $dalle_err  = curl_error($ch);
         curl_close($ch);
 
-        $image_url = json_decode($dalle_raw, true)['data'][0]['url'] ?? '';
+        if ($dalle_err) {
+            $image_error = 'Could not reach the image API.';
+            autoPostLog('DALL-E curl error: ' . $dalle_err);
+        } else {
+            $dalle_json = json_decode($dalle_raw, true);
+            $image_url  = $dalle_json['data'][0]['url'] ?? '';
 
-        if ($image_url) {
-            $ch = curl_init($image_url);
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_TIMEOUT        => 30,
-            ]);
-            $image_data = curl_exec($ch);
-            curl_close($ch);
+            if (!$image_url) {
+                $api_msg     = $dalle_json['error']['message'] ?? 'unknown error';
+                $image_error = 'Image API error (HTTP ' . $dalle_code . '): ' . $api_msg;
+                autoPostLog('DALL-E HTTP ' . $dalle_code . ' — ' . substr((string)$dalle_raw, 0, 800));
+            } else {
+                $ch = curl_init($image_url);
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_TIMEOUT        => 30,
+                ]);
+                $image_data = curl_exec($ch);
+                $dl_err     = curl_error($ch);
+                curl_close($ch);
 
-            if ($image_data) {
-                $uploads_dir = __DIR__ . '/../admin/uploads/';
-                if (!is_dir($uploads_dir)) mkdir($uploads_dir, 0755, true);
-                $featured_image = 'img_' . uniqid('', true) . '.jpg';
-                file_put_contents($uploads_dir . $featured_image, $image_data);
+                if (!$image_data) {
+                    $image_error = 'Generated image could not be downloaded.';
+                    autoPostLog('Image download failed: ' . $dl_err);
+                } else {
+                    $uploads_dir = __DIR__ . '/../admin/uploads/';
+                    if (!is_dir($uploads_dir)) @mkdir($uploads_dir, 0755, true);
+                    $candidate = 'img_' . uniqid('', true) . '.jpg';
 
-                $pdo->prepare('UPDATE posts SET featured_image = ? WHERE id = ?')
-                    ->execute([$featured_image, $post_id]);
+                    if (@file_put_contents($uploads_dir . $candidate, $image_data) === false) {
+                        $image_error = 'Could not write the image to admin/uploads/ (check permissions).';
+                        autoPostLog('file_put_contents failed for ' . $uploads_dir . $candidate);
+                    } else {
+                        $featured_image = $candidate;
+                        $pdo->prepare('UPDATE posts SET featured_image = ? WHERE id = ?')
+                            ->execute([$featured_image, $post_id]);
+                    }
+                }
             }
         }
     }
@@ -204,9 +232,10 @@ if ($phase === '2' || $phase === 'all') {
     file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
 
     respond(200, [
-        'ok'    => true,
-        'phase' => 2,
-        'image' => $featured_image ?: null,
+        'ok'          => true,
+        'phase'       => 2,
+        'image'       => $featured_image ?: null,
+        'image_error' => $image_error ?: null,
     ]);
 }
 

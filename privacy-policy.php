@@ -224,5 +224,8 @@ $canonical   = 'https://dennypratama.com/privacy-policy';
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
+<script src="/script.js?v=16" defer></script>
+<script>var PAGE='privacy', SLUG=null;</script>
+<script src="/api/tracker.js" defer></script>
 </body>
 </html>

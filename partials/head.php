@@ -7,6 +7,11 @@
       if (sessionStorage.getItem('pt')) {
         document.documentElement.classList.add('pt-arriving');
         sessionStorage.removeItem('pt');
+        // Safety net: if script.js never runs the reveal (e.g. not loaded on
+        // this page), drop the curtain so it can't leave a blank screen.
+        setTimeout(function () {
+          document.documentElement.classList.remove('pt-arriving', 'pt-revealing');
+        }, 1500);
       }
     } catch (e) {}
   </script>
@@ -66,7 +71,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=73"/>
+  <link rel="stylesheet" href="/style.css?v=74"/>
 
   <!-- reCAPTCHA v3 site key (public; consumed by script.js) -->
   <meta name="recaptcha-site-key" content="6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"/>

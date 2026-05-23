@@ -382,16 +382,21 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             fetch(p2url)
               .then(function(r){ return r.json(); })
               .then(function(d2){
-                runStatus.className = 'run-status ok';
-                runStatus.textContent = '✓ Published: "' + d1.title + '"'
-                  + (d2.image ? ' (with image)' : ' (no image)');
-                setTimeout(function(){ location.reload(); }, 2500);
+                if (d2.image) {
+                  runStatus.className = 'run-status ok';
+                  runStatus.textContent = '✓ Published: "' + d1.title + '" (with image)';
+                } else {
+                  runStatus.className = 'run-status err';
+                  runStatus.textContent = '⚠ Published: "' + d1.title + '" — image failed: '
+                    + (d2.image_error || 'unknown reason');
+                }
+                setTimeout(function(){ location.reload(); }, 6000);
               })
               .catch(function(){
                 /* Phase 2 failed but post was already created in phase 1 */
-                runStatus.className = 'run-status ok';
-                runStatus.textContent = '✓ Published: "' + d1.title + '" (image generation failed)';
-                setTimeout(function(){ location.reload(); }, 2500);
+                runStatus.className = 'run-status err';
+                runStatus.textContent = '⚠ Published: "' + d1.title + '" but image request errored.';
+                setTimeout(function(){ location.reload(); }, 6000);
               });
           })
           .catch(function(){
