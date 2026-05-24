@@ -100,6 +100,11 @@ $posts = $pdo->query(
             <?php endif; ?>
           </td>
           <td>
+            <?php $is_live = $p['is_published'] || (!empty($p['scheduled_at']) && strtotime($p['scheduled_at']) <= time()); ?>
+            <?php if ($is_live): ?>
+              <a class="action-link" href="/blog/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener"
+                 style="margin-right:14px">View ↗</a>
+            <?php endif; ?>
             <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this post?')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
