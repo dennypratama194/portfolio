@@ -40,6 +40,7 @@ if (!$anthropic_key) {
 $phase = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
 require __DIR__ . '/db.php';
+require __DIR__ . '/helpers.php';
 
 /* ════════════════════════════════════════════════════
    PHASE 1 — Claude generates the post content
@@ -212,15 +213,25 @@ if ($phase === '2' || $phase === 'all') {
                 } else {
                     $uploads_dir = __DIR__ . '/../admin/uploads/';
                     if (!is_dir($uploads_dir)) @mkdir($uploads_dir, 0755, true);
-                    $candidate = 'img_' . uniqid('', true) . '.jpg';
+                    $base = 'img_' . uniqid('', true);
 
-                    if (@file_put_contents($uploads_dir . $candidate, $image_data) === false) {
-                        $image_error = 'Could not write the image to admin/uploads/ (check permissions).';
-                        autoPostLog('file_put_contents failed for ' . $uploads_dir . $candidate);
-                    } else {
-                        $featured_image = $candidate;
+                    /* Prefer WebP (smaller); fall back to the original JPEG if GD/WebP is unavailable */
+                    $featured_image = convertToWebp($image_data, $uploads_dir, $base);
+
+                    if ($featured_image === null) {
+                        autoPostLog('WebP conversion unavailable — saving original image instead.');
+                        $candidate = $base . '.jpg';
+                        if (@file_put_contents($uploads_dir . $candidate, $image_data) !== false) {
+                            $featured_image = $candidate;
+                        }
+                    }
+
+                    if ($featured_image) {
                         $pdo->prepare('UPDATE posts SET featured_image = ? WHERE id = ?')
                             ->execute([$featured_image, $post_id]);
+                    } else {
+                        $image_error = 'Could not write the image to admin/uploads/ (check permissions).';
+                        autoPostLog('Failed to write image (webp + jpeg fallback both failed) to ' . $uploads_dir);
                     }
                 }
             }

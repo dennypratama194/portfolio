@@ -13,6 +13,9 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteCond %{HTTP_HOST} ^www\. [NC]
 RewriteRule ^ https://%{HTTP_HOST:4}%{REQUEST_URI} [L,R=301]
 
+# ── Dynamic sitemap (generated from DB; keeps the /sitemap.xml URL) ──
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
 # ── Clean URLs ──────────────────────────────────────
 # Redirect /index.html → /
 RewriteCond %{THE_REQUEST} /index\.html[\s?] [NC]
@@ -24,6 +27,10 @@ RewriteCond %{REQUEST_URI} !^/api/ [NC]
 RewriteCond %{REQUEST_URI} !^/admin/ [NC]
 RewriteCond %{THE_REQUEST} \s/([^.?]+)\.php[?\s] [NC]
 RewriteRule ^[^.?]+\.php$ /%1 [R=301,L]
+
+# ── Legacy post URLs → clean /blog/SLUG (preserves SEO) ──
+RewriteCond %{THE_REQUEST} \s/post\?slug=([A-Za-z0-9_-]+) [NC]
+RewriteRule ^post/?$ /blog/%1? [R=301,L]
 
 # ── My Library ─────────────────────────────────────────
 RewriteRule ^my-library/?$ my-library.php [NC,L]
@@ -41,6 +48,11 @@ RewriteRule ^ebook/([A-Za-z0-9_-]+)/?$ ebook.php?slug=$1 [NC,QSA,L]
 RewriteCond %{REQUEST_URI} !^/admin/ [NC]
 RewriteCond %{REQUEST_URI} !^/api/   [NC]
 RewriteRule ^read/([A-Za-z0-9_-]+)/?$ read.php?slug=$1 [NC,QSA,L]
+
+# /blog/SLUG      → post.php?slug=SLUG  (clean blog post URLs; /blog alone still → blog.php)
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/api/   [NC]
+RewriteRule ^blog/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [NC,QSA,L]
 
 # Try .php first (e.g. /blog → blog.php, /post → post.php)
 RewriteCond %{REQUEST_FILENAME} !-d

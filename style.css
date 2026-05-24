@@ -2024,9 +2024,16 @@
     .blog-filter-btn.active { color: var(--ink); border-bottom-color: var(--red); }
 
     /* Category badge on blog cards */
+    .blog-card-head {
+      display: flex; align-items: baseline; flex-wrap: wrap;
+      gap: 0 10px; margin-bottom: 12px;
+    }
     .blog-card-cat {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--red); margin-bottom: 8px; display: block;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--red);
+    }
+    .blog-card-cat + .blog-card-meta::before {
+      content: '·'; margin-right: 10px; color: var(--ink-3);
     }
 
     /* ═══════════════════════════════════════

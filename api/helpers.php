@@ -45,6 +45,31 @@ function isAllowedImage(string $tmp_path): bool {
 }
 
 /**
+ * Convert raw image bytes to a WebP file on disk.
+ * Returns the written filename (e.g. "img_abc.webp") on success, or null if
+ * conversion isn't possible (GD/WebP missing, or the bytes aren't a valid image).
+ * Caller should fall back to saving the original on null.
+ */
+function convertToWebp(string $image_data, string $dir, string $basename, int $quality = 82): ?string {
+    if (!function_exists('imagewebp') || !function_exists('imagecreatefromstring')) {
+        return null; // GD or WebP support unavailable on this host
+    }
+    $img = @imagecreatefromstring($image_data);
+    if ($img === false) return null;
+
+    /* Preserve transparency if the source was a PNG */
+    if (function_exists('imagepalettetotruecolor')) @imagepalettetotruecolor($img);
+    imagealphablending($img, true);
+    imagesavealpha($img, true);
+
+    $filename = $basename . '.webp';
+    $ok = @imagewebp($img, rtrim($dir, '/\\') . '/' . $filename, $quality);
+    imagedestroy($img);
+
+    return $ok ? $filename : null;
+}
+
+/**
  * Sliding-window IP rate limit (filesystem-backed).
  * Returns true if the request is allowed, false if the bucket is exhausted.
  *

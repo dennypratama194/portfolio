@@ -8,7 +8,7 @@ require __DIR__ . '/../api/db.php';
 
 /* ── Stat cards ── */
 $total_views     = (int)$pdo->query('SELECT COUNT(*) FROM page_views')->fetchColumn();
-$views_today     = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
+$views_today     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
 $views_week      = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARWEEK(viewed_at,1) = YEARWEEK(NOW(),1)')->fetchColumn();
 $views_month     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
 $unique_visitors = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views')->fetchColumn();
@@ -178,25 +178,29 @@ $max_views = max($chart_data) ?: 1;
     .view-count { font-size: 14px; color: rgba(236,234,226,0.8); min-width: 28px; text-align: right; font-weight: 500; }
     .uniq-count { font-size: 14px; color: rgba(236,234,226,0.35); min-width: 52px; }
 
-    /* ── Bar chart ── */
+    /* ── Line chart ── */
     .chart-wrap {
       border: 1px solid rgba(236,234,226,0.07);
       padding: 32px 24px 20px;
       margin-bottom: 40px; overflow-x: auto;
     }
-    .chart-bars {
-      display: flex; align-items: flex-end; gap: 6px;
-      height: 140px; min-width: 560px;
+    .chart-svg { width: 100%; min-width: 560px; max-width: 760px; height: auto; display: block; }
+    .chart-axis { stroke: rgba(236,234,226,0.08); stroke-width: 1; }
+    .chart-area { fill: rgba(232,50,10,0.10); stroke: none; }
+    .chart-line {
+      fill: none; stroke: #E8320A; stroke-width: 2;
+      stroke-linejoin: round; stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
     }
-    .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-    .chart-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
-    .chart-bar {
-      width: 100%; background: #E8320A; opacity: 0.7;
-      min-height: 2px; transition: opacity 0.2s;
+    .chart-dot { fill: #E8320A; }
+    .chart-val {
+      fill: rgba(236,234,226,0.5); font-size: 11px;
+      font-family: 'Geist Mono', monospace;
     }
-    .chart-bar:hover { opacity: 1; }
-    .chart-label { font-size: 12px; letter-spacing: 0.06em; color: rgba(236,234,226,0.25); margin-top: 8px; white-space: nowrap; }
-    .chart-value { font-size: 12px; letter-spacing: 0.06em; color: rgba(236,234,226,0.35); margin-top: 4px; }
+    .chart-xlabel {
+      fill: rgba(236,234,226,0.3); font-size: 11px;
+      font-family: 'Geist Mono', monospace; letter-spacing: 0.04em;
+    }
 
     .empty { color: rgba(236,234,226,0.2); font-size: 14px; padding: 32px 0; }
   </style>
@@ -280,19 +284,47 @@ $max_views = max($chart_data) ?: 1;
 
     <!-- ── Last 14 days chart ── -->
     <div class="section-heading">Last 14 Days</div>
+    <?php
+      /* SVG line-chart geometry (viewBox units) */
+      $W = 760; $H = 180;
+      $padL = 10; $padR = 10; $padT = 20; $padB = 30;
+      $plotW = $W - $padL - $padR;
+      $plotH = $H - $padT - $padB;
+      $baseY = $padT + $plotH;
+      $days  = array_keys($chart_data);
+      $vals  = array_values($chart_data);
+      $n     = count($vals);
+      $step  = $n > 1 ? $plotW / ($n - 1) : 0;
+      $pts   = [];
+      foreach ($vals as $i => $v) {
+          $pts[] = [
+              'x' => round($padL + $i * $step, 1),
+              'y' => round($baseY - ($v / $max_views) * $plotH, 1),
+              'v' => $v,
+              'd' => $days[$i],
+          ];
+      }
+      $line_pts = implode(' ', array_map(fn($p) => $p['x'] . ',' . $p['y'], $pts));
+      $area_d   = 'M ' . $pts[0]['x'] . ',' . $baseY;
+      foreach ($pts as $p) { $area_d .= ' L ' . $p['x'] . ',' . $p['y']; }
+      $area_d  .= ' L ' . end($pts)['x'] . ',' . $baseY . ' Z';
+    ?>
     <div class="chart-wrap">
-      <div class="chart-bars">
-        <?php foreach ($chart_data as $day => $views): ?>
-          <?php $pct = round($views / $max_views * 100); ?>
-          <div class="chart-col">
-            <div class="chart-bar-wrap">
-              <div class="chart-bar" style="height:<?= $pct ?>%" title="<?= $views ?> views"></div>
-            </div>
-            <div class="chart-label"><?= date('d/m', strtotime($day)) ?></div>
-            <div class="chart-value"><?= $views ?: '' ?></div>
-          </div>
+      <svg class="chart-svg" viewBox="0 0 <?= $W ?> <?= $H ?>" preserveAspectRatio="xMidYMid meet"
+           role="img" aria-label="Daily page views over the last 14 days">
+        <line class="chart-axis" x1="<?= $padL ?>" y1="<?= $baseY ?>" x2="<?= $W - $padR ?>" y2="<?= $baseY ?>"/>
+        <path class="chart-area" d="<?= $area_d ?>"/>
+        <polyline class="chart-line" points="<?= $line_pts ?>"/>
+        <?php foreach ($pts as $p): ?>
+          <?php if ($p['v'] > 0): ?>
+            <text class="chart-val" x="<?= $p['x'] ?>" y="<?= max($padT - 6, $p['y'] - 8) ?>" text-anchor="middle"><?= $p['v'] ?></text>
+          <?php endif; ?>
+          <circle class="chart-dot" cx="<?= $p['x'] ?>" cy="<?= $p['y'] ?>" r="3">
+            <title><?= date('d M', strtotime($p['d'])) ?> — <?= $p['v'] ?> views</title>
+          </circle>
+          <text class="chart-xlabel" x="<?= $p['x'] ?>" y="<?= $baseY + 18 ?>" text-anchor="middle"><?= date('d/m', strtotime($p['d'])) ?></text>
         <?php endforeach; ?>
-      </div>
+      </svg>
     </div>
 
     <!-- ── Per-page breakdown ── -->

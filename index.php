@@ -572,7 +572,7 @@ $jsonld        = json_encode([
       <?php foreach ($bp_posts as $bp):
         $bp_img = $bp['featured_image'] ? '/admin/uploads/' . $bp['featured_image'] : null;
       ?>
-        <a class="bp-card" href="/post?slug=<?= rawurlencode($bp['slug']) ?>">
+        <a class="bp-card" href="/blog/<?= rawurlencode($bp['slug']) ?>">
           <?php if ($bp_img): ?>
             <img class="bp-card-img"
                  src="<?= escHtml($bp_img) ?>"

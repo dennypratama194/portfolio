@@ -12,6 +12,21 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 <head>
 <?php include 'partials/head.php'; ?>
 <meta name="robots" content="noindex, nofollow"/>
+<style>
+  body { min-height: 100dvh; display: flex; flex-direction: column; }
+  main { flex: 1; display: flex; }
+  .error-page { flex: 1; min-height: unset; }
+  .error-actions .btn-hero-ghost {
+    font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--ink); padding: 16px 32px;
+    border: 1.5px solid var(--ink); border-radius: 100px;
+    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+  }
+  .error-actions .btn-hero-ghost:hover {
+    background: var(--ink); color: var(--paper);
+    transform: translateY(-3px);
+  }
+</style>
 </head>
 <body>
 

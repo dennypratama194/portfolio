@@ -51,7 +51,7 @@ $jsonld    = json_encode([
         return [
             '@type'         => 'BlogPosting',
             'headline'      => $p['title'],
-            'url'           => 'https://dennypratama.com/post?slug=' . rawurlencode($p['slug']),
+            'url'           => 'https://dennypratama.com/blog/' . rawurlencode($p['slug']),
             'datePublished' => $p['published_at'],
             'description'   => $p['excerpt'],
         ];
@@ -96,7 +96,7 @@ $jsonld    = json_encode([
       $cat_label = $post['category'] ? ($cat_labels[$post['category']] ?? $post['category']) : null;
     ?>
       <a class="blog-card"
-         href="/post?slug=<?= rawurlencode($post['slug']) ?>"
+         href="/blog/<?= rawurlencode($post['slug']) ?>"
          data-cat="<?= escHtml($post['category'] ?? '') ?>">
         <?php if ($img_url): ?>
           <img class="blog-card-img"
@@ -106,10 +106,12 @@ $jsonld    = json_encode([
         <?php else: ?>
           <div class="blog-card-img"></div>
         <?php endif; ?>
-        <?php if ($cat_label): ?>
-          <span class="blog-card-cat"><?= escHtml($cat_label) ?></span>
-        <?php endif; ?>
-        <div class="blog-card-meta"><?= escHtml(formatDate($post['published_at'])) ?></div>
+        <div class="blog-card-head">
+          <?php if ($cat_label): ?>
+            <span class="blog-card-cat"><?= escHtml($cat_label) ?></span>
+          <?php endif; ?>
+          <span class="blog-card-meta"><?= escHtml(formatDate($post['published_at'])) ?></span>
+        </div>
         <div class="blog-card-title"><?= escHtml($post['title']) ?></div>
         <?php if ($post['excerpt']): ?>
           <div class="blog-card-excerpt"><?= escHtml($post['excerpt']) ?></div>

@@ -324,7 +324,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           <?php foreach ($recent as $r): ?>
           <tr>
             <td>
-              <a class="post-title-link" href="/post?slug=<?= htmlspecialchars($r['slug']) ?>" target="_blank">
+              <a class="post-title-link" href="/blog/<?= htmlspecialchars($r['slug']) ?>" target="_blank">
                 <?= htmlspecialchars($r['title']) ?>
               </a>
             </td>

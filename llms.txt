@@ -1,0 +1,21 @@
+# Denny Pratama
+
+> UI/UX designer and developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise — bridging visual craft and technical execution for startups and founders. Available for new projects.
+
+## Main
+
+- [Home](https://dennypratama.com): Portfolio, selected work, services, and about.
+- [Blog](https://dennypratama.com/blog): Articles on UI/UX design, web development, and AI tools for designers and developers. Each post is linked from this page.
+
+## About
+
+- Name: Denny Pratama
+- Role: UI/UX Designer & Developer
+- Location: Indonesia
+- Focus: UI/UX design, web development, brand identity, design systems, AI
+- Contact: hello@dennypratama.com
+
+## Legal
+
+- [Privacy Policy](https://dennypratama.com/privacy-policy)
+- [Terms & Conditions](https://dennypratama.com/terms-and-conditions)

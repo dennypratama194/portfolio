@@ -36,7 +36,7 @@ $category_label = $post['category'] ? ($cat_labels[$post['category']] ?? $post['
 $title       = $post['title'] . ' — Denny Pratama';
 $description = $post['excerpt']
     ?: 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
-$canonical   = 'https://dennypratama.com/post?slug=' . urlencode($post['slug']);
+$canonical   = 'https://dennypratama.com/blog/' . rawurlencode($post['slug']);
 $og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/og-image.png';
 $og_type     = 'article';
 $jsonld = json_encode([
