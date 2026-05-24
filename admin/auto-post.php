@@ -69,7 +69,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css"/>
+  <link rel="stylesheet" href="theme.css?v=1"/>
   <style>
     .main { max-width: 760px; }
     input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
