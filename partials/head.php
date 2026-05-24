@@ -72,6 +72,9 @@
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="stylesheet" href="/style.css?v=76"/>
+  <?php if (!empty($page_css)): /* page-specific stylesheet, loaded after the global one */ ?>
+  <link rel="stylesheet" href="<?= htmlspecialchars($page_css) ?>"/>
+  <?php endif; ?>
 
   <!-- reCAPTCHA v3 site key (public; consumed by script.js) -->
   <meta name="recaptcha-site-key" content="6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"/>

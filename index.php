@@ -454,34 +454,34 @@ $jsonld        = json_encode([
         <span class="cl-headline">Brands I've<br>partnered<br>with.</span>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-wordsburg.png" alt="Wordsburg" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-wordsburg.webp" alt="Wordsburg" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-xertra.png" alt="Xertra" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-xertra.webp" alt="Xertra" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-mariwisata.png" alt="Mariwisata" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-mariwisata.webp" alt="Mariwisata" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-ortex.png" alt="Ortex" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-ortex.webp" alt="Ortex" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-more.png" alt="MoRe Creative Agency" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-more.webp" alt="MoRe Creative Agency" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-labme.png" alt="LAB.ME" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-labme.webp" alt="LAB.ME" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-socialbee.png" alt="Socialbee" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-socialbee.webp" alt="Socialbee" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-edufarmers.png" alt="Edufarmers" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-edufarmers.webp" alt="Edufarmers" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-ispapp.png" alt="ISPApp" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-ispapp.webp" alt="ISPApp" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
       <div class="cl-cell">
-        <img src="/assets/client-isohorns.png" alt="IsoHorns" class="cl-logo" loading="lazy" width="160" height="60"/>
+        <img src="/assets/client-isohorns.webp" alt="IsoHorns" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
     </div>
   </section>

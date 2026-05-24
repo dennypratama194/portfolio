@@ -68,8 +68,13 @@ Anything that reads as a sentence, description, or paragraph is body text — us
 |---|---|
 | Public pages | `style.css` |
 | Admin pages | `admin/theme.css` |
-| Page-specific overrides | Inline `<style>` block, max ~20 lines |
+| Small page-specific overrides (≤ ~20 lines) | Inline `<style>` block in the page |
+| Large page-specific styles (> ~20 lines) | `css/<page>.css`, loaded via `$page_css` set before `include 'partials/head.php'` (e.g. `$page_css = '/css/ebook.css?v=1';`) |
 | Admin light-mode overrides | `[data-theme="light"]` section at bottom of `admin/theme.css` |
+
+Don't dump page-specific rules into the global `style.css` — it loads on every page. Keep them scoped via `$page_css`. Bump the `?v=` when editing a `css/<page>.css` file.
+
+See `COMPONENTS.md` (project root) for the full catalog of buttons, cards, forms, and label patterns — search it before adding new CSS.
 
 ## Never
 - Hardcode a hex color in a component rule — use a CSS variable

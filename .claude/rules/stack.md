@@ -16,18 +16,24 @@ No build tools. Edit CSS and JS directly.
 ```
 portfolio/
 ├── index.php               # Homepage
-├── blog.php                # Blog listing
-├── post.php                # Single post (JS-rendered from API)
-├── ebook.php               # Ebook sales page
-├── ebooks.php              # Ebook catalog
-├── my-library.php          # Purchased library (user-facing)
+├── blog.php                # Blog listing (cards link to /blog/SLUG)
+├── post.php                # Single post (server-rendered; routed /blog/SLUG → post.php?slug=)
+├── ebook.php               # Ebook sales page (styles in css/ebook.css)
+├── ebooks.php              # Ebook catalog (styles in css/ebooks.css)
+├── my-library.php          # Purchased library (styles in css/my-library.css)
 ├── recover.php             # Resend magic link
-├── read.php                # Magic-link ebook reader
-├── style.css               # ALL public CSS — search here first
+├── read.php                # Magic-link ebook reader (self-contained <head> + styles)
+├── style.css               # Shared public CSS — search here first
 ├── script.js               # ALL public JS
+├── COMPONENTS.md           # Catalog of buttons/cards/forms/patterns — read before adding CSS
 ├── robots.txt              # Crawl rules
-├── sitemap.xml             # Update manually when adding routes
+├── llms.txt                # AI/LLM crawler map
+├── sitemap.php             # Dynamic sitemap (served at /sitemap.xml via .htaccess); auto-lists posts
 ├── .htaccess               # URL routing + security headers
+├── css/                    # Large page-specific stylesheets (loaded via $page_css)
+│   ├── ebook.css
+│   ├── ebooks.css
+│   └── my-library.css
 ├── partials/
 │   ├── head.php            # Meta, OG, JSON-LD, CSS/font preloads
 │   ├── nav.php             # Fixed nav + mobile menu
