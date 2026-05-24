@@ -171,6 +171,21 @@ select option { background: #1a1917; }
   color: rgba(236,234,226,0.3); text-decoration: none; transition: color 0.2s;
 }
 .btn-cancel:hover { color: #ECEAE2; }
+
+/* Secondary/outline button (e.g. Auto Post in the Posts header) */
+.top-bar-actions { display: flex; align-items: center; gap: 12px; }
+.btn-outline {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(236,234,226,0.6); text-decoration: none;
+  padding: 12px 20px; border: 1px solid rgba(236,234,226,0.15);
+  cursor: pointer; transition: color 0.2s, border-color 0.2s;
+}
+.btn-outline:hover { color: #ECEAE2; border-color: rgba(236,234,226,0.35); }
+
+/* Clickable table rows (navigate on click; action buttons opt out) */
+tr.row-link { cursor: pointer; transition: background 0.15s; }
+tr.row-link:hover { background: rgba(236,234,226,0.03); }
 .btn-row { display: flex; gap: 16px; align-items: center; }
 
 /* ── Drag-and-drop image zone ── */
@@ -191,13 +206,16 @@ select option { background: #1a1917; }
 .drop-filename { font-size: 14px; color: rgba(236,234,226,0.5); margin-top: 8px; }
 .img-preview {
   display: block; width: 100%; max-height: 280px; object-fit: cover;
-  margin-top: 12px; opacity: 0.85;
 }
-.img-remove {
-  display: inline-block; margin-top: 8px; font-size: 12px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: rgba(232,50,10,0.6); cursor: pointer;
-  background: none; border: none; font-family: inherit; transition: color 0.2s;
+.img-actions { display: flex; gap: 20px; align-items: center; margin-top: 12px; }
+.img-action, .img-remove {
+  font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+  background: none; border: none; font-family: inherit; cursor: pointer;
+  padding: 0; transition: color 0.2s;
 }
+.img-action { color: rgba(236,234,226,0.5); }
+.img-action:hover { color: #ECEAE2; }
+.img-remove { color: rgba(232,50,10,0.6); }
 .img-remove:hover { color: #E8320A; }
 
 
@@ -453,6 +471,9 @@ select option { background: #1a1917; }
 /* Chapters page */
 [data-theme="light"] .top-bar          { border-bottom-color: rgba(28,27,24,0.08); }
 [data-theme="light"] .top-bar h1       { color: rgba(28,27,24,0.65); }
+[data-theme="light"] .btn-outline      { color: rgba(28,27,24,0.6); border-color: rgba(28,27,24,0.15); }
+[data-theme="light"] .btn-outline:hover { color: #1C1B18; border-color: rgba(28,27,24,0.4); }
+[data-theme="light"] tr.row-link:hover { background: rgba(28,27,24,0.03); }
 [data-theme="light"] .panel-list       { border-right-color: rgba(28,27,24,0.08); }
 [data-theme="light"] .panel-list-header { color: rgba(28,27,24,0.35); }
 [data-theme="light"] .chapter-item     { border-bottom-color: rgba(28,27,24,0.05); }

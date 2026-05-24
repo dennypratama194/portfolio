@@ -166,12 +166,13 @@ $sched_val = !empty($post['scheduled_at'])
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <!-- Quill rich text editor (open source, no API key) -->
-  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet"/>
   <style>
     .main { max-width: 900px; }
     .top-bar { justify-content: flex-start; gap: 16px; }
     .field { margin-bottom: 28px; }
     textarea { min-height: 80px; }
+    textarea.content-fallback { min-height: 320px; resize: vertical; line-height: 1.75; }
     select { font-size: 16px; }
 
     /* Quill editor styling to match dark theme */
@@ -234,41 +235,24 @@ $sched_val = !empty($post['scheduled_at'])
     .drop-text span { color: #E8320A; }
     .drop-filename { font-size: 14px; color: rgba(236,234,226,0.5); margin-top: 8px; }
     .img-preview {
-      display: block; width: 100%; max-height: 220px; object-fit: cover;
-      margin-top: 12px; opacity: 0.85;
+      display: block; width: 100%; max-height: 280px; object-fit: cover;
     }
-    .img-remove {
-      display: inline-block; margin-top: 8px; font-size: 12px; letter-spacing: 0.1em;
-      text-transform: uppercase; color: rgba(232,50,10,0.6); cursor: pointer;
-      background: none; border: none; font-family: inherit; transition: color 0.2s;
+    .img-actions { display: flex; gap: 20px; align-items: center; margin-top: 12px; }
+    .img-action, .img-remove {
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      background: none; border: none; font-family: inherit; cursor: pointer;
+      padding: 0; transition: color 0.2s;
     }
+    .img-action { color: rgba(236,234,226,0.5); }
+    .img-action:hover { color: #ECEAE2; }
+    .img-remove { color: rgba(232,50,10,0.6); }
     .img-remove:hover { color: #E8320A; }
 
   </style>
 </head>
 <body>
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <main class="main main--wide">
     <div class="top-bar top-bar--gap">
@@ -319,7 +303,10 @@ $sched_val = !empty($post['scheduled_at'])
 
       <div class="field">
         <label>Featured Image</label>
-        <div class="drop-zone" id="drop-zone">
+        <?php $has_img = !empty($post['featured_image']); ?>
+
+        <!-- Drop zone — shown only when there's no image yet -->
+        <div class="drop-zone" id="drop-zone" style="<?= $has_img ? 'display:none' : '' ?>">
           <input type="file" name="featured_image" id="img-input" accept="image/*"/>
           <div id="drop-prompt">
             <div class="drop-icon">⬆</div>
@@ -327,24 +314,27 @@ $sched_val = !empty($post['scheduled_at'])
             <div class="drop-filename" id="drop-filename"></div>
           </div>
         </div>
-        <?php if ($post['featured_image']): ?>
+
+        <!-- Preview + actions — shown when an image exists or has just been picked -->
+        <div class="img-wrap" id="img-wrap" style="<?= $has_img ? '' : 'display:none' ?>">
           <img class="img-preview" id="img-preview"
-               src="uploads/<?= htmlspecialchars($post['featured_image']) ?>"
-               alt="Current featured image"/>
-          <button type="button" class="img-remove" id="img-remove">Remove image</button>
-          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
-        <?php else: ?>
-          <img class="img-preview" id="img-preview" src="" alt="" style="display:none"/>
-          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
-        <?php endif; ?>
+               src="<?= $has_img ? 'uploads/' . htmlspecialchars($post['featured_image']) : '' ?>"
+               alt="Featured image"/>
+          <div class="img-actions">
+            <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
+            <button type="button" class="img-remove" id="img-remove">Remove image</button>
+          </div>
+        </div>
+
+        <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
       </div>
 
       <div class="field">
         <label>Body</label>
-        <!-- Quill editor container -->
-        <div id="quill-editor"><?= $post['body'] ?></div>
-        <!-- Hidden input that gets submitted -->
-        <input type="hidden" name="body" id="body-input"/>
+        <!-- The textarea is the actual saved field + fallback if Quill fails to load.
+             Quill enhances it; on submit its HTML is synced back into the textarea. -->
+        <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
+        <div id="quill-editor" style="display:none"><?= $post['body'] ?></div>
       </div>
 
       <div class="field">
@@ -381,10 +371,12 @@ $sched_val = !empty($post['scheduled_at'])
     </form>
   </main>
 
-  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
   <script>
-    /* ── Quill editor ── */
-    const quill = new Quill('#quill-editor', {
+    /* ── Quill editor (enhances the textarea; falls back to it on any failure) ── */
+    var quill = null;
+    try {
+    quill = new Quill('#quill-editor', {
       theme: 'snow',
       placeholder: 'Write your post here...',
       modules: {
@@ -398,6 +390,12 @@ $sched_val = !empty($post['scheduled_at'])
         ]
       }
     });
+      /* Quill loaded — swap the plain textarea for the rich editor */
+      document.getElementById('body-input').style.display = 'none';
+      document.getElementById('quill-editor').style.display = '';
+    } catch (e) {
+      console.error('Rich editor failed to load; using plain text fallback.', e);
+    }
 
     /* ── Auto-generate slug from title ── */
     const titleEl = document.getElementById('title');
@@ -414,22 +412,25 @@ $sched_val = !empty($post['scheduled_at'])
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
 
-    /* ── Drag-and-drop image upload ── */
-    const dropZone  = document.getElementById('drop-zone');
-    const imgInput  = document.getElementById('img-input');
+    /* ── Featured image: drop-zone (no image) ⇄ preview + actions (has image) ── */
+    const dropZone   = document.getElementById('drop-zone');
+    const imgInput   = document.getElementById('img-input');
+    const imgWrap    = document.getElementById('img-wrap');
     const imgPreview = document.getElementById('img-preview');
-    const dropFilename = document.getElementById('drop-filename');
-    const imgRemove = document.getElementById('img-remove');
+    const imgReplace = document.getElementById('img-replace');
+    const imgRemove  = document.getElementById('img-remove');
     const removeFlag = document.getElementById('remove-image-flag');
+
+    function showImage() { imgWrap.style.display = ''; dropZone.style.display = 'none'; }
+    function showDropZone() { imgWrap.style.display = 'none'; dropZone.style.display = ''; }
 
     function showPreview(file) {
       if (!file || !file.type.startsWith('image/')) return;
-      dropFilename.textContent = file.name;
       const reader = new FileReader();
       reader.onload = e => {
         imgPreview.src = e.target.result;
-        imgPreview.style.display = 'block';
-        if (imgRemove) imgRemove.style.display = 'inline-block';
+        removeFlag.value = '0';   /* picking a new image cancels any pending removal */
+        showImage();
       };
       reader.readAsDataURL(file);
     }
@@ -448,7 +449,6 @@ $sched_val = !empty($post['scheduled_at'])
       dropZone.classList.remove('dragover');
       const file = e.dataTransfer.files[0];
       if (file) {
-        /* Transfer dropped file to the real input */
         const dt = new DataTransfer();
         dt.items.add(file);
         imgInput.files = dt.files;
@@ -456,14 +456,15 @@ $sched_val = !empty($post['scheduled_at'])
       }
     });
 
+    /* Replace → open the file picker (works even though the drop-zone is hidden) */
+    if (imgReplace) imgReplace.addEventListener('click', () => imgInput.click());
+
     if (imgRemove) {
       imgRemove.addEventListener('click', () => {
         imgPreview.src = '';
-        imgPreview.style.display = 'none';
         imgInput.value = '';
-        dropFilename.textContent = '';
         removeFlag.value = '1';
-        imgRemove.style.display = 'none';
+        showDropZone();
       });
     }
 
@@ -475,9 +476,9 @@ $sched_val = !empty($post['scheduled_at'])
       });
     });
 
-    /* ── Copy Quill HTML to hidden input before submit ── */
+    /* ── Sync the rich editor into the textarea before submit (textarea is the saved field) ── */
     document.querySelector('form').addEventListener('submit', () => {
-      document.getElementById('body-input').value = quill.root.innerHTML;
+      if (quill) document.getElementById('body-input').value = quill.root.innerHTML;
     });
 
   </script>

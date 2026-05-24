@@ -51,32 +51,15 @@ $posts = $pdo->query(
 </head>
 <body>
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link active" href="index.php">Posts</a>
-      <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <main class="main">
     <div class="top-bar">
       <h1>Posts</h1>
-      <a class="btn-new" href="edit.php">+ New Post</a>
+      <div class="top-bar-actions">
+        <a class="btn-outline" href="auto-post.php">⚡ Auto Post</a>
+        <a class="btn-new" href="edit.php">+ New Post</a>
+      </div>
     </div>
 
     <?php if (empty($posts)): ?>
@@ -93,7 +76,7 @@ $posts = $pdo->query(
       </thead>
       <tbody>
         <?php foreach ($posts as $p): ?>
-        <tr>
+        <tr class="row-link" data-href="edit.php?id=<?= $p['id'] ?>">
           <td>
             <div class="post-title"><?= htmlspecialchars($p['title']) ?></div>
             <div class="post-slug">/<?= htmlspecialchars($p['slug']) ?></div>
@@ -117,7 +100,6 @@ $posts = $pdo->query(
             <?php endif; ?>
           </td>
           <td>
-            <a class="action-link" href="edit.php?id=<?= $p['id'] ?>">Edit</a>
             <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this post?')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
@@ -134,6 +116,15 @@ $posts = $pdo->query(
     <?php endif; ?>
   </main>
 
+  <script>
+    /* Whole post row is clickable → edit; action buttons (Delete) opt out */
+    document.querySelectorAll('tr.row-link').forEach(function (row) {
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('a, button, form, input')) return;
+        window.location.href = row.dataset.href;
+      });
+    });
+  </script>
   <script src="admin.js"></script>
 </body>
 </html>

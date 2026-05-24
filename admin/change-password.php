@@ -53,27 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link active" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <main class="main main--narrow">
     <div class="top-bar top-bar--gap">

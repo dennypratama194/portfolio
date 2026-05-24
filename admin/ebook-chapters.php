@@ -163,7 +163,7 @@ if ($chapter_id && !$edit_chapter) {
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css"/>
   <?php if ($chapter_id && $edit_chapter): ?>
-  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet"/>
   <?php endif; ?>
   <style>
     html, body { height: 100%; overflow: hidden; }
@@ -327,28 +327,7 @@ if ($chapter_id && !$edit_chapter) {
 <body>
 <div class="app-wrap">
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <!-- ── Admin nav sidebar ── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link active" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <!-- ── Main wrap ── -->
   <div class="main-wrap">
@@ -480,7 +459,7 @@ if ($chapter_id && !$edit_chapter) {
 </div><!-- /app-wrap -->
 
 <?php if ($chapter_id && $edit_chapter): ?>
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <?php endif; ?>
 <script>
   /* ── CSRF token for AJAX ── */

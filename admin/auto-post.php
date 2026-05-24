@@ -160,27 +160,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 </head>
 <body>
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link active" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <main class="main main--medium">
     <div class="top-bar">
@@ -227,7 +207,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       </div>
 
       <div class="field">
-        <label>OpenAI API Key (DALL-E images)</label>
+        <label>OpenAI API Key (gpt-image-2 images)</label>
         <input type="password" name="openai_api_key"
                placeholder="<?= $has_oai ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-...' ?>"/>
         <?php if ($has_oai): ?>
@@ -371,9 +351,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               return;
             }
 
-            runStatus.textContent = 'Phase 2 — Generating featured image with DALL-E…';
+            runStatus.textContent = 'Phase 2 — Generating featured image with gpt-image-2…';
 
-            /* Phase 2: DALL-E generates image */
+            /* Phase 2: gpt-image-2 generates image */
             var p2url = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN)
               + '&phase=2'
               + '&post_id=' + d1.post_id

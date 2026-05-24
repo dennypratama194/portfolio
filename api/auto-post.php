@@ -1,5 +1,5 @@
 <?php
-set_time_limit(90);
+set_time_limit(180); // gpt-image-2 generation can take longer than the old DALL·E call
 
 $is_cli = php_sapi_name() === 'cli';
 
@@ -57,7 +57,7 @@ Return ONLY a valid JSON object with these exact fields:
   "slug": "url-friendly-slug-from-title",
   "excerpt": "A compelling 2-sentence summary for the blog listing page.",
   "category": "uiux or development or ai",
-  "image_prompt": "A concise DALL-E prompt for a clean, modern, minimal blog header image. No text, no people, abstract or conceptual.",
+  "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header image. No text, no people, abstract or conceptual.",
   "body": "Full blog post in HTML. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags only. Minimum 600 words. No inline styles."
 }
 
@@ -140,7 +140,7 @@ PROMPT;
 }
 
 /* ════════════════════════════════════════════════════
-   PHASE 2 — DALL-E generates the featured image
+   PHASE 2 — gpt-image-2 generates the featured image
 ════════════════════════════════════════════════════ */
 if ($phase === '2' || $phase === 'all') {
 
@@ -162,54 +162,48 @@ if ($phase === '2' || $phase === 'all') {
         $image_error = 'No image prompt was produced in phase 1.';
         autoPostLog('Phase 2 skipped: ' . $image_error);
     } else {
+        /* gpt-image-2 (DALL·E was retired 2026-05-12). The API returns the image as
+           base64 in data[0].b64_json — there is no URL to download. Note: response_format
+           and style are no longer accepted; quality is low|medium|high|auto. */
         $ch = curl_init('https://api.openai.com/v1/images/generations');
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode([
-                'model'           => 'dall-e-3',
-                'prompt'          => $image_prompt,
-                'n'               => 1,
-                'size'            => '1792x1024',
-                'quality'         => 'standard',
-                'response_format' => 'url',
+                'model'   => 'gpt-image-2',
+                'prompt'  => $image_prompt,
+                'n'       => 1,
+                'size'    => '1536x1024',
+                'quality' => 'medium',
             ]),
-            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_TIMEOUT        => 120,
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $openai_key,
             ],
         ]);
-        $dalle_raw  = curl_exec($ch);
-        $dalle_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $dalle_err  = curl_error($ch);
+        $img_raw  = curl_exec($ch);
+        $img_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $img_err  = curl_error($ch);
         curl_close($ch);
 
-        if ($dalle_err) {
+        if ($img_err) {
             $image_error = 'Could not reach the image API.';
-            autoPostLog('DALL-E curl error: ' . $dalle_err);
+            autoPostLog('Image API curl error: ' . $img_err);
         } else {
-            $dalle_json = json_decode($dalle_raw, true);
-            $image_url  = $dalle_json['data'][0]['url'] ?? '';
+            $img_json = json_decode($img_raw, true);
+            $b64      = $img_json['data'][0]['b64_json'] ?? '';
 
-            if (!$image_url) {
-                $api_msg     = $dalle_json['error']['message'] ?? 'unknown error';
-                $image_error = 'Image API error (HTTP ' . $dalle_code . '): ' . $api_msg;
-                autoPostLog('DALL-E HTTP ' . $dalle_code . ' — ' . substr((string)$dalle_raw, 0, 800));
+            if (!$b64) {
+                $api_msg     = $img_json['error']['message'] ?? 'unknown error';
+                $image_error = 'Image API error (HTTP ' . $img_code . '): ' . $api_msg;
+                autoPostLog('Image API HTTP ' . $img_code . ' — ' . substr((string)$img_raw, 0, 800));
             } else {
-                $ch = curl_init($image_url);
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_TIMEOUT        => 30,
-                ]);
-                $image_data = curl_exec($ch);
-                $dl_err     = curl_error($ch);
-                curl_close($ch);
+                $image_data = base64_decode($b64);
 
                 if (!$image_data) {
-                    $image_error = 'Generated image could not be downloaded.';
-                    autoPostLog('Image download failed: ' . $dl_err);
+                    $image_error = 'Image API returned data that could not be decoded.';
+                    autoPostLog('base64_decode failed on gpt-image-2 response.');
                 } else {
                     $uploads_dir = __DIR__ . '/../admin/uploads/';
                     if (!is_dir($uploads_dir)) @mkdir($uploads_dir, 0755, true);
@@ -219,8 +213,8 @@ if ($phase === '2' || $phase === 'all') {
                     $featured_image = convertToWebp($image_data, $uploads_dir, $base);
 
                     if ($featured_image === null) {
-                        autoPostLog('WebP conversion unavailable — saving original image instead.');
-                        $candidate = $base . '.jpg';
+                        autoPostLog('WebP conversion unavailable — saving original PNG instead.');
+                        $candidate = $base . '.png'; // gpt-image-2 returns PNG bytes
                         if (@file_put_contents($uploads_dir . $candidate, $image_data) !== false) {
                             $featured_image = $candidate;
                         }

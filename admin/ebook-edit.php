@@ -155,27 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-  <div class="mobile-topbar">
-    <div class="mobile-topbar-logo"><img src="/assets/logo.png" alt="Denny Pratama"/></div>
-    <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
-  </div>
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/></div>
-    <nav class="sidebar-nav">
-      <a class="sidebar-link" href="analytics.php">Dashboard</a>
-      <a class="sidebar-link" href="index.php">Posts</a>
-      <a class="sidebar-link" href="auto-post.php">Auto Post</a>
-      <a class="sidebar-link active" href="ebooks.php">Ebooks</a>
-      <a class="sidebar-link" href="change-password.php">Change Password</a>
-      <a class="sidebar-link" href="../index.html" target="_blank">View Site →</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="theme-toggle" id="theme-toggle">◑ Light mode</button>
-      <a class="sidebar-logout" href="logout.php">Sign out</a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
   <main class="main">
     <div class="top-bar">
@@ -235,7 +215,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="field">
         <label>Cover Image</label>
-        <div class="drop-zone" id="drop-zone">
+        <?php $has_cover = !empty($product['cover_image']); ?>
+
+        <!-- Drop zone — shown only when there's no cover yet -->
+        <div class="drop-zone" id="drop-zone" style="<?= $has_cover ? 'display:none' : '' ?>">
           <input type="file" name="cover_image" id="img-input" accept="image/*"/>
           <div id="drop-prompt">
             <div class="drop-icon">⬆</div>
@@ -243,16 +226,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="drop-filename" id="drop-filename"></div>
           </div>
         </div>
-        <?php if ($product['cover_image']): ?>
+
+        <!-- Preview + actions — shown when a cover exists or has just been picked -->
+        <div class="img-wrap" id="img-wrap" style="<?= $has_cover ? '' : 'display:none' ?>">
           <img class="img-preview" id="img-preview"
-               src="uploads/<?= htmlspecialchars($product['cover_image']) ?>"
-               alt="Current cover image"/>
-          <button type="button" class="img-remove" id="img-remove">Remove image</button>
-          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
-        <?php else: ?>
-          <img class="img-preview" id="img-preview" src="" alt="" style="display:none"/>
-          <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
-        <?php endif; ?>
+               src="<?= $has_cover ? 'uploads/' . htmlspecialchars($product['cover_image']) : '' ?>"
+               alt="Cover image"/>
+          <div class="img-actions">
+            <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
+            <button type="button" class="img-remove" id="img-remove">Remove image</button>
+          </div>
+        </div>
+
+        <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
       </div>
 
       <div class="field">
@@ -289,22 +275,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
 
-    /* ── Drag-and-drop cover image ── */
-    const dropZone     = document.getElementById('drop-zone');
-    const imgInput     = document.getElementById('img-input');
-    const imgPreview   = document.getElementById('img-preview');
-    const dropFilename = document.getElementById('drop-filename');
-    const imgRemove    = document.getElementById('img-remove');
-    const removeFlag   = document.getElementById('remove-image-flag');
+    /* ── Cover image: drop-zone (no image) ⇄ preview + actions (has image) ── */
+    const dropZone   = document.getElementById('drop-zone');
+    const imgInput   = document.getElementById('img-input');
+    const imgWrap    = document.getElementById('img-wrap');
+    const imgPreview = document.getElementById('img-preview');
+    const imgReplace = document.getElementById('img-replace');
+    const imgRemove  = document.getElementById('img-remove');
+    const removeFlag = document.getElementById('remove-image-flag');
+
+    function showImage() { imgWrap.style.display = ''; dropZone.style.display = 'none'; }
+    function showDropZone() { imgWrap.style.display = 'none'; dropZone.style.display = ''; }
 
     function showPreview(file) {
       if (!file || !file.type.startsWith('image/')) return;
-      dropFilename.textContent = file.name;
       const reader = new FileReader();
       reader.onload = e => {
         imgPreview.src = e.target.result;
-        imgPreview.style.display = 'block';
-        if (imgRemove) imgRemove.style.display = 'inline-block';
+        removeFlag.value = '0';   /* picking a new image cancels any pending removal */
+        showImage();
       };
       reader.readAsDataURL(file);
     }
@@ -330,14 +319,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     });
 
+    /* Replace → open the file picker (works even though the drop-zone is hidden) */
+    if (imgReplace) imgReplace.addEventListener('click', () => imgInput.click());
+
     if (imgRemove) {
       imgRemove.addEventListener('click', () => {
         imgPreview.src = '';
-        imgPreview.style.display = 'none';
         imgInput.value = '';
-        dropFilename.textContent = '';
         removeFlag.value = '1';
-        imgRemove.style.display = 'none';
+        showDropZone();
       });
     }
 
