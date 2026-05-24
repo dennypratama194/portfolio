@@ -209,7 +209,7 @@ for ($i = 11; $i >= 0; $i--) {
       padding: 32px 24px 20px;
       margin-bottom: 40px; overflow-x: auto;
     }
-    .chart-svg { width: 100%; min-width: 560px; max-width: 760px; height: auto; display: block; }
+    .chart-svg { width: 100%; min-width: 560px; height: auto; display: block; }
     .chart-axis { stroke: rgba(236,234,226,0.08); stroke-width: 1; }
     .chart-area { fill: rgba(232,50,10,0.10); stroke: none; }
     .chart-line {
@@ -217,11 +217,16 @@ for ($i = 11; $i >= 0; $i--) {
       stroke-linejoin: round; stroke-linecap: round;
       vector-effect: non-scaling-stroke;
     }
-    .chart-dot { fill: #E8320A; }
+    .chart-dot { fill: #E8320A; transition: r 0.12s; }
+    .chart-hit { fill: transparent; cursor: pointer; }
+    /* Value shows only on hover of its point */
     .chart-val {
-      fill: rgba(236,234,226,0.5); font-size: 11px;
+      fill: #ECEAE2; font-size: 11px;
       font-family: 'Geist Mono', monospace;
+      opacity: 0; transition: opacity 0.12s;
     }
+    .chart-pt:hover .chart-val { opacity: 1; }
+    .chart-pt:hover .chart-dot { r: 4.5; }
     .chart-xlabel {
       fill: rgba(236,234,226,0.3); font-size: 11px;
       font-family: 'Geist Mono', monospace; letter-spacing: 0.04em;
@@ -344,11 +349,17 @@ for ($i = 11; $i >= 0; $i--) {
       var SERIES = <?= json_encode($chart_series, JSON_UNESCAPED_UNICODE) ?>;
       var svg  = document.getElementById('views-chart');
       var tabs = document.querySelectorAll('.chart-tab');
-      var W = 760, H = 180, padL = 10, padR = 10, padT = 24, padB = 30;
-      var plotW = W - padL - padR, plotH = H - padT - padB, baseY = padT + plotH;
+      var H = 180, padL = 10, padR = 10, padT = 24, padB = 30;
+      var currentRange = 'daily';
+
+      /* Render at the chart's real pixel width so it fills the container 1:1 (text stays crisp) */
+      function chartWidth() {
+        var w = svg.clientWidth || (svg.parentNode && svg.parentNode.clientWidth) || 760;
+        return Math.max(560, Math.round(w));
+      }
 
       /* Catmull-Rom → cubic bezier for a smooth line; control points clamped to the plot */
-      function smoothPath(pts) {
+      function smoothPath(pts, baseY) {
         if (pts.length < 2) return pts.length ? 'M' + pts[0].x + ',' + pts[0].y : '';
         var d = 'M' + pts[0].x + ',' + pts[0].y;
         for (var i = 0; i < pts.length - 1; i++) {
@@ -366,10 +377,14 @@ for ($i = 11; $i >= 0; $i--) {
 
       function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
-      function render(range) {
-        var data = SERIES[range] || [];
+      function render() {
+        var data = SERIES[currentRange] || [];
         var n = data.length;
         if (!n) { svg.innerHTML = ''; return; }
+        var W = chartWidth();
+        var plotW = W - padL - padR, plotH = H - padT - padB, baseY = padT + plotH;
+        svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
         var max = 1;
         data.forEach(function (d) { if (d.value > max) max = d.value; });
         var step = n > 1 ? plotW / (n - 1) : 0;
@@ -380,18 +395,20 @@ for ($i = 11; $i >= 0; $i--) {
             v: d.value, label: d.label
           };
         });
-        var line = smoothPath(pts);
+        var line = smoothPath(pts, baseY);
         var area = line + ' L' + pts[n - 1].x + ',' + baseY + ' L' + pts[0].x + ',' + baseY + ' Z';
 
         var s = '<line class="chart-axis" x1="' + padL + '" y1="' + baseY + '" x2="' + (W - padR) + '" y2="' + baseY + '"/>';
         s += '<path class="chart-area" d="' + area + '"/>';
         s += '<path class="chart-line" d="' + line + '"/>';
         pts.forEach(function (p) {
-          if (p.v > 0) {
-            s += '<text class="chart-val" x="' + p.x + '" y="' + Math.max(padT - 6, p.y - 8) + '" text-anchor="middle">' + p.v + '</text>';
-          }
-          s += '<circle class="chart-dot" cx="' + p.x + '" cy="' + p.y + '" r="3">'
-             + '<title>' + esc(p.label) + ' — ' + p.v + ' views</title></circle>';
+          var bandW = step > 0 ? step : 40;
+          s += '<g class="chart-pt">'
+            +    '<text class="chart-val" x="' + p.x + '" y="' + Math.max(padT - 6, p.y - 10) + '" text-anchor="middle">' + p.v + '</text>'
+            +    '<circle class="chart-dot" cx="' + p.x + '" cy="' + p.y + '" r="3"/>'
+            +    '<rect class="chart-hit" x="' + (p.x - bandW / 2).toFixed(1) + '" y="' + padT + '" width="' + bandW.toFixed(1) + '" height="' + plotH + '">'
+            +      '<title>' + esc(p.label) + ' — ' + p.v + ' views</title></rect>'
+            +  '</g>';
           s += '<text class="chart-xlabel" x="' + p.x + '" y="' + (baseY + 18) + '" text-anchor="middle">' + esc(p.label) + '</text>';
         });
         svg.innerHTML = s;
@@ -401,10 +418,17 @@ for ($i = 11; $i >= 0; $i--) {
         t.addEventListener('click', function () {
           tabs.forEach(function (x) { x.classList.remove('is-active'); });
           t.classList.add('is-active');
-          render(t.dataset.range);
+          currentRange = t.dataset.range;
+          render();
         });
       });
-      render('daily');
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(render, 150);
+      });
+      render();
     })();
     </script>
 
