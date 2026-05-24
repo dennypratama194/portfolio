@@ -263,6 +263,16 @@ if ($chapter_id && !$edit_chapter) {
     }
     input[type=text]:focus { border-color: #E8320A; }
 
+    /* ── Content fallback textarea (shown if Quill fails) ── */
+    textarea.content-fallback {
+      width: 100%; min-height: 360px; resize: vertical;
+      background: rgba(236,234,226,0.05);
+      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      font-family: var(--font-sans); font-size: 16px; line-height: 1.75;
+      padding: 12px 16px; outline: none;
+    }
+    textarea.content-fallback:focus { border-color: #E8320A; }
+
     /* ── Quill dark theme ── */
     .ql-toolbar.ql-snow {
       background: rgba(236,234,226,0.05);
@@ -442,8 +452,10 @@ if ($chapter_id && !$edit_chapter) {
 
               <div class="field">
                 <label>Content</label>
-                <div id="quill-editor"><?= $edit_chapter['body'] ?></div>
-                <input type="hidden" name="body" id="body-input"/>
+                <!-- The textarea is the actual saved field + fallback if Quill fails to load.
+                     Quill enhances it; on submit its HTML is synced back into the textarea. -->
+                <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($edit_chapter['body'] ?? '') ?></textarea>
+                <div id="quill-editor" style="display:none"><?= $edit_chapter['body'] ?></div>
               </div>
 
               <div class="field">
@@ -476,8 +488,10 @@ if ($chapter_id && !$edit_chapter) {
   var PRODUCT_ID = <?= $product_id ?>;
 
   <?php if ($chapter_id && $edit_chapter): ?>
-  /* ── Quill editor ── */
-  var quill = new Quill('#quill-editor', {
+  /* ── Quill editor (enhances the textarea; falls back to it on any failure) ── */
+  var quill = null;
+  try {
+  quill = new Quill('#quill-editor', {
     theme: 'snow',
     placeholder: 'Write chapter content here...',
     modules: {
@@ -501,6 +515,7 @@ if ($chapter_id && !$edit_chapter) {
               if (!file) return;
               var fd = new FormData();
               fd.append('image', file);
+              fd.append('csrf', CSRF_TOKEN);
               fetch('upload-image.php', { method: 'POST', body: fd })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
@@ -519,6 +534,13 @@ if ($chapter_id && !$edit_chapter) {
       }
     }
   });
+    /* Quill loaded — swap the plain textarea for the rich editor */
+    document.getElementById('body-input').style.display = 'none';
+    document.getElementById('quill-editor').style.display = '';
+  } catch (e) {
+    /* Quill failed (CDN/JS error) — leave the textarea visible so editing & saving still work */
+    console.error('Rich editor failed to load; using plain text fallback.', e);
+  }
 
   /* ── Auto-generate slug from title ── */
   var titleEl    = document.getElementById('title');
@@ -535,9 +557,10 @@ if ($chapter_id && !$edit_chapter) {
   });
   slugEl.addEventListener('input', function () { slugEdited = true; });
 
-  /* ── Copy Quill HTML to hidden input before submit ── */
-  document.querySelector('form[action*="chapter_id"]').addEventListener('submit', function () {
-    document.getElementById('body-input').value = quill.root.innerHTML;
+  /* ── Sync the rich editor into the textarea before submit (textarea is the saved field) ── */
+  var editForm = document.querySelector('form[action*="chapter_id"]');
+  if (editForm) editForm.addEventListener('submit', function () {
+    if (quill) document.getElementById('body-input').value = quill.root.innerHTML;
   });
   <?php endif; ?>
 

@@ -23,8 +23,8 @@ $page_css    = '/css/my-library.css?v=1';
         <p class="form-page-eyebrow">My Library</p>
         <h1 class="form-page-title">Access your<br>purchases.</h1>
         <p class="form-page-sub">
-          Enter the email you used at checkout and your ebooks
-          will appear right here — no email trip needed.
+          Enter the email you used at checkout and we'll send your
+          access links straight to your inbox.
         </p>
 
         <form class="form-stack" id="lib-form" novalidate>
@@ -32,19 +32,11 @@ $page_css    = '/css/my-library.css?v=1';
           <input type="email" id="lib-email" name="email" class="form-input"
                  placeholder="you@example.com" autocomplete="email" required/>
           <button type="submit" class="form-btn" id="lib-btn">
-            <span class="form-btn-label">View My Library</span>
+            <span class="form-btn-label">Email my links</span>
             <span class="form-btn-spinner" aria-hidden="true"></span>
           </button>
         </form>
 
-        <div class="form-msg form-msg--error" id="lib-msg-not-found" hidden>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 6v5M10 14h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <p>No purchases found for that email. Double-check the address you used at checkout,
-          or <a href="/ebook/recover">resend your links by email →</a></p>
-        </div>
         <div class="form-msg form-msg--error" id="lib-msg-rate" hidden>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
@@ -61,12 +53,15 @@ $page_css    = '/css/my-library.css?v=1';
         </div>
       </div>
 
-      <!-- ── Results state ── -->
-      <div id="lib-results-state" hidden>
-        <p class="form-page-eyebrow">My Library</p>
-        <h1 class="form-page-title">Your purchases.</h1>
+      <!-- ── Sent confirmation state ── -->
+      <div id="lib-sent-state" hidden>
+        <p class="form-page-eyebrow">Check your inbox</p>
+        <h1 class="form-page-title">Links sent.</h1>
+        <p class="form-page-sub">
+          If that email has any purchases, we've just sent the access links to it.
+          Delivery can take a minute — remember to check your spam folder.
+        </p>
         <button class="lib-switch-btn" id="lib-switch-btn">← Use a different email</button>
-        <div class="lib-grid" id="lib-grid"></div>
       </div>
 
     </div>
@@ -81,62 +76,28 @@ $page_css    = '/css/my-library.css?v=1';
 (function () {
   var STORAGE_KEY = 'lib_email';
 
-  var formState    = document.getElementById('lib-form-state');
-  var resultsState = document.getElementById('lib-results-state');
-  var form         = document.getElementById('lib-form');
-  var emailEl      = document.getElementById('lib-email');
-  var btn          = document.getElementById('lib-btn');
-  var grid         = document.getElementById('lib-grid');
-  var switchBtn    = document.getElementById('lib-switch-btn');
+  var formState = document.getElementById('lib-form-state');
+  var sentState = document.getElementById('lib-sent-state');
+  var form      = document.getElementById('lib-form');
+  var emailEl   = document.getElementById('lib-email');
+  var btn       = document.getElementById('lib-btn');
+  var switchBtn = document.getElementById('lib-switch-btn');
 
-  var msgNotFound = document.getElementById('lib-msg-not-found');
-  var msgRate     = document.getElementById('lib-msg-rate');
-  var msgError    = document.getElementById('lib-msg-error');
+  var msgRate  = document.getElementById('lib-msg-rate');
+  var msgError = document.getElementById('lib-msg-error');
 
   /* Pre-fill email from localStorage */
   var saved = localStorage.getItem(STORAGE_KEY);
   if (saved) emailEl.value = saved;
 
   function hideMessages() {
-    msgNotFound.hidden = true;
-    msgRate.hidden     = true;
-    msgError.hidden    = true;
+    msgRate.hidden  = true;
+    msgError.hidden = true;
   }
 
   function setLoading(on) {
     btn.disabled = on;
     btn.classList.toggle('loading', on);
-  }
-
-  function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function showResults(purchases) {
-    grid.innerHTML = '';
-    purchases.forEach(function (p) {
-      var date = p.paid_at
-        ? new Date(p.paid_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-        : '';
-
-      var coverHtml = p.cover_image
-        ? '<img class="lib-card-cover" src="' + escHtml(p.cover_image) + '" alt="' + escHtml(p.title) + '" loading="lazy"/>'
-        : '<div class="lib-card-cover-placeholder" aria-hidden="true">◆</div>';
-
-      var card = document.createElement('div');
-      card.className = 'lib-card';
-      card.innerHTML =
-        coverHtml +
-        '<div class="lib-card-body">' +
-          '<div class="lib-card-title">' + escHtml(p.title) + '</div>' +
-          (date ? '<div class="lib-card-date">Purchased ' + date + '</div>' : '') +
-        '</div>' +
-        '<a class="lib-card-cta" href="' + escHtml(p.read_url) + '">Read Now →</a>';
-      grid.appendChild(card);
-    });
-
-    formState.hidden    = true;
-    resultsState.hidden = false;
   }
 
   form.addEventListener('submit', async function (e) {
@@ -148,18 +109,19 @@ $page_css    = '/css/my-library.css?v=1';
     setLoading(true);
 
     try {
-      var res  = await fetch('/api/ebook-library', {
+      /* Secure flow: links are emailed to the address (only the inbox owner
+         can use them). The response is intentionally generic. */
+      var res  = await fetch('/api/ebook-recover', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email: email }),
       });
       var data = await res.json().catch(function(){ return {}; });
 
-      if (data.status === 'found') {
+      if (data.status === 'sent') {
         localStorage.setItem(STORAGE_KEY, email);
-        showResults(data.purchases);
-      } else if (data.status === 'not_found') {
-        msgNotFound.hidden = false;
+        formState.hidden = true;
+        sentState.hidden = false;
       } else if (data.status === 'rate_limited') {
         msgRate.hidden = false;
       } else {
@@ -173,8 +135,8 @@ $page_css    = '/css/my-library.css?v=1';
   });
 
   switchBtn.addEventListener('click', function () {
-    resultsState.hidden = true;
-    formState.hidden    = false;
+    sentState.hidden = true;
+    formState.hidden = false;
     hideMessages();
     emailEl.focus();
   });

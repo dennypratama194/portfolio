@@ -70,6 +70,27 @@ function convertToWebp(string $image_data, string $dir, string $basename, int $q
 }
 
 /**
+ * Resolve the real client IP. The site sits behind Cloudflare, so
+ * REMOTE_ADDR is Cloudflare's edge IP (shared by all visitors) — using it
+ * for rate limiting/lockouts would punish everyone at once. Prefer the
+ * Cloudflare-set header, then X-Forwarded-For, then REMOTE_ADDR.
+ */
+function client_ip(): string {
+    $candidates = [];
+    if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $candidates[] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
+    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $candidates[] = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+    }
+    $candidates[] = $_SERVER['REMOTE_ADDR'] ?? '';
+    foreach ($candidates as $ip) {
+        if (filter_var($ip, FILTER_VALIDATE_IP)) return $ip;
+    }
+    return '0.0.0.0';
+}
+
+/**
  * Sliding-window IP rate limit (filesystem-backed).
  * Returns true if the request is allowed, false if the bucket is exhausted.
  *
@@ -77,7 +98,7 @@ function convertToWebp(string $image_data, string $dir, string $basename, int $q
  *   if (!rateLimit('posts_list', 200)) { http_response_code(429); exit; }
  */
 function rateLimit(string $bucket, int $max, int $window_sec = 3600): bool {
-    $ip       = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $ip       = client_ip();
     $rate_dir = __DIR__ . '/logs/ratelimit';
     if (!is_dir($rate_dir)) @mkdir($rate_dir, 0755, true);
 

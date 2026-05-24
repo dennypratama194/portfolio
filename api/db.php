@@ -4,6 +4,13 @@
    Credentials live in .secrets.php (gitignored).
    Copy .secrets.php.example → .secrets.php on a new server.
 ════════════════════════════════════════ */
+
+/* Block direct web access — this file is a library, only ever included. */
+if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) {
+    http_response_code(403);
+    exit('Forbidden');
+}
+
 require_once __DIR__ . '/.secrets.php';
 
 /* ── Admin password hash ── */

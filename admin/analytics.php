@@ -70,21 +70,46 @@ $top_posts = $pdo->query(
      LIMIT 5"
 )->fetchAll();
 
-/* ── Last 14 days chart ── */
-$chart_rows = $pdo->query(
-    "SELECT DATE(viewed_at) AS day, COUNT(*) AS views
+/* ── Views-over-time chart: daily / weekly / monthly series ── */
+$chart_series = ['daily' => [], 'weekly' => [], 'monthly' => []];
+
+/* Daily — last 14 days */
+$d_rows = $pdo->query(
+    "SELECT DATE(viewed_at) AS k, COUNT(*) AS v
      FROM page_views
      WHERE viewed_at >= DATE_SUB(CURDATE(), INTERVAL 13 DAY)
-     GROUP BY DATE(viewed_at)
-     ORDER BY day ASC"
+     GROUP BY k"
 )->fetchAll(PDO::FETCH_KEY_PAIR);
-
-$chart_data = [];
 for ($i = 13; $i >= 0; $i--) {
-    $day = date('Y-m-d', strtotime("-{$i} days"));
-    $chart_data[$day] = (int)($chart_rows[$day] ?? 0);
+    $k = date('Y-m-d', strtotime("-{$i} days"));
+    $chart_series['daily'][] = ['label' => date('d/m', strtotime($k)), 'value' => (int)($d_rows[$k] ?? 0)];
 }
-$max_views = max($chart_data) ?: 1;
+
+/* Weekly — last 12 weeks (bucketed by Monday of each week) */
+$w_rows = $pdo->query(
+    "SELECT DATE(DATE_SUB(viewed_at, INTERVAL WEEKDAY(viewed_at) DAY)) AS k, COUNT(*) AS v
+     FROM page_views
+     WHERE viewed_at >= DATE_SUB(CURDATE(), INTERVAL 11 WEEK)
+     GROUP BY k"
+)->fetchAll(PDO::FETCH_KEY_PAIR);
+$w_base = strtotime('monday this week');
+for ($i = 11; $i >= 0; $i--) {
+    $k = date('Y-m-d', strtotime("-{$i} week", $w_base));
+    $chart_series['weekly'][] = ['label' => date('d/m', strtotime($k)), 'value' => (int)($w_rows[$k] ?? 0)];
+}
+
+/* Monthly — last 12 months (bucketed by first of month) */
+$m_rows = $pdo->query(
+    "SELECT DATE_FORMAT(viewed_at, '%Y-%m-01') AS k, COUNT(*) AS v
+     FROM page_views
+     WHERE viewed_at >= DATE_SUB(DATE_FORMAT(CURDATE(), '%Y-%m-01'), INTERVAL 11 MONTH)
+     GROUP BY k"
+)->fetchAll(PDO::FETCH_KEY_PAIR);
+$m_base = strtotime(date('Y-m-01'));
+for ($i = 11; $i >= 0; $i--) {
+    $k = date('Y-m-01', strtotime("-{$i} month", $m_base));
+    $chart_series['monthly'][] = ['label' => date('M', strtotime($k)), 'value' => (int)($m_rows[$k] ?? 0)];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -202,6 +227,25 @@ $max_views = max($chart_data) ?: 1;
       font-family: 'Geist Mono', monospace; letter-spacing: 0.04em;
     }
 
+    /* ── Chart filter tabs ── */
+    .chart-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .chart-head .section-heading { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .chart-tabs { display: flex; border: 1px solid rgba(236,234,226,0.1); }
+    .chart-tab {
+      background: none; border: none; cursor: pointer;
+      font-family: 'Geist Mono', monospace; font-size: 12px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(236,234,226,0.4); padding: 8px 16px;
+      border-right: 1px solid rgba(236,234,226,0.1);
+      transition: color 0.2s, background 0.2s;
+    }
+    .chart-tab:last-child { border-right: none; }
+    .chart-tab:hover { color: #ECEAE2; }
+    .chart-tab.is-active { color: #E8320A; background: rgba(232,50,10,0.08); }
+
     .empty { color: rgba(236,234,226,0.2); font-size: 14px; padding: 32px 0; }
   </style>
 </head>
@@ -282,50 +326,87 @@ $max_views = max($chart_data) ?: 1;
       </div>
     </div>
 
-    <!-- ── Last 14 days chart ── -->
-    <div class="section-heading">Last 14 Days</div>
-    <?php
-      /* SVG line-chart geometry (viewBox units) */
-      $W = 760; $H = 180;
-      $padL = 10; $padR = 10; $padT = 20; $padB = 30;
-      $plotW = $W - $padL - $padR;
-      $plotH = $H - $padT - $padB;
-      $baseY = $padT + $plotH;
-      $days  = array_keys($chart_data);
-      $vals  = array_values($chart_data);
-      $n     = count($vals);
-      $step  = $n > 1 ? $plotW / ($n - 1) : 0;
-      $pts   = [];
-      foreach ($vals as $i => $v) {
-          $pts[] = [
-              'x' => round($padL + $i * $step, 1),
-              'y' => round($baseY - ($v / $max_views) * $plotH, 1),
-              'v' => $v,
-              'd' => $days[$i],
-          ];
-      }
-      $line_pts = implode(' ', array_map(fn($p) => $p['x'] . ',' . $p['y'], $pts));
-      $area_d   = 'M ' . $pts[0]['x'] . ',' . $baseY;
-      foreach ($pts as $p) { $area_d .= ' L ' . $p['x'] . ',' . $p['y']; }
-      $area_d  .= ' L ' . end($pts)['x'] . ',' . $baseY . ' Z';
-    ?>
-    <div class="chart-wrap">
-      <svg class="chart-svg" viewBox="0 0 <?= $W ?> <?= $H ?>" preserveAspectRatio="xMidYMid meet"
-           role="img" aria-label="Daily page views over the last 14 days">
-        <line class="chart-axis" x1="<?= $padL ?>" y1="<?= $baseY ?>" x2="<?= $W - $padR ?>" y2="<?= $baseY ?>"/>
-        <path class="chart-area" d="<?= $area_d ?>"/>
-        <polyline class="chart-line" points="<?= $line_pts ?>"/>
-        <?php foreach ($pts as $p): ?>
-          <?php if ($p['v'] > 0): ?>
-            <text class="chart-val" x="<?= $p['x'] ?>" y="<?= max($padT - 6, $p['y'] - 8) ?>" text-anchor="middle"><?= $p['v'] ?></text>
-          <?php endif; ?>
-          <circle class="chart-dot" cx="<?= $p['x'] ?>" cy="<?= $p['y'] ?>" r="3">
-            <title><?= date('d M', strtotime($p['d'])) ?> — <?= $p['v'] ?> views</title>
-          </circle>
-          <text class="chart-xlabel" x="<?= $p['x'] ?>" y="<?= $baseY + 18 ?>" text-anchor="middle"><?= date('d/m', strtotime($p['d'])) ?></text>
-        <?php endforeach; ?>
-      </svg>
+    <!-- ── Views-over-time chart ── -->
+    <div class="chart-head">
+      <div class="section-heading">Views Over Time</div>
+      <div class="chart-tabs" role="tablist">
+        <button class="chart-tab is-active" data-range="daily"   type="button">Daily</button>
+        <button class="chart-tab"           data-range="weekly"  type="button">Weekly</button>
+        <button class="chart-tab"           data-range="monthly" type="button">Monthly</button>
+      </div>
     </div>
+    <div class="chart-wrap">
+      <svg id="views-chart" class="chart-svg" viewBox="0 0 760 180" preserveAspectRatio="xMidYMid meet"
+           role="img" aria-label="Page views over time"></svg>
+    </div>
+    <script>
+    (function () {
+      var SERIES = <?= json_encode($chart_series, JSON_UNESCAPED_UNICODE) ?>;
+      var svg  = document.getElementById('views-chart');
+      var tabs = document.querySelectorAll('.chart-tab');
+      var W = 760, H = 180, padL = 10, padR = 10, padT = 24, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB, baseY = padT + plotH;
+
+      /* Catmull-Rom → cubic bezier for a smooth line; control points clamped to the plot */
+      function smoothPath(pts) {
+        if (pts.length < 2) return pts.length ? 'M' + pts[0].x + ',' + pts[0].y : '';
+        var d = 'M' + pts[0].x + ',' + pts[0].y;
+        for (var i = 0; i < pts.length - 1; i++) {
+          var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+          var c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+          var c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+          c1y = Math.max(padT, Math.min(baseY, c1y));
+          c2y = Math.max(padT, Math.min(baseY, c2y));
+          d += 'C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) + ' '
+                   + c2x.toFixed(1) + ',' + c2y.toFixed(1) + ' '
+                   + p2.x + ',' + p2.y;
+        }
+        return d;
+      }
+
+      function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+      function render(range) {
+        var data = SERIES[range] || [];
+        var n = data.length;
+        if (!n) { svg.innerHTML = ''; return; }
+        var max = 1;
+        data.forEach(function (d) { if (d.value > max) max = d.value; });
+        var step = n > 1 ? plotW / (n - 1) : 0;
+        var pts = data.map(function (d, i) {
+          return {
+            x: +(padL + i * step).toFixed(1),
+            y: +(baseY - (d.value / max) * plotH).toFixed(1),
+            v: d.value, label: d.label
+          };
+        });
+        var line = smoothPath(pts);
+        var area = line + ' L' + pts[n - 1].x + ',' + baseY + ' L' + pts[0].x + ',' + baseY + ' Z';
+
+        var s = '<line class="chart-axis" x1="' + padL + '" y1="' + baseY + '" x2="' + (W - padR) + '" y2="' + baseY + '"/>';
+        s += '<path class="chart-area" d="' + area + '"/>';
+        s += '<path class="chart-line" d="' + line + '"/>';
+        pts.forEach(function (p) {
+          if (p.v > 0) {
+            s += '<text class="chart-val" x="' + p.x + '" y="' + Math.max(padT - 6, p.y - 8) + '" text-anchor="middle">' + p.v + '</text>';
+          }
+          s += '<circle class="chart-dot" cx="' + p.x + '" cy="' + p.y + '" r="3">'
+             + '<title>' + esc(p.label) + ' — ' + p.v + ' views</title></circle>';
+          s += '<text class="chart-xlabel" x="' + p.x + '" y="' + (baseY + 18) + '" text-anchor="middle">' + esc(p.label) + '</text>';
+        });
+        svg.innerHTML = s;
+      }
+
+      tabs.forEach(function (t) {
+        t.addEventListener('click', function () {
+          tabs.forEach(function (x) { x.classList.remove('is-active'); });
+          t.classList.add('is-active');
+          render(t.dataset.range);
+        });
+      });
+      render('daily');
+    })();
+    </script>
 
     <!-- ── Per-page breakdown ── -->
     <div class="section-heading">By Page</div>

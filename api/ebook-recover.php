@@ -5,6 +5,7 @@
    Called by: recover.php (public) and admin/ebook-purchases.php
 ════════════════════════════════════════════════════════════ */
 header('Content-Type: application/json');
+require_once __DIR__ . '/helpers.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -25,26 +26,33 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 $email = strtolower($email);
 
-/* ── Rate limiting: max 3 requests per email per hour (file-based) ── */
-$rate_dir  = __DIR__ . '/logs/ratelimit';
+/* ── Rate limiting: per-IP (anti-enumeration) + per-email (anti-spam) ──
+   Both recorded BEFORE the lookup, so probing non-existent emails still
+   burns the attacker's budget. ── */
+$rate_dir = __DIR__ . '/logs/ratelimit';
 if (!is_dir($rate_dir)) {
     mkdir($rate_dir, 0755, true);
 }
-$rate_file = $rate_dir . '/' . hash('sha256', $email) . '.json';
-
-$timestamps   = [];
 $one_hour_ago = time() - 3600;
 
-if (file_exists($rate_file)) {
-    $stored = json_decode(file_get_contents($rate_file), true);
-    if (is_array($stored)) {
-        $timestamps = array_values(array_filter($stored, function ($t) use ($one_hour_ago) {
-            return $t > $one_hour_ago;
-        }));
+$rate_ok = function (string $file, int $max) use ($rate_dir, $one_hour_ago): bool {
+    $path = $rate_dir . '/' . $file;
+    $ts   = [];
+    if (file_exists($path)) {
+        $stored = json_decode(file_get_contents($path), true);
+        if (is_array($stored)) {
+            $ts = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
+        }
     }
-}
+    if (count($ts) >= $max) return false;
+    $ts[] = time();
+    file_put_contents($path, json_encode($ts), LOCK_EX);
+    return true;
+};
 
-if (count($timestamps) >= 3) {
+$ip = client_ip();
+if (!$rate_ok('recover_ip_' . hash('sha256', $ip) . '.json', 15)
+    || !$rate_ok('recover_' . hash('sha256', $email) . '.json', 3)) {
     http_response_code(429);
     echo json_encode(['status' => 'rate_limited']);
     exit;
@@ -65,18 +73,17 @@ $stmt = $pdo->prepare(
 $stmt->execute([$email]);
 $purchases = $stmt->fetchAll();
 
+/* ── Generic response: never reveal whether this email has purchases
+   (prevents customer enumeration). Only actually send if there are any. ── */
 if (empty($purchases)) {
-    echo json_encode(['status' => 'not_found']);
+    echo json_encode(['status' => 'sent']);
     exit;
 }
-
-/* ── Record this request in rate-limit file BEFORE sending ── */
-$timestamps[] = time();
-file_put_contents($rate_file, json_encode($timestamps), LOCK_EX);
 
 /* ── Build the recovery email HTML ── */
 $recover_link = SITE_URL . '/ebook/recover';
 $count        = count($purchases);
+$email_safe   = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
 
 /* ── Build one block per purchase ── */
 $purchase_blocks = '';
@@ -144,7 +151,7 @@ $html = <<<HTML
                 {$heading}
               </h1>
               <p style="margin:0;font-size:16px;color:#5A5855;line-height:1.6;">
-                We found {$count} {$plural} for <strong style="color:#0D0C09;">{$email}</strong>.
+                We found {$count} {$plural} for <strong style="color:#0D0C09;">{$email_safe}</strong>.
                 Each button below opens your personal copy — it's ready to read right now.
               </p>
             </td>
@@ -209,16 +216,14 @@ $curl_err    = curl_errno($ch);
 curl_close($ch);
 
 if ($curl_err || $email_code < 200 || $email_code >= 300) {
-    /* Log the failure for server-side debugging */
+    /* Log server-side, but still return the generic 'sent' response so a
+       send failure can't be used to confirm an email has purchases. */
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) { mkdir($log_dir, 0755, true); }
     $log_entry = date('c') . ' | http=' . $email_code . ' | curl_err=' . $curl_err
                . ' | resend=' . $resend_body . PHP_EOL;
     file_put_contents($log_dir . '/resend-errors.log', $log_entry, FILE_APPEND | LOCK_EX);
-
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Failed to send email. Please try again.']);
-    exit;
 }
 
-echo json_encode(['status' => 'sent', 'count' => $count]);
+/* Always generic — never leak whether the email existed or the send result. */
+echo json_encode(['status' => 'sent']);
