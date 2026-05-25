@@ -583,7 +583,7 @@ $jsonld        = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=19" defer></script>
+  <script src="/script.js?v=20" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

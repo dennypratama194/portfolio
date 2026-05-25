@@ -542,7 +542,13 @@ document.addEventListener('DOMContentLoaded', function () {
       ScrollTrigger.create({
         trigger: aboutEl,
         start: 'top 25%',
+        end:   'bottom top',
+        // Toggle in both directions so the dark-cursor state never gets stuck on
+        // after scrolling past About (was leaving the cursor invisible on the
+        // light Process section below).
         onEnter:     function () { aboutEl.classList.add('in-dark'); },
+        onEnterBack: function () { aboutEl.classList.add('in-dark'); },
+        onLeave:     function () { aboutEl.classList.remove('in-dark'); },
         onLeaveBack: function () { aboutEl.classList.remove('in-dark'); },
       });
     }
