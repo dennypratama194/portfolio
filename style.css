@@ -1395,39 +1395,36 @@
     ═══════════════════════════════════════ */
     #clients {
       background: var(--ink);
-      padding: 0 var(--pad-x) 64px;
+      padding: 64px var(--pad-x);
+    }
+    .cl-head {
+      margin-bottom: 32px;
     }
     .cl-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 2px;
       background: var(--ink);
     }
     .cl-cell {
       background: #1a1916;
-      min-height: 160px;
+      min-height: 180px;
       display: flex; align-items: center; justify-content: center;
       padding: 32px;
       transition: background 0.25s;
     }
     .cl-cell:hover { background: #211f1c; }
-    .cl-cell--text {
-      grid-column: 1 / 2;
-      grid-row: 1 / 3;
-      align-items: flex-start; justify-content: flex-end;
-      flex-direction: column;
-      padding: 40px;
-    }
     .cl-eyebrow {
       font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); margin-bottom: 16px; display: block;
     }
     .cl-headline {
+      margin: 0;
       font-family: var(--font-sans);
-      font-size: clamp(24px, 2.5vw, 40px);
+      font-size: clamp(28px, 3vw, 48px);
       font-weight: 300;
       color: var(--paper);
-      line-height: 1.2;
+      line-height: 1.1;
     }
     .cl-logo {
       max-width: 120px; max-height: 32px;
@@ -1439,15 +1436,11 @@
     .cl-logo[alt="Wordsburg"],
     .cl-logo[alt="Mariwisata"] { max-width: 160px; max-height: 52px; }
 
-    @media (max-width: 1024px) {
-      .cl-grid { grid-template-columns: 1fr 1fr 1fr; }
-      .cl-cell--text { grid-column: 1 / 4; grid-row: auto; }
-    }
     @media (max-width: 768px) {
-      #clients { padding: 0 var(--pad-x-sm) 40px; }
+      #clients { padding: 48px var(--pad-x-sm); }
+      .cl-head { margin-bottom: 24px; }
       .cl-grid { grid-template-columns: 1fr 1fr; }
-      .cl-cell--text { grid-column: 1 / 3; grid-row: auto; min-height: 100px; }
-      .cl-cell { min-height: 100px; padding: 20px; }
+      .cl-cell { min-height: 120px; padding: 20px; }
     }
 
     /* ═══════════════════════════════════════
@@ -1654,7 +1647,6 @@
     ═══════════════════════════════════════ */
     #blog-preview {
       padding: 120px var(--pad-x);
-      border-top: 1px solid var(--border);
       background: var(--paper);
     }
     .bp-header {

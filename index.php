@@ -448,11 +448,11 @@ $jsonld        = json_encode([
   </section>
 
   <section id="clients">
+    <div class="cl-head">
+      <span class="cl-eyebrow">04 — Clients</span>
+      <h2 class="cl-headline">Brands I've partnered with.</h2>
+    </div>
     <div class="cl-grid">
-      <div class="cl-cell cl-cell--text">
-        <span class="cl-eyebrow">04 — Clients</span>
-        <span class="cl-headline">Brands I've<br>partnered<br>with.</span>
-      </div>
       <div class="cl-cell">
         <img src="/assets/client-wordsburg.webp" alt="Wordsburg" class="cl-logo" loading="lazy" width="160" height="60"/>
       </div>
