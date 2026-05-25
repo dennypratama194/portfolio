@@ -23,6 +23,12 @@ if (isset($input['action']) && $input['action'] === 'end') {
     exit;
 }
 
+/* ── Skip the site owner: admins carry a "do not track" cookie set at login ── */
+if (!empty($_COOKIE['dp_notrack'])) {
+    echo json_encode(['ok' => true, 'skipped' => 'owner']);
+    exit;
+}
+
 /* ── "start" call: record a page view ── */
 $page = $input['page'] ?? '';
 $slug = isset($input['slug']) ? trim((string)$input['slug']) : null;

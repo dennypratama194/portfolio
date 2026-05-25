@@ -1991,7 +1991,7 @@
     .post-cta-btn:hover { opacity: 0.85; }
 
     .post-footer {
-      padding: 64px var(--pad-x); border-top: 1px solid var(--border);
+      padding: 64px var(--pad-x);
       display: flex; align-items: center; justify-content: space-between; gap: 24px;
     }
     .post-footer-back {
@@ -2573,7 +2573,6 @@ html.pt-leaving body { pointer-events: none; }
 
 /* ── Related articles ────────────────────────────── */
 .post-related {
-  border-top: 1px solid var(--border);
   padding: 80px var(--pad-x) 0;
 }
 .post-related-head { margin-bottom: 32px; }

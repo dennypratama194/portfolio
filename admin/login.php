@@ -55,6 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         @unlink($lock_file);              // clear lockout on success
         session_regenerate_id(true);     // prevent session fixation
         $_SESSION['authed'] = true;
+        /* ── "Do not track" cookie ── so the owner's own visits to the public
+           site aren't counted in analytics. Survives IP changes; refreshed on
+           every login. 1-year expiry, sent on all paths so track.php sees it. ── */
+        setcookie('dp_notrack', '1', [
+            'expires'  => time() + 31536000,
+            'path'     => '/',
+            'secure'   => true,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
         session_write_close();
         header('Location: /admin/analytics');
         exit;
