@@ -1395,14 +1395,14 @@
     ═══════════════════════════════════════ */
     #clients {
       background: var(--ink);
-      padding: 64px var(--pad-x);
+      padding: 64px var(--pad-x) 96px;
     }
     .cl-head {
       margin-bottom: 32px;
     }
     .cl-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 2px;
       background: var(--ink);
     }
@@ -1437,7 +1437,7 @@
     .cl-logo[alt="Mariwisata"] { max-width: 160px; max-height: 52px; }
 
     @media (max-width: 768px) {
-      #clients { padding: 48px var(--pad-x-sm); }
+      #clients { padding: 48px var(--pad-x-sm) 64px; }
       .cl-head { margin-bottom: 24px; }
       .cl-grid { grid-template-columns: 1fr 1fr; }
       .cl-cell { min-height: 120px; padding: 20px; }
