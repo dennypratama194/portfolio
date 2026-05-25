@@ -70,6 +70,68 @@ function convertToWebp(string $image_data, string $dir, string $basename, int $q
 }
 
 /**
+ * Slugify a heading into a URL-safe anchor id (e.g. "Why Empty States" → "why-empty-states").
+ */
+function slugify(string $text): string {
+    $text = preg_replace('/[^\p{L}\p{N}]+/u', '-', $text);
+    $text = trim((string) $text, '-');
+    $text = mb_strtolower($text, 'UTF-8');
+    return $text !== '' ? $text : 'section';
+}
+
+/**
+ * Parse post body HTML, assign stable id="" anchors to each <h2>, and return
+ * both the rewritten HTML and a flat table-of-contents list.
+ *
+ * Returns ['html' => string, 'toc' => [['id' => string, 'text' => string], ...]].
+ * On any failure (empty body, no DOM extension) the original HTML is returned
+ * with an empty toc, so callers can render unchanged.
+ */
+function injectHeadingIds(string $html): array {
+    if (trim($html) === '' || !class_exists('DOMDocument')) {
+        return ['html' => $html, 'toc' => []];
+    }
+
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $dom->loadHTML(
+        '<?xml encoding="UTF-8">' . '<div id="__pb">' . $html . '</div>',
+        LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+    );
+    libxml_clear_errors();
+
+    $xpath = new DOMXPath($dom);
+    $root  = $xpath->query('//*[@id="__pb"]')->item(0);
+    if (!$root) {
+        return ['html' => $html, 'toc' => []];
+    }
+
+    $toc  = [];
+    $used = [];
+    foreach (iterator_to_array($root->getElementsByTagName('h2')) as $h2) {
+        $text = trim($h2->textContent);
+        if ($text === '') continue;
+
+        $id = $h2->getAttribute('id');
+        if ($id === '') {
+            $base = slugify($text);
+            $id   = $base;
+            $n    = 2;
+            while (isset($used[$id])) { $id = $base . '-' . $n++; }
+            $h2->setAttribute('id', $id);
+        }
+        $used[$id] = true;
+        $toc[] = ['id' => $id, 'text' => $text];
+    }
+
+    $out = '';
+    foreach ($root->childNodes as $child) {
+        $out .= $dom->saveHTML($child);
+    }
+    return ['html' => $out, 'toc' => $toc];
+}
+
+/**
  * Resolve the real client IP. The site sits behind Cloudflare, so
  * REMOTE_ADDR is Cloudflare's edge IP (shared by all visitors) — using it
  * for rate limiting/lockouts would punish everyone at once. Prefer the

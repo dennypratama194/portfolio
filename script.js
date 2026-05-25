@@ -658,3 +658,74 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'ArrowRight') go(idx + 1);
   });
 }());
+
+/* ── SMOOTH SCROLL for in-page anchor links (e.g. "See the work" → #work, post TOC) ──
+   Done in JS rather than CSS scroll-behavior:smooth, which GSAP warns against when
+   ScrollTrigger pins are present (the homepage work section pins). Per-target offset
+   is handled by each element's CSS scroll-margin-top. */
+(function () {
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.classList.contains('js-open-modal')) return;
+    const id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    if (history.pushState) history.pushState(null, '', '#' + id);
+    else location.hash = id;
+  });
+})();
+
+/* ── BLOG POST: table-of-contents (mobile toggle + scroll-spy) ── */
+(function () {
+  const toc = document.getElementById('post-toc');
+  if (!toc) return;
+
+  const toggle  = document.getElementById('post-toc-toggle');
+  const links   = Array.from(toc.querySelectorAll('.post-toc-link'));
+  const isMobile = function () { return window.matchMedia('(max-width: 1199px)').matches; };
+
+  // Mobile accordion toggle (no-op visually on desktop, where the nav is always shown)
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      const open = toc.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  // Map each heading to its link; close the mobile panel after a pick
+  const linkFor = new Map();
+  links.forEach(function (link) {
+    const id = decodeURIComponent((link.getAttribute('href') || '').slice(1));
+    const target = id && document.getElementById(id);
+    if (target) linkFor.set(target, link);
+    link.addEventListener('click', function () {
+      if (isMobile()) {
+        toc.classList.remove('is-open');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+  if (!linkFor.size) return;
+
+  // Scroll-spy: highlight the heading nearest the top of the viewport
+  let active = null;
+  function setActive(link) {
+    if (link === active) return;
+    if (active) active.classList.remove('is-active');
+    if (link) link.classList.add('is-active');
+    active = link;
+  }
+
+  const spy = new IntersectionObserver(function (entries) {
+    const inView = entries
+      .filter(function (e) { return e.isIntersecting; })
+      .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+    if (inView.length) setActive(linkFor.get(inView[0].target));
+  }, { rootMargin: '-100px 0px -65% 0px', threshold: 0 });
+
+  linkFor.forEach(function (_link, target) { spy.observe(target); });
+})();
