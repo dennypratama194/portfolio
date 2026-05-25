@@ -487,78 +487,42 @@ $jsonld        = json_encode([
   </section>
 
   <section id="approach">
-    <h2 class="sr-only">From vague idea to live product — here's exactly how it works.</h2>
-
-    <div class="approach-layout" id="approach-layout">
-
-      <!-- Left: sticky step info -->
-      <div class="approach-left">
+    <div class="approach-head">
+      <div class="approach-head-main">
         <div class="approach-eyebrow">05 — Process</div>
-
-        <div class="approach-steps-wrap">
-
-          <div class="approach-step is-active" data-step="0">
-            <div class="as-kicker">
-              <span class="as-num">01</span>
-              <h3 class="as-tag">Discover</h3>
-            </div>
-            <div class="as-title">No assumptions.</div>
-            <div class="as-desc">Deep research into your users, market, and goals before a single pixel is touched.</div>
-          </div>
-
-          <div class="approach-step" data-step="1">
-            <div class="as-kicker">
-              <span class="as-num">02</span>
-              <h3 class="as-tag">Define</h3>
-            </div>
-            <div class="as-title">Clarity first.</div>
-            <div class="as-desc">Strategy, IA, and wireframes locked before visual design begins. Prevents expensive rework.</div>
-          </div>
-
-          <div class="approach-step" data-step="2">
-            <div class="as-kicker">
-              <span class="as-num">03</span>
-              <h3 class="as-tag">Design</h3>
-            </div>
-            <div class="as-title">Craft, not trend.</div>
-            <div class="as-desc">High-fidelity UI with motion, systems, and visual language built to endure — not just impress.</div>
-          </div>
-
-          <div class="approach-step" data-step="3">
-            <div class="as-kicker">
-              <span class="as-num">04</span>
-              <h3 class="as-tag">Deliver</h3>
-            </div>
-            <div class="as-title">Ship it. Own it.</div>
-            <div class="as-desc">Full build or clean handoff. Your product, live and accountable. No disappearing acts.</div>
-          </div>
-
-        </div>
-
-        <div class="approach-dots" id="approach-dots">
-          <span class="approach-dot is-active" data-step="0"></span>
-          <span class="approach-dot" data-step="1"></span>
-          <span class="approach-dot" data-step="2"></span>
-          <span class="approach-dot" data-step="3"></span>
-        </div>
+        <h2 class="approach-title">From a vague idea to a live product — here's exactly how it works.</h2>
       </div>
+      <p class="approach-intro">Four phases, no guesswork — a clear path from the first conversation to a product that's live and accountable. No assumptions, no disappearing acts.</p>
+    </div>
 
-      <!-- Right: sticky process visuals -->
-      <div class="approach-right">
-        <div class="approach-img is-active" data-step="0">
-          <div class="ai-inner ai-discover" aria-hidden="true"></div>
-        </div>
-        <div class="approach-img" data-step="1">
-          <div class="ai-inner ai-define" aria-hidden="true"></div>
-        </div>
-        <div class="approach-img" data-step="2">
-          <div class="ai-inner ai-design" aria-hidden="true"></div>
-        </div>
-        <div class="approach-img" data-step="3">
-          <div class="ai-inner ai-deliver" aria-hidden="true"></div>
-        </div>
-      </div>
+    <div class="approach-grid">
+      <article class="approach-card">
+        <span class="approach-card-num">01</span>
+        <h3 class="approach-card-tag">Discover</h3>
+        <p class="approach-card-title">No assumptions.</p>
+        <p class="approach-card-desc">Deep research into your users, market, and goals before a single pixel is touched.</p>
+      </article>
 
+      <article class="approach-card">
+        <span class="approach-card-num">02</span>
+        <h3 class="approach-card-tag">Define</h3>
+        <p class="approach-card-title">Clarity first.</p>
+        <p class="approach-card-desc">Strategy, IA, and wireframes locked before visual design begins. Prevents expensive rework.</p>
+      </article>
+
+      <article class="approach-card">
+        <span class="approach-card-num">03</span>
+        <h3 class="approach-card-tag">Design</h3>
+        <p class="approach-card-title">Craft, not trend.</p>
+        <p class="approach-card-desc">High-fidelity UI with motion, systems, and visual language built to endure — not just impress.</p>
+      </article>
+
+      <article class="approach-card">
+        <span class="approach-card-num">04</span>
+        <h3 class="approach-card-tag">Deliver</h3>
+        <p class="approach-card-title">Ship it. Own it.</p>
+        <p class="approach-card-desc">Full build or clean handoff. Your product, live and accountable. No disappearing acts.</p>
+      </article>
     </div>
   </section>
 
@@ -619,7 +583,7 @@ $jsonld        = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=18" defer></script>
+  <script src="/script.js?v=19" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

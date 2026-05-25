@@ -524,6 +524,15 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    // Process — phase cards
+    const approachCards = document.querySelectorAll('.approach-card');
+    if (approachCards.length) {
+      gsap.from(approachCards, {
+        y: 64, opacity: 0, stagger: 0.12, duration: DS, ease: EASE,
+        scrollTrigger: st(approachCards[0], { start: 'top 85%' }),
+      });
+    }
+
     // ── Trigger-based wash: paper → ink when #about hits 75% in view ─────────
     // No scrub — GPU-composited CSS transitions handle the interpolation, which
     // is frame-rate independent and immune to wheel/trackpad jitter. The class
@@ -537,39 +546,6 @@ document.addEventListener('DOMContentLoaded', function () {
         onLeaveBack: function () { aboutEl.classList.remove('in-dark'); },
       });
     }
-
-    // Approach — sticky scroll switcher
-    (function () {
-      var section = document.getElementById('approach');
-      if (!section) return;
-
-      var steps = section.querySelectorAll('.approach-step[data-step]');
-      var imgs  = section.querySelectorAll('.approach-img[data-step]');
-      var dots  = section.querySelectorAll('.approach-dot[data-step]');
-      var TOTAL = 4;
-      var current = 0;
-
-      function setStep(i) {
-        if (i === current) return;
-        current = i;
-        steps.forEach(function(el) { el.classList.toggle('is-active', +el.dataset.step === i); });
-        imgs.forEach(function(el)  { el.classList.toggle('is-active', +el.dataset.step === i); });
-        dots.forEach(function(el)  { el.classList.toggle('is-active', +el.dataset.step === i); });
-      }
-
-      // Mobile: skip scroll logic, all steps visible
-      if (window.innerWidth <= 768) return;
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: function(self) {
-          var step = Math.min(TOTAL - 1, Math.floor(self.progress * TOTAL));
-          setStep(step);
-        },
-      });
-    }());
 
     // Clients — header text
     const clientsHeader = document.querySelector('.clients-header');
