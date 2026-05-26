@@ -67,30 +67,71 @@ if (!$rc['success'] || ($rc['score'] ?? 0) < RECAPTCHA_THRESHOLD) {
     exit;
 }
 
-// Forward to Web3Forms
+// Forward to Web3Forms — prefer cURL (more reliable on shared hosting)
 $payload = json_encode([
     'access_key' => WEB3FORMS_KEY,
     'subject'    => 'New project enquiry from ' . $name,
     'name'       => $name,
     'email'      => $email,
-    'enquiry'    => $enquiry,
+    'message'    => $enquiry,
+    'from_name'  => 'dennypratama.com contact form',
 ]);
 
-$ctx = stream_context_create([
-    'http' => [
-        'method'  => 'POST',
-        'header'  => "Content-Type: application/json\r\nAccept: application/json\r\n",
-        'content' => $payload,
-        'timeout' => 10,
-    ]
-]);
+$response  = null;
+$transport = 'none';
+$curl_err  = '';
 
-$response = @file_get_contents('https://api.web3forms.com/submit', false, $ctx);
-$result   = $response ? json_decode($response, true) : null;
+if (function_exists('curl_init')) {
+    $transport = 'curl';
+    $ch = curl_init('https://api.web3forms.com/submit');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $payload,
+        CURLOPT_HTTPHEADER     => ['Content-Type: application/json', 'Accept: application/json'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_CONNECTTIMEOUT => 8,
+    ]);
+    $response   = curl_exec($ch);
+    $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err   = curl_error($ch);
+    curl_close($ch);
+} elseif (ini_get('allow_url_fopen')) {
+    $transport = 'fopen';
+    $ctx = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "Content-Type: application/json\r\nAccept: application/json\r\n",
+            'content'       => $payload,
+            'timeout'       => 10,
+            'ignore_errors' => true,
+        ]
+    ]);
+    $response  = @file_get_contents('https://api.web3forms.com/submit', false, $ctx);
+    $http_code = 0;
+    if (isset($http_response_header[0]) && preg_match('#\s(\d{3})\s#', $http_response_header[0], $m)) {
+        $http_code = (int)$m[1];
+    }
+}
 
-if ($result && $result['success']) {
+$result = $response ? json_decode($response, true) : null;
+
+if ($result && !empty($result['success'])) {
     echo json_encode(['success' => true]);
 } else {
+    // Log the failure so we can diagnose without exposing details to the client
+    $log_dir = __DIR__ . '/logs';
+    if (!is_dir($log_dir)) { @mkdir($log_dir, 0755, true); }
+    @file_put_contents($log_dir . '/contact-errors.log',
+        '[' . date('c') . '] transport=' . $transport
+        . ' http=' . ($http_code ?? 'n/a')
+        . ' curl_err=' . $curl_err
+        . ' response=' . substr((string)$response, 0, 500)
+        . "\n",
+        FILE_APPEND | LOCK_EX
+    );
+
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Submission failed, please try again']);
+    $client_msg = $result['message'] ?? 'Submission failed, please try again';
+    echo json_encode(['success' => false, 'message' => $client_msg]);
 }
