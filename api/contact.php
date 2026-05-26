@@ -130,6 +130,17 @@ if ($http_code >= 200 && $http_code < 300) {
         FILE_APPEND | LOCK_EX
     );
 
+    $resend_msg = '';
+    if ($response) {
+        $decoded = json_decode($response, true);
+        if (is_array($decoded)) {
+            $resend_msg = $decoded['message'] ?? $decoded['name'] ?? '';
+        }
+    }
+
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Submission failed, please try again']);
+    echo json_encode([
+        'success' => false,
+        'message' => $resend_msg ?: ('Submission failed (HTTP ' . $http_code . ')'),
+    ]);
 }
