@@ -23,8 +23,10 @@
               <textarea class="pm-input pm-textarea" id="pm-enquiry" placeholder="Tell me about your project…"></textarea>
             </div>
           </div>
-          <button class="pm-btn-send" id="pm-send">Send it →</button>
-          <p class="pm-recaptcha-note">Protected by reCAPTCHA — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a> &amp; <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a></p>
+          <button class="pm-btn-send" id="pm-send">
+            <span class="form-btn-spinner" aria-hidden="true"></span>
+            <span class="form-btn-label">Send it →</span>
+          </button>
         </div>
 
         <div class="pm-success" id="pm-success">

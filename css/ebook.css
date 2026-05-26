@@ -66,27 +66,32 @@
   padding: 4px 12px; border: 1px solid var(--border);
 }
 
-/* Hero buy form */
-.eb-form { display: flex; gap: 0; flex-wrap: nowrap; max-width: 520px; }
+/* Hero buy form — stacked: email above, button below (matches .pm-btn-send) */
+.eb-form { display: flex; flex-direction: column; gap: 16px; max-width: 520px; align-items: flex-start; }
 .eb-email {
-  flex: 1; min-width: 0;
+  width: 100%;
   background: #fff; border: 1.5px solid var(--ink);
-  border-right: none;
-  font-family: var(--font-sans); font-size: 14px;
+  font-family: var(--font-sans); font-size: 16px;
   padding: 14px 18px; color: var(--ink); outline: none;
   transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 .eb-email::placeholder { color: var(--ink-3); }
 .eb-email:focus { border-color: var(--red); }
+
 .eb-btn-buy {
-  background: var(--ink); color: var(--paper);
-  border: 1.5px solid var(--ink);
-  font-family: var(--font-sans); font-size: 12px; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 14px 24px; cursor: none; white-space: nowrap;
-  transition: background 0.22s, color 0.22s;
+  padding: 18px 48px;
+  background: var(--red); color: #fff;
+  border: none; border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: none; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
 }
-.eb-btn-buy:hover { background: var(--red); border-color: var(--red); }
+.eb-btn-buy:hover    { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(232,50,10,0.4); }
+.eb-btn-buy:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
 .eb-form-note {
   font-size: 14px; color: var(--ink-3); margin-top: 12px; line-height: 1.5;
 }
@@ -185,10 +190,6 @@
 }
 #eb-cta .eb-email::placeholder { color: rgba(236,234,226,0.35); }
 #eb-cta .eb-email:focus { border-color: var(--red); }
-#eb-cta .eb-btn-buy {
-  background: var(--red); border-color: var(--red); color: #fff;
-}
-#eb-cta .eb-btn-buy:hover { background: #c9290a; border-color: #c9290a; }
 #eb-cta .eb-form-note { color: rgba(236,234,226,0.35); }
 #eb-cta .eb-price { color: rgba(236,234,226,0.5); font-weight: 400; font-size: 14px; margin-top: 16px; }
 
@@ -231,9 +232,7 @@ details[open] .faq-icon { transform: rotate(45deg); color: var(--red); }
   .eb-ch-excerpt { grid-column: 2; }
   .eb-author-grid { grid-template-columns: 1fr; }
   .eb-stats-grid  { grid-template-columns: repeat(2, 1fr); }
-  .eb-form { flex-wrap: wrap; }
-  .eb-email { border-right: 1.5px solid var(--ink); min-width: 100%; }
-  .eb-btn-buy { width: 100%; justify-content: center; }
+  .eb-btn-buy { width: 100%; padding: 16px 32px; }
   #eb-cta .eb-email { border-color: rgba(236,234,226,0.2); }
 }
 @media (max-width: 480px) {

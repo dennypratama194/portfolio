@@ -102,7 +102,7 @@ $jsonld = json_encode([
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 $needs_gsap = true;
-$page_css   = '/css/ebook.css?v=1';
+$page_css   = '/css/ebook.css?v=2';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -171,11 +171,11 @@ $page_css   = '/css/ebook.css?v=1';
                autocomplete="email"/>
         <input type="hidden" name="recaptcha_token" class="eb-recaptcha-token" value=""/>
         <button class="eb-btn-buy" type="submit">
-          Get Access — <?= $price_fmt ?>
+          <span class="form-btn-spinner" aria-hidden="true"></span>
+          <span class="form-btn-label">Get Access — <?= $price_fmt ?></span>
         </button>
       </form>
       <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
-      <p class="eb-form-note eb-recaptcha-note">Protected by reCAPTCHA — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a> &amp; <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a></p>
       <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:var(--red);text-decoration:none;font-weight:500">View your library →</a></p>
     </div>
 
@@ -352,7 +352,8 @@ $page_css   = '/css/ebook.css?v=1';
              placeholder="Your email address" required
              autocomplete="email"/>
       <button class="eb-btn-buy" type="submit">
-        Get Access — <?= $price_fmt ?>
+        <span class="form-btn-spinner" aria-hidden="true"></span>
+        <span class="form-btn-label">Get Access — <?= $price_fmt ?></span>
       </button>
     </form>
     <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
@@ -365,7 +366,7 @@ $page_css   = '/css/ebook.css?v=1';
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=21" defer></script>
+<script src="/script.js?v=23" defer></script>
 <script>
   /* ── Ebook page GSAP animations ── */
   document.addEventListener('DOMContentLoaded', function () {
@@ -478,9 +479,13 @@ $page_css   = '/css/ebook.css?v=1';
         if (form.dataset.ok) return;          // second pass: real submit
         e.preventDefault();
 
-        var btn = form.querySelector('.eb-btn-buy');
-        var origText = btn ? btn.textContent : '';
-        if (btn) { btn.disabled = true; btn.textContent = 'Verifying…'; }
+        var btn   = form.querySelector('.eb-btn-buy');
+        var label = btn ? btn.querySelector('.form-btn-label') : null;
+        if (btn) {
+          btn.disabled = true;
+          btn.classList.add('loading');
+          if (label) label.textContent = 'Verifying…';
+        }
 
         function go(token) {
           var input = form.querySelector('.eb-recaptcha-token');

@@ -61,9 +61,9 @@ Admin pages share a **sidebar + mobile topbar** block (currently copy-pasted per
 | `.btn-hero-primary` | hero, homepage | solid ink pill, magnetic hover |
 | `.btn-hero-ghost` | hero, modal triggers | outlined pill |
 | `.btn-cta-main` / `.btn-cta-outline` | CTA section | solid / outlined on dark |
-| `.form-btn` | public forms (recover, library) | full-width, has `.form-btn-spinner` loading state |
-| `.pm-btn-send` | contact modal | submit |
-| `.eb-btn-buy` | ebook pages | checkout |
+| `.form-btn` | public forms (recover, library) | full-width red, has `.form-btn-spinner` loading state |
+| `.pm-btn-send` | contact modal | red pill submit; shares spinner/label pattern via `.loading` class |
+| `.eb-btn-buy` | ebook pages (hero + CTA) | red pill checkout; same visual as `.pm-btn-send`, shares spinner/label pattern |
 | `.btn-save` / `.btn-new` / `.btn-cancel` / `.btn-secondary` | admin | standard admin actions |
 
 All button text is mono + uppercase via the typography system. Magnetic hover (`.btn-hero-primary`, `.btn-cta-main`) is wired in `script.js`.

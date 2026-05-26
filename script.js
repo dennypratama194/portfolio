@@ -236,6 +236,14 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     recaptchaLoaded = true;
   }
 
+  const sendBtnLabel = sendBtn.querySelector('.form-btn-label');
+
+  function resetSendBtn() {
+    sendBtn.classList.remove('loading');
+    sendBtn.disabled = false;
+    if (sendBtnLabel) sendBtnLabel.textContent = 'Send it →';
+  }
+
   function openModal() {
     loadRecaptcha();
     modal.removeAttribute('inert');
@@ -245,6 +253,7 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     formEl.style.display    = 'flex';
     successEl.style.display = 'none';
     modal.querySelectorAll('.pm-input').forEach(i => i.value = '');
+    resetSendBtn();
     setTimeout(() => document.getElementById('pm-name').focus(), 400);
   }
   function closeModal() {
@@ -268,8 +277,9 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
     if (!email || !email.includes('@')) { shake(document.getElementById('pm-email')); return; }
 
     /* ── loading state ── */
-    sendBtn.disabled    = true;
-    sendBtn.textContent = 'Sending…';
+    sendBtn.disabled = true;
+    sendBtn.classList.add('loading');
+    if (sendBtnLabel) sendBtnLabel.textContent = 'Sending…';
 
     try {
       /* Get reCAPTCHA v3 token */
@@ -295,8 +305,11 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
       }
     } catch (err) {
       console.error('[contact form]', err);
-      sendBtn.textContent = (err && err.message ? err.message : 'Failed') + ' — try again';
-      sendBtn.disabled    = false;
+      sendBtn.classList.remove('loading');
+      if (sendBtnLabel) {
+        sendBtnLabel.textContent = (err && err.message ? err.message : 'Failed') + ' — try again';
+      }
+      sendBtn.disabled = false;
     }
   });
 
