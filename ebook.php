@@ -32,10 +32,19 @@ $ch_stmt->execute([$product['id']]);
 $chapters = $ch_stmt->fetchAll();
 
 /* ── State from query params ── */
-$purchased = isset($_GET['purchased']) && $_GET['purchased'] === '1';
-$failed    = isset($_GET['failed'])    && $_GET['failed']    === '1';
-$owned     = isset($_GET['owned'])     && $_GET['owned']     === '1';
-$error     = $_GET['error'] ?? '';
+$purchased     = isset($_GET['purchased']) && $_GET['purchased'] === '1';
+$failed        = isset($_GET['failed'])    && $_GET['failed']    === '1';
+$owned         = isset($_GET['owned'])     && $_GET['owned']     === '1';
+$access_denied = isset($_GET['access'])    && $_GET['access']    === 'denied';
+$error         = $_GET['error'] ?? '';
+
+/* When the user landed here from a denied /read token, return 403 + noindex.
+   The sales page still renders (good UX — they can re-buy or recover their link),
+   but Google won't flag this as a soft 404 and won't index the URL. */
+if ($access_denied) {
+    http_response_code(403);
+    header('X-Robots-Tag: noindex, nofollow');
+}
 
 /* ── Formatted price ── */
 $price_fmt = 'IDR ' . number_format((int)$product['price'], 0, ',', '.');
@@ -114,6 +123,10 @@ $page_css   = '/css/ebook.css?v=1';
   <div class="eb-banner eb-banner-own">
     You already own this ebook.
     <a href="/ebook/recover">Recover your access link →</a>
+  </div>
+<?php elseif ($access_denied): ?>
+  <div class="eb-banner eb-banner-err">
+    That access link is invalid or has expired. <a href="/ebook/recover">Recover your link →</a>
   </div>
 <?php elseif ($failed): ?>
   <div class="eb-banner eb-banner-err">

@@ -9,7 +9,18 @@ $token = trim($_GET['t']    ?? '');
 
 /* Redirect helpers — called before DB to handle missing params */
 function deny(string $slug): never {
-    header('Location: /ebook/' . rawurlencode($slug) . '?access=denied');
+    /* No slug → render a direct 403 instead of redirecting to /ebook/?access=denied
+       (that slug-less URL was getting flagged by Google as a soft 404). */
+    if ($slug === '') {
+        http_response_code(403);
+        header('X-Robots-Tag: noindex, nofollow');
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo "Access denied.";
+        exit;
+    }
+    /* Valid slug: send the user to the sales page (which now also returns 403 + noindex
+       when ?access=denied so it can't be soft-404'd). */
+    header('Location: /ebook/' . rawurlencode($slug) . '?access=denied', true, 302);
     exit;
 }
 

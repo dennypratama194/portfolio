@@ -15,6 +15,24 @@
       /* Typography */
       --font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      /* Type scale — one source of truth.
+         Hierarchy:  display > h1 > h2 > h3
+         Use `font-size: var(--text-h1)` etc. instead of inline clamp()s. */
+      --text-display: clamp(44px, 8vw, 88px); /* homepage hero only */
+      --text-h1:      clamp(40px, 5vw, 72px); /* page heroes + section titles */
+      --text-h2:      clamp(28px, 3vw, 40px); /* card titles, subsections */
+      --text-h3:      clamp(20px, 2vw, 28px); /* small card titles */
+    }
+
+    /* Mobile type scale — fixed values so hierarchy is guaranteed (no clamp ranges that can overlap) */
+    @media (max-width: 768px) {
+      :root {
+        --text-display: 44px;
+        --text-h1:      32px;
+        --text-h2:      24px;
+        --text-h3:      20px;
+      }
     }
 
     /* ═══════════════════════════════════════
@@ -323,7 +341,7 @@
       display: block;
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(40px, 6vw, 88px);
+      font-size: var(--text-display);
       font-weight: 400;
       letter-spacing: -0.045em;
       line-height: 0.9;
@@ -333,7 +351,7 @@
     .hero-line-2 {
       display: flex; align-items: flex-end; gap: 0.18em;
       font-family: var(--font-sans);
-      font-size: clamp(40px, 6vw, 88px);
+      font-size: var(--text-display);
       font-weight: 400;
       letter-spacing: -0.045em;
       line-height: 0.88;
@@ -499,7 +517,7 @@
     .work-title {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(40px, 5vw, 72px);
+      font-size: var(--text-h1);
       font-weight: 400;
       letter-spacing: -0.04em;
       line-height: 0.9;
@@ -574,7 +592,7 @@
     /* Bottom group — name, desc, divider, url */
     .wc-body { display: flex; flex-direction: column; }
     .wc-name {
-      font-size: clamp(28px, 3vw, 40px);
+      font-size: var(--text-h2);
       line-height: 1.1;
       color: var(--ink);
       margin-bottom: 16px;
@@ -632,7 +650,7 @@
     .manifesto-text {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(40px, 5vw, 72px);
+      font-size: var(--text-h1);
       font-weight: 400;
       letter-spacing: -0.035em;
       line-height: 1.1;
@@ -934,7 +952,7 @@
       content: ''; width: 28px; height: 1px; background: var(--red);
     }
     .approach-title {
-      font-size: clamp(32px, 4vw, 56px); font-weight: 500;
+      font-size: var(--text-h1); font-weight: 500;
       letter-spacing: -0.03em; line-height: 1.05;
       color: var(--ink); max-width: 720px;
     }
@@ -960,7 +978,7 @@
     .approach-card:hover { background: rgba(232,50,10,0.025); }
     .approach-card-num {
       font-family: var(--font-sans);
-      font-size: clamp(40px, 4vw, 64px); font-weight: 500;
+      font-size: var(--text-h2); font-weight: 500;
       letter-spacing: -0.03em; line-height: 1;
       color: var(--ink-3); margin-bottom: 8px;
     }
@@ -1021,7 +1039,7 @@
     .cta-title {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(40px, 5vw, 72px);
+      font-size: var(--text-h1);
       font-weight: 400;
       letter-spacing: -0.045em;
       line-height: 0.9;
@@ -1158,7 +1176,7 @@
     }
     .pm-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(48px, 7vw, 96px);
+      font-size: var(--text-display);
       font-weight: 400; letter-spacing: -0.04em; line-height: 0.9;
       color: var(--paper); margin-bottom: 56px;
     }
@@ -1278,7 +1296,7 @@
       .pmodal-header { padding: 20px 24px; }
       .pmodal-body   { padding: 0 24px; align-items: flex-start; }
       .pm-form, .pm-success { padding: 40px 0; }
-      .pm-title      { font-size: clamp(40px, 12vw, 64px); margin-bottom: 36px; }
+      .pm-title      { margin-bottom: 36px; }
       .pm-input      { font-size: 18px; }
       .pm-btn-send   { margin-top: 36px; padding: 16px 32px; align-self: stretch; text-align: center; justify-content: center; }
 
@@ -1329,7 +1347,7 @@
       #hero { padding: 0 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
-      .hero-line-1, .hero-line-2 { font-size: clamp(28px, 9vw, 44px); line-height: 0.92; }
+      .hero-line-1, .hero-line-2 { line-height: 0.92; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
       .scroll-cue { display: none; }
       .hero-desc { font-size: 16px; max-width: 100%; }
@@ -1339,9 +1357,8 @@
       .ticker-item { font-size: 12px; padding: 0 24px; }
 
       #work { padding: 80px 0 0; }
-      .work-header { padding: 0 24px; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 40px; }
+      .work-header { padding: 0 24px; flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
       .work-subtitle { text-align: left; max-width: 100%; }
-      .work-title { font-size: clamp(32px, 9vw, 56px); }
       .work-grid {
         grid-template-columns: 1fr;
         row-gap: 16px;
@@ -1358,7 +1375,6 @@
 
       #about { padding: 80px 24px 0; }
       .about-grid { gap: 40px; }
-      .manifesto-text { font-size: clamp(32px, 8vw, 56px); }
       .stats-block { grid-template-columns: 1fr 1fr; gap: 1px; }
       .stat-cell { padding: 24px 16px; }
       .stat-num { font-size: 48px; }
@@ -1366,11 +1382,11 @@
       #approach { padding: 80px 0 0; }
       .approach-head { grid-template-columns: 1fr; gap: 24px; padding: 0 24px; align-items: start; }
       .approach-grid { grid-template-columns: 1fr; margin: 32px 24px 0; }
-      .approach-card { padding: 32px 24px 36px; border-right: none; }
+      .approach-card { padding: 32px 24px 36px; /* keep card's own border-right so the 1-col stack has a complete right edge */ }
       .approach-card:last-child { border-bottom: none; }
 
       #cta { padding: 80px 24px; }
-      .cta-title { font-size: clamp(32px, 9vw, 56px); margin-bottom: 40px; }
+      .cta-title { margin-bottom: 40px; }
       .cta-row { flex-direction: column; align-items: flex-start; gap: 28px; }
       .cta-desc { max-width: 100%; font-size: 16px; }
       .cta-btns { flex-direction: column; width: 100%; }
@@ -1385,7 +1401,6 @@
     }
 
     @media (max-width: 480px) {
-      .hero-line-1, .hero-line-2 { font-size: clamp(24px, 10vw, 36px); }
       .stats-block { grid-template-columns: 1fr; }
       .stat-cell { padding: 20px 16px; }
     }
@@ -1421,7 +1436,7 @@
     .cl-headline {
       margin: 0;
       font-family: var(--font-sans);
-      font-size: clamp(28px, 3vw, 48px);
+      font-size: var(--text-h2);
       font-weight: 300;
       color: var(--paper);
       line-height: 1.1;
@@ -1480,7 +1495,7 @@
     .bs-num {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(32px, 3vw, 48px);
+      font-size: var(--text-h2);
       color: var(--paper);
       line-height: 1;
       font-weight: 300;
@@ -1533,7 +1548,7 @@
     .bt-quote {
       font-family: var(--font-sans);
       font-style: italic;
-      font-size: clamp(24px, 2.4vw, 32px);
+      font-size: var(--text-h3);
       line-height: 1.35;
       color: var(--paper);
       flex: 1;
@@ -1591,7 +1606,7 @@
     }
     .bc-cta-text {
       font-family: var(--font-sans);
-      font-size: clamp(28px, 2.6vw, 40px);
+      font-size: var(--text-h2);
       font-weight: 300;
       color: var(--paper);
       line-height: 1.25;
@@ -1638,7 +1653,8 @@
         padding: 0;
       }
       .bento-stat { padding: 28px 24px; }
-      .bc-testi { grid-row: auto; min-height: 280px; }
+      /* 280px clipped the longest quote + author + "Result:" line on phones; bump to fit */
+      .bc-testi { grid-row: auto; min-height: 440px; }
       .bc-clients, .bc-cta { grid-row: auto; }
     }
 
@@ -1666,7 +1682,7 @@
     .bp-view-all:hover { color: var(--red); }
     .bp-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(40px, 5.5vw, 72px); font-weight: 400;
+      font-size: var(--text-h1); font-weight: 400;
       letter-spacing: -0.04em; line-height: 0.92; color: var(--ink);
       margin-bottom: 64px;
     }
@@ -1695,7 +1711,7 @@
     }
     .bp-card-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(20px, 2vw, 28px); font-weight: 400;
+      font-size: var(--text-h3); font-weight: 400;
       letter-spacing: -0.02em; line-height: 1.2; color: var(--ink);
     }
     .bp-card-excerpt {
@@ -1734,7 +1750,7 @@
     .blog-hero-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--red); }
     .blog-hero-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(40px, 5vw, 72px); font-weight: 400;
+      font-size: var(--text-h1); font-weight: 400;
       letter-spacing: -0.045em; line-height: 0.9; color: var(--ink);
     }
 
@@ -1766,7 +1782,7 @@
     }
     .blog-card-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(24px, 2.5vw, 32px); font-weight: 400;
+      font-size: var(--text-h3); font-weight: 400;
       letter-spacing: -0.025em; line-height: 1.15; color: var(--ink);
     }
     .blog-card-excerpt {
@@ -1806,7 +1822,7 @@
     .post-hero-back:hover { color: var(--ink); }
     .post-hero-title {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(40px, 5vw, 72px); font-weight: 400;
+      font-size: var(--text-h1); font-weight: 400;
       letter-spacing: -0.045em; line-height: 0.92; color: var(--ink); max-width: 900px;
     }
     .post-featured-img {
@@ -1817,7 +1833,7 @@
     .post-body p   { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--ink-2); margin-bottom: 8px; }
     .post-body h2  {
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(28px, 3.5vw, 48px); font-weight: 400;
+      font-size: var(--text-h2); font-weight: 400;
       letter-spacing: -0.03em; line-height: 1.1; color: var(--ink); margin: 20px 0 8px;
     }
     .post-body h3  { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 16px 0 8px; }
@@ -1827,7 +1843,7 @@
     .post-body blockquote {
       border-left: 2px solid var(--red); padding: 8px 0 8px 24px; margin: 36px 0;
       font-family: var(--font-sans); font-style: italic;
-      font-size: clamp(20px, 2.5vw, 28px); color: var(--ink-2); line-height: 1.5;
+      font-size: var(--text-h3); color: var(--ink-2); line-height: 1.5;
     }
     .post-body ul, .post-body ol { padding-left: 24px; margin-bottom: 28px; }
     .post-body li  { font-size: 16px; font-weight: 300; line-height: 1.75; color: var(--ink-2); margin-bottom: 6px; }
@@ -2020,7 +2036,7 @@
 }
 .form-page-title {
   margin: 0 0 16px;
-  font-size: clamp(32px, 6vw, 48px);
+  font-size: var(--text-h1);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -2469,7 +2485,7 @@ html.pt-leaving body { pointer-events: none; }
 }
 .post-related-title {
   font-family: var(--font-sans); font-weight: 500;
-  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.03em;
+  font-size: var(--text-h2); letter-spacing: -0.03em;
   line-height: 1; color: var(--ink);
 }
 .post-related-grid {

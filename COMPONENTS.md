@@ -23,6 +23,17 @@ Defined in `:root` at the top of `style.css`. Always use these — never hardcod
 **Spacing:** multiples of 4 only (4/8/12/16/24/32/48/64/96/128).
 **Type scale:** 12/14/16/18/20/24/28/32/40/48/56/64/72/80. `12px` only for uppercase eyebrows with `letter-spacing ≥ 0.06em`; body copy ≥ 16px; captions/labels ≥ 14px.
 
+**Heading tokens** (the single source of truth — use these, never inline `clamp()` per selector):
+
+| Token | Desktop | Mobile (≤768px) | Use for |
+|---|---|---|---|
+| `--text-display` | `clamp(44px, 8vw, 88px)` | `44px` | Homepage hero only |
+| `--text-h1` | `clamp(40px, 5vw, 72px)` | `32px` | Section titles, page heroes (blog/post/ebook/form) |
+| `--text-h2` | `clamp(28px, 3vw, 40px)` | `24px` | Card titles, subsections, post-body `<h2>` |
+| `--text-h3` | `clamp(20px, 2vw, 28px)` | `20px` | Small card titles, testimonial quotes, blockquotes |
+
+Hierarchy is guaranteed at every viewport (display > h1 > h2 > h3). Apply with `font-size: var(--text-h1)`. To resize the whole site's mobile h2, edit one line in `:root` — every h2 follows.
+
 ---
 
 ## Layout components (PHP partials)

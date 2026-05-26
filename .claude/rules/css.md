@@ -18,7 +18,17 @@
 - No arbitrary values like `margin: 13px` or `padding: 22px`
 - line-height as a spacing unit must also resolve to a 4px-grid value (e.g. at 18px font: `line-height: 0` = 0px, not 0.75 = 13.5px)
 
-## Typography scale — strict
+## Headings — always use the token, never inline clamp()
+For every heading (hero, section title, card title, etc.), set:
+```css
+font-size: var(--text-display); /* homepage hero */
+font-size: var(--text-h1);      /* section titles + page heroes (blog/post/ebook/form) */
+font-size: var(--text-h2);      /* card titles, subsections, post-body h2 */
+font-size: var(--text-h3);      /* small card titles, blockquotes, testimonial quote */
+```
+Tokens are defined once in `:root` (with `clamp()` for desktop) and overridden to fixed px values inside `@media (max-width: 768px)` so hierarchy is guaranteed on mobile. **Never** write `font-size: clamp(...)` on an individual heading selector — that's exactly the inconsistency the tokens exist to prevent. See `COMPONENTS.md` for the full table.
+
+## Typography scale — strict (non-heading text)
 Allowed `font-size` values only: **14 / 16 / 18 / 20 / 24 / 28 / 32 / 40 / 48 / 56 / 64 / 72 / 80px**
 
 Rules:
