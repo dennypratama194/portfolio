@@ -44,7 +44,7 @@ $saved = isset($_GET['saved']);
 /* ── Recent auto-posts ── */
 require __DIR__ . '/../api/db.php';
 $recent = $pdo->query(
-    "SELECT title, slug, published_at FROM posts
+    "SELECT id, title, slug, published_at, featured_image FROM posts
      WHERE body LIKE '%<!-- auto-generated -->%'
      ORDER BY published_at DESC LIMIT 5"
 )->fetchAll();
@@ -156,6 +156,21 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     .post-title-link:hover { color: #E8320A; }
     .empty { font-size: 14px; padding: 24px 0; }
     .last-run { font-size: 12px; color: rgba(236,234,226,0.3); }
+
+    .img-ok      { color: #4ade80; margin-right: 8px; }
+    .img-missing { color: rgba(236,234,226,0.3); margin-right: 8px; }
+    .regen-btn {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(236,234,226,0.5); background: none;
+      border: 1px solid rgba(236,234,226,0.12);
+      padding: 4px 12px; cursor: pointer; font-family: inherit;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .regen-btn:hover:not(:disabled) { color: #ECEAE2; border-color: rgba(236,234,226,0.3); }
+    .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .regen-status { font-size: 12px; color: rgba(236,234,226,0.5); margin-left: 8px; display: inline-block; }
+    .regen-status.ok  { color: #4ade80; }
+    .regen-status.err { color: #E8320A; }
   </style>
 </head>
 <body>
@@ -298,7 +313,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     <?php else: ?>
       <table>
         <thead>
-          <tr><th>Title</th><th>Published</th></tr>
+          <tr><th>Title</th><th>Published</th><th>Image</th></tr>
         </thead>
         <tbody>
           <?php foreach ($recent as $r): ?>
@@ -309,6 +324,17 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               </a>
             </td>
             <td><?= $r['published_at'] ? date('d M Y, H:i', strtotime($r['published_at'])) : '—' ?></td>
+            <td>
+              <?php if ($r['featured_image']): ?>
+                <span class="img-ok" title="Image present">✓</span>
+              <?php else: ?>
+                <span class="img-missing" title="No image">—</span>
+              <?php endif; ?>
+              <button class="regen-btn" data-id="<?= (int)$r['id'] ?>" <?= $token ? '' : 'disabled' ?>>
+                <?= $r['featured_image'] ? 'Regenerate' : 'Generate' ?>
+              </button>
+              <span class="regen-status" data-status-for="<?= (int)$r['id'] ?>"></span>
+            </td>
           </tr>
           <?php endforeach; ?>
         </tbody>
@@ -386,6 +412,38 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           });
       });
     }
+  </script>
+  <script>
+    /* ── Per-post image regenerate ── */
+    document.querySelectorAll('.regen-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!TOKEN) return;
+        var id     = btn.dataset.id;
+        var status = document.querySelector('.regen-status[data-status-for="' + id + '"]');
+        btn.disabled = true;
+        status.className   = 'regen-status';
+        status.textContent = 'Generating…';
+
+        fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            if (d.image) {
+              status.className   = 'regen-status ok';
+              status.textContent = '✓ Saved — reloading…';
+              setTimeout(function () { location.reload(); }, 1500);
+            } else {
+              status.className   = 'regen-status err';
+              status.textContent = '✗ ' + (d.image_error || d.error || 'Failed');
+              btn.disabled = false;
+            }
+          })
+          .catch(function () {
+            status.className   = 'regen-status err';
+            status.textContent = '✗ Request failed';
+            btn.disabled = false;
+          });
+      });
+    });
   </script>
   <script src="admin.js"></script>
 

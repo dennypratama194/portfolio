@@ -25,27 +25,51 @@ if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token
     respond(403, ['ok' => false, 'error' => 'Forbidden.']);
 }
 
-if (empty($config['enabled'])) {
-    respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
-}
-
 $anthropic_key = $config['anthropic_api_key'] ?? '';
 $openai_key    = $config['openai_api_key']    ?? '';
 $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
 
-if (!$anthropic_key) {
-    respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
-}
-
 $phase = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
+
+/* `regen` is a manual admin action that only re-runs image generation for an
+   existing post — it bypasses the global enable toggle and doesn't need Claude. */
+if (empty($config['enabled']) && $phase !== 'regen') {
+    respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
+}
 
 require __DIR__ . '/db.php';
 require __DIR__ . '/helpers.php';
 
 /* ════════════════════════════════════════════════════
+   PHASE = REGEN — rebuild the featured image for an
+   existing post using a prompt synthesised from its
+   title + excerpt. Falls through to phase 2 below.
+════════════════════════════════════════════════════ */
+$is_regen = false;
+if ($phase === 'regen') {
+    $post_id = (int)($_GET['post_id'] ?? 0);
+    if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for regen.']);
+
+    $stmt = $pdo->prepare('SELECT title, excerpt FROM posts WHERE id = ?');
+    $stmt->execute([$post_id]);
+    $row = $stmt->fetch();
+    if (!$row) respond(404, ['ok' => false, 'error' => 'Post not found.']);
+
+    $image_prompt = 'Clean, modern, minimal blog header image, abstract and conceptual, no text, no people. Topic: ' . $row['title'];
+    if (!empty($row['excerpt'])) $image_prompt .= '. Context: ' . $row['excerpt'];
+
+    $is_regen = true;
+    $phase    = '2';   // fall through to existing image-generation block
+}
+
+/* ════════════════════════════════════════════════════
    PHASE 1 — Claude generates the post content
 ════════════════════════════════════════════════════ */
 if ($phase === '1' || $phase === 'all') {
+
+    if (!$anthropic_key) {
+        respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
+    }
 
     /* ── Memory: last 20 published posts (any source) so Claude knows what
        it (or you) have already covered and won't rehash them. ── */
@@ -163,7 +187,7 @@ Return ONLY a valid JSON object with these exact fields:
   "excerpt": "A compelling 2-sentence summary for the blog listing page.",
   "category": "$required_category",
   "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header image. No text, no people, abstract or conceptual.",
-  "body": "Full blog post in HTML. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags only. Minimum 600 words. No inline styles."
+  "body": "Full blog post in HTML. Use ONLY these tags: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a>, <pre>, <code>, <hr>. Multi-line code MUST be wrapped in <pre><code>...</code></pre>; inline code in <code>...</code>. Inside any <pre> or <code>, HTML-escape special characters as entities — use &lt; for <, &gt; for >, &amp; for &. Never leave raw angle brackets inside code. Minimum 600 words. No inline styles."
 }
 
 Do not include any markdown, explanation, or text outside the JSON object.
@@ -226,8 +250,11 @@ PROMPT;
     $title    = trim(strip_tags($post_data['title']));
     $excerpt  = trim(strip_tags($post_data['excerpt']));
     $category = $required_category;
-    $allowed  = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br>';
-    $body     = strip_tags($post_data['body'], $allowed) . "\n<!-- auto-generated -->";
+    $allowed  = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>';
+    /* Force code-block contents to be entity-encoded BEFORE strip_tags runs — otherwise
+       raw HTML examples inside <pre>/<code> get treated as tags and stripped, leaving
+       the code mashed together as plain inline text (the bug we just hit on the blog). */
+    $body     = strip_tags(sanitizeAutoPostCode($post_data['body']), $allowed) . "\n<!-- auto-generated -->";
 
     $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($post_data['slug'] ?? $title)), '-');
     $slug = $slug_base; $attempt = 1;
@@ -266,13 +293,13 @@ PROMPT;
 ════════════════════════════════════════════════════ */
 if ($phase === '2' || $phase === 'all') {
 
-    if ($phase === '2') {
+    if ($phase === '2' && !$is_regen) {
         /* Browser mode: read post_id and image_prompt from GET */
         $post_id      = (int)($_GET['post_id']      ?? 0);
         $image_prompt = trim($_GET['image_prompt']  ?? '');
         if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for phase 2.']);
     }
-    /* CLI/all mode: $post_id and $image_prompt already set above */
+    /* CLI/all and regen: $post_id and $image_prompt already set above */
 
     $featured_image = '';
     $image_error    = '';
@@ -354,9 +381,11 @@ if ($phase === '2' || $phase === 'all') {
         }
     }
 
-    /* Update last_run */
-    $config['last_run'] = date('Y-m-d H:i:s');
-    file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
+    /* Update last_run (skip for manual regen — that's not a cron tick) */
+    if (!$is_regen) {
+        $config['last_run'] = date('Y-m-d H:i:s');
+        file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
+    }
 
     respond(200, [
         'ok'          => true,
@@ -372,6 +401,39 @@ function respond(int $code, array $data): void {
     if (!$is_cli) http_response_code($code);
     echo json_encode($data) . "\n";
     exit;
+}
+
+/* Normalize Claude's code blocks: ensure every <pre> contains a single <code> with
+   HTML-entity-escaped contents, and any standalone <code> gets the same treatment.
+   Idempotent — runs whether Claude already used entities or wrote raw HTML. Must be
+   called BEFORE strip_tags so raw `<...>` examples inside code don't get stripped. */
+function sanitizeAutoPostCode(string $html): string {
+    // <pre>...</pre>: normalize inner to a single <code> with safely-encoded content
+    $html = preg_replace_callback(
+        '#<pre(?:\s[^>]*)?>(.*?)</pre>#is',
+        function ($m) {
+            $inner = preg_replace('#</?code(?:\s[^>]*)?>#i', '', $m[1]);
+            $inner = htmlspecialchars(
+                html_entity_decode($inner, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                ENT_QUOTES | ENT_HTML5, 'UTF-8'
+            );
+            return '<pre><code>' . $inner . '</code></pre>';
+        },
+        $html
+    );
+    // Remaining <code>...</code> (inline) — same encode pass; idempotent on already-safe text
+    $html = preg_replace_callback(
+        '#<code(?:\s[^>]*)?>(.*?)</code>#is',
+        function ($m) {
+            $inner = htmlspecialchars(
+                html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                ENT_QUOTES | ENT_HTML5, 'UTF-8'
+            );
+            return '<code>' . $inner . '</code>';
+        },
+        $html
+    );
+    return $html;
 }
 
 /* Jaccard word overlap on two titles, ignoring filler words. Used to detect
