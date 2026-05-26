@@ -47,16 +47,121 @@ require __DIR__ . '/helpers.php';
 ════════════════════════════════════════════════════ */
 if ($phase === '1' || $phase === 'all') {
 
-    $prompt = <<<PROMPT
-You are a blog writer for Denny Pratama, a UI/UX designer and developer based in Indonesia.
-Write an original, insightful, and practical blog post on ONE of these topics: UI/UX design, web development, or AI tools for designers and developers.
+    /* ── Memory: last 20 published posts (any source) so Claude knows what
+       it (or you) have already covered and won't rehash them. ── */
+    $recent_stmt = $pdo->query(
+        "SELECT title, category FROM posts
+         WHERE is_published = 1
+         ORDER BY COALESCE(published_at, scheduled_at) DESC
+         LIMIT 20"
+    );
+    $recent_posts = $recent_stmt->fetchAll();
+
+    /* ── Hard category rotation: pick whichever of uiux/development/ai is
+       least represented in the last 9 posts. Guarantees development and
+       AI posts cycle in instead of UI/UX dominating every run. ── */
+    $cat_counts = ['uiux' => 0, 'development' => 0, 'ai' => 0];
+    foreach (array_slice($recent_posts, 0, 9) as $r) {
+        if (isset($cat_counts[$r['category']])) $cat_counts[$r['category']]++;
+    }
+    asort($cat_counts); // ascending — least-published first
+    $required_category = array_key_first($cat_counts);
+
+    /* ── Topic seeds per category. Tied to the actual stack on this site
+       (PHP/MySQL/vanilla JS/GSAP/cPanel) so dev posts read native, not generic. ── */
+    $topic_seeds = [
+        'uiux' => [
+            'empty states and zero-data screens',
+            'error states and inline form validation',
+            'onboarding sequences and progressive disclosure',
+            'microcopy that improves conversion',
+            'navigation patterns: sidebar, tabs, command palette',
+            'accessibility, focus management, keyboard navigation',
+            'dashboard information density and hierarchy',
+            'mobile-first interaction patterns',
+            'multi-step forms with saved state',
+            'search and filtering UX',
+            'motion and micro-interactions',
+            'design systems and component governance',
+            'color contrast and dark mode',
+            'web typography hierarchy',
+            'pricing pages and checkout flows',
+        ],
+        'development' => [
+            'PHP performance and prepared statements with PDO',
+            'MySQL indexing and query optimization',
+            'vanilla JS patterns without frameworks',
+            'CSS Grid and modern layout techniques',
+            'GSAP animation patterns for the web',
+            'Core Web Vitals and image optimization (WebP, AVIF)',
+            'caching strategies on shared cPanel hosting',
+            'security headers, CSRF protection, XSS prevention',
+            'HTML and ARIA accessibility implementation',
+            'REST API design and JSON conventions',
+            'session and authentication patterns in PHP',
+            'file upload validation and safe storage',
+            'error logging and debugging on production',
+            'Git workflows for solo developers',
+            'deploying from local to cPanel hosting',
+        ],
+        'ai' => [
+            'using Claude as a design collaborator',
+            'prompt engineering for product copy',
+            'AI for design QA and accessibility audits',
+            'generating realistic placeholder content with AI',
+            'AI image generation for blog and marketing assets',
+            'building product features with the Claude API',
+            'AI ethics and trust in product UX',
+            'AI-assisted code review and refactoring',
+            'building AI-assisted internal tools',
+            'evaluating AI outputs: when to trust, when to verify',
+        ],
+    ];
+    $seed_list = "- " . implode("\n- ", $topic_seeds[$required_category]);
+
+    /* ── Format / angle cycle (day-of-year keeps it deterministic per run) ── */
+    $angles = [
+        'a practical tutorial with concrete step-by-step examples',
+        'an opinion piece backed by real evidence and lived experience',
+        'a "before / after" case-study style breakdown',
+        'a checklist or pattern catalog (numbered, scannable)',
+        'a debugging or post-mortem walkthrough of a real problem',
+    ];
+    $angle = $angles[(int)date('z') % count($angles)];
+
+    /* ── Build the "avoid repeating these" list for the prompt ── */
+    $recent_list = '';
+    foreach ($recent_posts as $r) {
+        $recent_list .= '- "' . $r['title'] . '" [' . ($r['category'] ?: '?') . "]\n";
+    }
+    if ($recent_list === '') $recent_list = '(no posts yet — this is the first one)';
+
+    /* ── Generate with one retry if the result word-overlaps a recent title ── */
+    $extra_constraint = '';
+    $post_data = null;
+    $candidate = null;
+
+    for ($attempt = 1; $attempt <= 2; $attempt++) {
+        $prompt = <<<PROMPT
+You are a blog writer for Denny Pratama, a UI/UX designer and developer based in Indonesia who works in PHP, vanilla JS, modern CSS, and GSAP on shared cPanel hosting.
+
+REQUIRED CATEGORY for this post: $required_category
+Format / angle for this post: $angle
+
+Topic seed list for this category — pick ONE of these (or invent something equally specific within the same category). Do not default to whichever sounds most familiar:
+$seed_list
+
+Recent posts already on the site — do NOT repeat, rehash, or write a near-variant of any of these titles or angles:
+$recent_list
+$extra_constraint
+Write an original, insightful, practical blog post on the chosen topic.
 
 Return ONLY a valid JSON object with these exact fields:
 {
   "title": "The post title (engaging, specific, not generic)",
   "slug": "url-friendly-slug-from-title",
   "excerpt": "A compelling 2-sentence summary for the blog listing page.",
-  "category": "uiux or development or ai",
+  "category": "$required_category",
   "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header image. No text, no people, abstract or conceptual.",
   "body": "Full blog post in HTML. Use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>, <blockquote> tags only. Minimum 600 words. No inline styles."
 }
@@ -64,46 +169,63 @@ Return ONLY a valid JSON object with these exact fields:
 Do not include any markdown, explanation, or text outside the JSON object.
 PROMPT;
 
-    $ch = curl_init('https://api.anthropic.com/v1/messages');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode([
-            'model'      => $model,
-            'max_tokens' => 4000,
-            'messages'   => [['role' => 'user', 'content' => $prompt]],
-        ]),
-        CURLOPT_TIMEOUT        => 60,
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'x-api-key: ' . $anthropic_key,
-            'anthropic-version: 2023-06-01',
-        ],
-    ]);
-    $claude_raw = curl_exec($ch);
-    $curl_err   = curl_error($ch);
-    curl_close($ch);
+        $ch = curl_init('https://api.anthropic.com/v1/messages');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode([
+                'model'      => $model,
+                'max_tokens' => 4000,
+                'messages'   => [['role' => 'user', 'content' => $prompt]],
+            ]),
+            CURLOPT_TIMEOUT        => 60,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'x-api-key: ' . $anthropic_key,
+                'anthropic-version: 2023-06-01',
+            ],
+        ]);
+        $claude_raw = curl_exec($ch);
+        $curl_err   = curl_error($ch);
+        curl_close($ch);
 
-    if ($curl_err) {
-        autoPostLog('Claude API curl error: ' . $curl_err);
-        respond(502, ['ok' => false, 'error' => 'Generation failed.']);
+        if ($curl_err) {
+            autoPostLog('Claude API curl error: ' . $curl_err);
+            respond(502, ['ok' => false, 'error' => 'Generation failed.']);
+        }
+
+        $claude_resp = json_decode($claude_raw, true);
+        $raw_content = $claude_resp['content'][0]['text'] ?? '';
+        $raw_content = preg_replace('/^```(?:json)?\s*/i', '', trim($raw_content));
+        $raw_content = preg_replace('/\s*```$/', '', $raw_content);
+        $candidate   = json_decode(trim($raw_content), true);
+
+        if (!$candidate || empty($candidate['title']) || empty($candidate['body'])) {
+            autoPostLog('Claude returned invalid content. Raw (first 500 chars): ' . substr($raw_content, 0, 500));
+            respond(502, ['ok' => false, 'error' => 'Generation failed.']);
+        }
+
+        /* Jaccard word overlap vs every recent title — ≥0.5 means "same topic". */
+        $clash = null;
+        foreach ($recent_posts as $r) {
+            if (titleSimilarity($candidate['title'], $r['title']) >= 0.5) {
+                $clash = $r['title'];
+                break;
+            }
+        }
+        if (!$clash) { $post_data = $candidate; break; }
+
+        autoPostLog('Attempt ' . $attempt . ' too similar to "' . $clash . '" (proposed: "' . $candidate['title'] . '") — retrying.');
+        $extra_constraint = "\nThe previous attempt produced \"" . $candidate['title'] . "\" which overlaps too much with the existing post \"" . $clash . "\". You MUST pick a COMPLETELY DIFFERENT topic this time.\n";
     }
 
-    $claude_resp = json_decode($claude_raw, true);
-    $raw_content = $claude_resp['content'][0]['text'] ?? '';
-    $raw_content = preg_replace('/^```(?:json)?\s*/i', '', trim($raw_content));
-    $raw_content = preg_replace('/\s*```$/', '', $raw_content);
-    $post_data   = json_decode(trim($raw_content), true);
+    /* If both attempts clashed, ship the last candidate rather than failing the cron run */
+    if (!$post_data) $post_data = $candidate;
 
-    if (!$post_data || empty($post_data['title']) || empty($post_data['body'])) {
-        autoPostLog('Claude returned invalid content. Raw (first 500 chars): ' . substr($raw_content, 0, 500));
-        respond(502, ['ok' => false, 'error' => 'Generation failed.']);
-    }
-
-    /* Sanitize and build slug */
+    /* Sanitize and build slug — force the rotated category server-side */
     $title    = trim(strip_tags($post_data['title']));
     $excerpt  = trim(strip_tags($post_data['excerpt']));
-    $category = in_array($post_data['category'], ['uiux', 'development', 'ai']) ? $post_data['category'] : 'ai';
+    $category = $required_category;
     $allowed  = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br>';
     $body     = strip_tags($post_data['body'], $allowed) . "\n<!-- auto-generated -->";
 
@@ -250,6 +372,24 @@ function respond(int $code, array $data): void {
     if (!$is_cli) http_response_code($code);
     echo json_encode($data) . "\n";
     exit;
+}
+
+/* Jaccard word overlap on two titles, ignoring filler words. Used to detect
+   "same topic, slightly different wording" duplicates before publishing. */
+function titleSimilarity(string $a, string $b): float {
+    static $stop = ['the','a','an','of','for','to','in','on','and','or','your','you','i','is',
+                    'are','that','this','with','how','why','what','from','at','by','as','it',
+                    'its','be','will','can','if','should','do','does','about'];
+    $wa = array_values(array_unique(array_diff(
+        preg_split('/[^a-z0-9]+/', strtolower($a), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop
+    )));
+    $wb = array_values(array_unique(array_diff(
+        preg_split('/[^a-z0-9]+/', strtolower($b), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop
+    )));
+    if (!$wa || !$wb) return 0;
+    $intersect = array_intersect($wa, $wb);
+    $union     = array_unique(array_merge($wa, $wb));
+    return count($intersect) / count($union);
 }
 
 function autoPostLog(string $msg): void {
