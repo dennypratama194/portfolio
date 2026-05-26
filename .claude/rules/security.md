@@ -19,10 +19,9 @@ All credentials live in `api/.secrets.php` (gitignored). Never hardcode in sourc
 | `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` | Database |
 | `ADMIN_USER` | Admin login username |
 | `RECAPTCHA_SECRET` | reCAPTCHA v3 |
-| `WEB3FORMS_KEY` | Contact form forwarding |
 | `XENDIT_SECRET_KEY` | Payment API |
 | `XENDIT_WEBHOOK_TOKEN` | Webhook verification |
-| `RESEND_API_KEY` | Transactional email |
+| `RESEND_API_KEY` | Transactional email (contact form + ebook delivery) |
 | `SITE_URL` | Absolute base URL (e.g. `https://dennypratama.com`) |
 
 ## Git hygiene

@@ -60,7 +60,7 @@ portfolio/
     ├── post.php            # GET ?slug=X → JSON single post
     ├── track.php           # Pageview analytics
     ├── tracker.js          # Client-side analytics
-    ├── contact.php         # Contact form → Web3Forms
+    ├── contact.php         # Contact form → Resend
     ├── ebook-checkout.php  # Xendit invoice creation
     ├── ebook-webhook.php   # Xendit payment confirmation
     ├── ebook-recover.php   # Resend magic link (also serves /my-library lookups)

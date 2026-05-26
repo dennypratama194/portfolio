@@ -67,64 +67,63 @@ if (!$rc['success'] || ($rc['score'] ?? 0) < RECAPTCHA_THRESHOLD) {
     exit;
 }
 
-// Forward to Web3Forms — prefer cURL (more reliable on shared hosting)
+/* ── Send via Resend ── */
+$safe_name    = htmlspecialchars($name,    ENT_QUOTES, 'UTF-8');
+$safe_email   = htmlspecialchars($email,   ENT_QUOTES, 'UTF-8');
+$safe_enquiry = nl2br(htmlspecialchars($enquiry, ENT_QUOTES, 'UTF-8'));
+
+$html = <<<HTML
+<!doctype html>
+<html><body style="font-family: -apple-system, Segoe UI, Roboto, sans-serif; background: #ECEAE2; color: #0D0C09; padding: 32px;">
+  <table style="max-width: 560px; margin: 0 auto; background: #fff; border: 1px solid rgba(13,12,9,0.1); border-collapse: collapse;">
+    <tr><td style="padding: 32px;">
+      <p style="font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6960; margin: 0 0 8px;">New project enquiry</p>
+      <h1 style="font-size: 24px; font-weight: 600; margin: 0 0 24px;">From {$safe_name}</h1>
+      <table style="width: 100%; font-size: 14px; line-height: 1.6;">
+        <tr><td style="padding: 8px 0; color: #6B6960; width: 80px;">Name</td><td style="padding: 8px 0;">{$safe_name}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6B6960;">Email</td><td style="padding: 8px 0;"><a href="mailto:{$safe_email}" style="color: #E8320A;">{$safe_email}</a></td></tr>
+      </table>
+      <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(13,12,9,0.1);">
+        <p style="font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6960; margin: 0 0 12px;">Message</p>
+        <div style="font-size: 16px; line-height: 1.7; color: #3A3830;">{$safe_enquiry}</div>
+      </div>
+    </td></tr>
+  </table>
+</body></html>
+HTML;
+
 $payload = json_encode([
-    'access_key' => WEB3FORMS_KEY,
-    'subject'    => 'New project enquiry from ' . $name,
-    'name'       => $name,
-    'email'      => $email,
-    'message'    => $enquiry,
-    'from_name'  => 'dennypratama.com contact form',
+    'from'     => 'Denny Pratama <noreply@dennypratama.com>',
+    'to'       => ['dennypratama194@gmail.com'],
+    'reply_to' => $email,
+    'subject'  => 'New project enquiry from ' . $name,
+    'html'     => $html,
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+$ch = curl_init('https://api.resend.com/emails');
+curl_setopt_array($ch, [
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => $payload,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_CONNECTTIMEOUT => 8,
+    CURLOPT_HTTPHEADER     => [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . RESEND_API_KEY,
+    ],
 ]);
+$response  = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$curl_err  = curl_error($ch);
+curl_close($ch);
 
-$response  = null;
-$transport = 'none';
-$curl_err  = '';
-
-if (function_exists('curl_init')) {
-    $transport = 'curl';
-    $ch = curl_init('https://api.web3forms.com/submit');
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/json', 'Accept: application/json'],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 15,
-        CURLOPT_CONNECTTIMEOUT => 8,
-    ]);
-    $response   = curl_exec($ch);
-    $http_code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curl_err   = curl_error($ch);
-    curl_close($ch);
-} elseif (ini_get('allow_url_fopen')) {
-    $transport = 'fopen';
-    $ctx = stream_context_create([
-        'http' => [
-            'method'        => 'POST',
-            'header'        => "Content-Type: application/json\r\nAccept: application/json\r\n",
-            'content'       => $payload,
-            'timeout'       => 10,
-            'ignore_errors' => true,
-        ]
-    ]);
-    $response  = @file_get_contents('https://api.web3forms.com/submit', false, $ctx);
-    $http_code = 0;
-    if (isset($http_response_header[0]) && preg_match('#\s(\d{3})\s#', $http_response_header[0], $m)) {
-        $http_code = (int)$m[1];
-    }
-}
-
-$result = $response ? json_decode($response, true) : null;
-
-if ($result && !empty($result['success'])) {
+if ($http_code >= 200 && $http_code < 300) {
     echo json_encode(['success' => true]);
 } else {
-    // Log the failure so we can diagnose without exposing details to the client
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) { @mkdir($log_dir, 0755, true); }
     @file_put_contents($log_dir . '/contact-errors.log',
-        '[' . date('c') . '] transport=' . $transport
-        . ' http=' . ($http_code ?? 'n/a')
+        '[' . date('c') . '] http=' . $http_code
         . ' curl_err=' . $curl_err
         . ' response=' . substr((string)$response, 0, 500)
         . "\n",
@@ -132,6 +131,5 @@ if ($result && !empty($result['success'])) {
     );
 
     http_response_code(500);
-    $client_msg = $result['message'] ?? 'Submission failed, please try again';
-    echo json_encode(['success' => false, 'message' => $client_msg]);
+    echo json_encode(['success' => false, 'message' => 'Submission failed, please try again']);
 }
