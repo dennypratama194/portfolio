@@ -140,7 +140,7 @@ main { flex: 1; display: flex; align-items: center; }
 })();
 </script>
 
-  <script src="/script.js?v=16" defer></script>
+  <script src="/script.js?v=21" defer></script>
   <script>var PAGE='recover',SLUG=null;</script>
   <script src="/api/tracker.js" defer></script>
 </body>

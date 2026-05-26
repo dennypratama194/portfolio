@@ -286,15 +286,16 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
         body: JSON.stringify({ name, email, enquiry, recaptcha_token })
       });
 
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (res.ok && json.success) {
         formEl.style.display    = 'none';
         successEl.style.display = 'flex';
       } else {
-        throw new Error(json.message || 'Server error');
+        throw new Error(json.message || ('HTTP ' + res.status));
       }
-    } catch {
-      sendBtn.textContent = 'Failed — try again';
+    } catch (err) {
+      console.error('[contact form]', err);
+      sendBtn.textContent = (err && err.message ? err.message : 'Failed') + ' — try again';
       sendBtn.disabled    = false;
     }
   });
