@@ -538,7 +538,7 @@
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: radial-gradient(130% 130% at 100% 100%, rgba(232,50,10,0.14) 0%, transparent 60%);
+      background: radial-gradient(130% 130% at 100% 0%, rgba(232,50,10,0.14) 0%, transparent 60%);
       opacity: 0;
       transition: opacity 0.5s cubic-bezier(0.23,1,0.32,1);
       pointer-events: none;

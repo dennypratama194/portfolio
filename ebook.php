@@ -156,11 +156,13 @@ $page_css   = '/css/ebook.css?v=1';
         <input class="eb-email" type="email" name="email"
                placeholder="Your email address" required
                autocomplete="email"/>
+        <input type="hidden" name="recaptcha_token" class="eb-recaptcha-token" value=""/>
         <button class="eb-btn-buy" type="submit">
           Get Access — <?= $price_fmt ?>
         </button>
       </form>
       <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
+      <p class="eb-form-note eb-recaptcha-note">Protected by reCAPTCHA — <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a> &amp; <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a></p>
       <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:var(--red);text-decoration:none;font-weight:500">View your library →</a></p>
     </div>
 
@@ -437,6 +439,54 @@ $page_css   = '/css/ebook.css?v=1';
       el.addEventListener('mouseleave', function () { document.body.classList.remove('on-dark'); });
     });
   });
+</script>
+
+<script>
+  /* ── reCAPTCHA v3 on the buy form ──
+     Loads grecaptcha on-demand, intercepts each .eb-form submit, fetches a
+     scored token, drops it into the hidden field, then lets the normal POST
+     fly through to /api/ebook-checkout. Fails open (third-party outage must
+     never block a real buyer) — the server still rejects only on a confident
+     low-score verdict. Matches the pattern used in admin/login.php. ── */
+  (function () {
+    var KEY = (document.querySelector('meta[name="recaptcha-site-key"]') || {}).content || '';
+    var forms = document.querySelectorAll('.eb-form');
+    if (!KEY || !forms.length) return;
+
+    if (typeof grecaptcha === 'undefined') {
+      var s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?render=' + KEY;
+      s.async = true;
+      document.head.appendChild(s);
+    }
+
+    forms.forEach(function (form) {
+      form.addEventListener('submit', function (e) {
+        if (form.dataset.ok) return;          // second pass: real submit
+        e.preventDefault();
+
+        var btn = form.querySelector('.eb-btn-buy');
+        var origText = btn ? btn.textContent : '';
+        if (btn) { btn.disabled = true; btn.textContent = 'Verifying…'; }
+
+        function go(token) {
+          var input = form.querySelector('.eb-recaptcha-token');
+          if (input) input.value = token || '';
+          form.dataset.ok = '1';
+          form.submit();
+        }
+
+        if (typeof grecaptcha === 'undefined') { go(''); return; }
+        try {
+          grecaptcha.ready(function () {
+            grecaptcha.execute(KEY, { action: 'ebook_buy' })
+              .then(go)
+              .catch(function () { go(''); });
+          });
+        } catch (_) { go(''); }
+      });
+    });
+  })();
 </script>
 </body>
 </html>

@@ -71,7 +71,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/></noscript>
 
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
-  <link rel="stylesheet" href="/style.css?v=85"/>
+  <link rel="stylesheet" href="/style.css?v=86"/>
   <?php if (!empty($page_css)): /* page-specific stylesheet, loaded after the global one */ ?>
   <link rel="stylesheet" href="<?= htmlspecialchars($page_css) ?>"/>
   <?php endif; ?>

@@ -32,6 +32,24 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     checkout_fail($product_slug, 'invalid_email');
 }
 
+/* ── reCAPTCHA v3 verification (soft signal) ──
+   Blocks ONLY on a confident bot verdict. No token, invalid token, or Google
+   unreachable all fail OPEN — a third-party outage must never block a real
+   buyer from completing a purchase. Pairs with the buy-form JS in ebook.php. ── */
+$rc_token = trim($_POST['recaptcha_token'] ?? '');
+if ($rc_token !== '' && defined('RECAPTCHA_SECRET')) {
+    $rc_ctx = stream_context_create(['http' => ['timeout' => 5]]);
+    $rc_raw = @file_get_contents(
+        'https://www.google.com/recaptcha/api/siteverify?secret=' . urlencode(RECAPTCHA_SECRET)
+        . '&response=' . urlencode($rc_token),
+        false, $rc_ctx
+    );
+    $rc = $rc_raw ? json_decode($rc_raw, true) : null;
+    if (is_array($rc) && ($rc['success'] ?? false) === true && (float)($rc['score'] ?? 1) < 0.3) {
+        checkout_fail($product_slug, 'captcha');
+    }
+}
+
 /* ── Look up active product ── */
 $stmt = $pdo->prepare('SELECT * FROM ebook_products WHERE slug = ? AND is_active = 1');
 $stmt->execute([$product_slug]);

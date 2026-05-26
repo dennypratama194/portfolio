@@ -69,7 +69,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=1"/>
+  <link rel="stylesheet" href="theme.css?v=2"/>
   <style>
     .main { max-width: 760px; }
     input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
@@ -355,6 +355,11 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       });
     }
 
+    /* ── Animated-dots loading indicator (CSS in theme.css → .loading-dots) ── */
+    function loadingHtml(verb, suffix) {
+      return verb + '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>' + (suffix || '');
+    }
+
     /* ── Run Now (two-phase) ── */
     var runBtn    = document.getElementById('run-btn');
     var runStatus = document.getElementById('run-status');
@@ -364,7 +369,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         runStatus.className = 'run-status';
-        runStatus.textContent = 'Phase 1 — Generating content with Claude…';
+        runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
 
         /* Phase 1: Claude generates post */
         fetch('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
@@ -377,7 +382,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               return;
             }
 
-            runStatus.textContent = 'Phase 2 — Generating featured image with gpt-image-2…';
+            runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image with gpt-image-2');
 
             /* Phase 2: gpt-image-2 generates image */
             var p2url = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN)
@@ -421,8 +426,8 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         var id     = btn.dataset.id;
         var status = document.querySelector('.regen-status[data-status-for="' + id + '"]');
         btn.disabled = true;
-        status.className   = 'regen-status';
-        status.textContent = 'Generating…';
+        status.className = 'regen-status';
+        status.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
         fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
           .then(function (r) { return r.json(); })

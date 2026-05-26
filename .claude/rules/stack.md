@@ -63,9 +63,8 @@ portfolio/
     ├── contact.php         # Contact form → Web3Forms
     ├── ebook-checkout.php  # Xendit invoice creation
     ├── ebook-webhook.php   # Xendit payment confirmation
-    ├── ebook-library.php   # User purchase lookup
-    ├── ebook-recover.php   # Resend magic link
-    └── auto-post.php       # AI auto-publishing (Claude + DALL-E)
+    ├── ebook-recover.php   # Resend magic link (also serves /my-library lookups)
+    └── auto-post.php       # AI auto-publishing (Claude + gpt-image-2)
 ```
 
 ## Never do

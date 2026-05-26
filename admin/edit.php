@@ -174,7 +174,7 @@ $sched_val = !empty($post['scheduled_at'])
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=1"/>
+  <link rel="stylesheet" href="theme.css?v=2"/>
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet"/>
   <style>
@@ -508,6 +508,11 @@ $sched_val = !empty($post['scheduled_at'])
       });
     }
 
+    /* ── Animated-dots loading indicator (CSS in theme.css → .loading-dots) ── */
+    function loadingHtml(verb, suffix) {
+      return verb + '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>' + (suffix || '');
+    }
+
     /* ── Re-format body with AI via /api/auto-post.php?phase=reformat
        (Returns body for review; does NOT save until you click the form's Save button.) ── */
     const bodyReformatBtn    = document.getElementById('body-reformat');
@@ -517,7 +522,7 @@ $sched_val = !empty($post['scheduled_at'])
         if (!confirm('Re-format the body with AI? It will rewrite this post\'s body so stripped code blocks come back. The new content loads into the editor for review — your current draft will be replaced in the editor, but nothing is saved until you click Save.')) return;
         bodyReformatBtn.disabled = true;
         bodyReformatStatus.className = 'img-regen-status';
-        bodyReformatStatus.textContent = 'Re-formatting… (this can take 30–60s)';
+        bodyReformatStatus.innerHTML = loadingHtml('Re-formatting', ' (30–60s)');
 
         fetch('/api/auto-post.php?phase=reformat&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
           .then(r => r.json())
@@ -552,7 +557,7 @@ $sched_val = !empty($post['scheduled_at'])
         if (!confirm('Regenerate the featured image with AI? This uses the post\'s saved title + excerpt and replaces the current image.')) return;
         imgRegen.disabled = true;
         imgRegenStatus.className = 'img-regen-status';
-        imgRegenStatus.textContent = 'Generating… (this can take ~30–60s)';
+        imgRegenStatus.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
         fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
           .then(r => r.json())

@@ -497,3 +497,26 @@ tr.row-link:hover { background: rgba(236,234,226,0.03); }
 [data-theme="light"] .panel-editor      { background: #F4F3EF; }
 [data-theme="light"] .toggle-option     { border-color: rgba(28,27,24,0.12); color: rgba(28,27,24,0.55); }
 [data-theme="light"] .app-wrap          { background: #F4F3EF; }
+
+/* ═══════════════════════════════════════════════════════
+   Loading indicator — animated ellipsis used by status
+   spans during in-flight AI actions (regen, reformat, run).
+   Spans-with-staggered-opacity is more reliable cross-browser
+   than animating CSS `content`. The dots inherit color from
+   the parent .*-status span so red/green states still apply.
+═══════════════════════════════════════════════════════ */
+.loading-dots {
+  display: inline-block;
+  margin-left: 2px;
+}
+.loading-dots span {
+  display: inline-block;
+  animation: loading-dots-pulse 1.4s ease-in-out infinite;
+  opacity: 0.2;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes loading-dots-pulse {
+  0%, 80%, 100% { opacity: 0.2; }
+  40%           { opacity: 1; }
+}
