@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-/* ── Rate limiting: max 5 submissions per IP per hour ── */
+/* ── Rate limiting: max 50 submissions per IP per hour (TEMP — drop back to 5 after debugging) ── */
 $rate_dir = __DIR__ . '/logs/ratelimit';
 if (!is_dir($rate_dir)) {
     mkdir($rate_dir, 0755, true);
@@ -27,7 +27,7 @@ if (file_exists($rate_file)) {
         $timestamps = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
     }
 }
-if (count($timestamps) >= 5) {
+if (count($timestamps) >= 50) {
     http_response_code(429);
     echo json_encode(['success' => false, 'message' => 'Too many requests, please try again later']);
     exit;
