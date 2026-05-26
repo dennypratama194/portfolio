@@ -18,15 +18,15 @@
 - No arbitrary values like `margin: 13px` or `padding: 22px`
 - line-height as a spacing unit must also resolve to a 4px-grid value (e.g. at 18px font: `line-height: 0` = 0px, not 0.75 = 13.5px)
 
-## Headings — always use the token, never inline clamp()
-For every heading (hero, section title, card title, etc.), set:
+## Headings — always use the token pair, never inline clamp() / line-height
+For every heading (hero, section title, card title, etc.), set BOTH size and line-height from the matching token:
 ```css
-font-size: var(--text-display); /* homepage hero */
-font-size: var(--text-h1);      /* section titles + page heroes (blog/post/ebook/form) */
-font-size: var(--text-h2);      /* card titles, subsections, post-body h2 */
-font-size: var(--text-h3);      /* small card titles, blockquotes, testimonial quote */
+font-size: var(--text-h1);   line-height: var(--leading-h1);   /* section titles, page heroes */
+font-size: var(--text-h2);   line-height: var(--leading-h2);   /* cards, subsections, post-body h2 */
+font-size: var(--text-h3);   line-height: var(--leading-h3);   /* small cards, blockquotes */
+font-size: var(--text-display); line-height: var(--leading-display); /* homepage hero only */
 ```
-Tokens are defined once in `:root` (with `clamp()` for desktop) and overridden to fixed px values inside `@media (max-width: 768px)` so hierarchy is guaranteed on mobile. **Never** write `font-size: clamp(...)` on an individual heading selector — that's exactly the inconsistency the tokens exist to prevent. See `COMPONENTS.md` for the full table.
+Tokens are defined once in `:root` (clamp() for desktop) and overridden to fixed values inside `@media (max-width: 768px)` so hierarchy AND vertical rhythm are guaranteed on mobile (tight ratios at 72px feel crowded at 32px — the mobile leading tokens loosen them). **Never** write `font-size: clamp(...)` or a one-off `line-height` on an individual heading — that's exactly the inconsistency the tokens exist to prevent. See `COMPONENTS.md` for the full table.
 
 ## Typography scale — strict (non-heading text)
 Allowed `font-size` values only: **14 / 16 / 18 / 20 / 24 / 28 / 32 / 40 / 48 / 56 / 64 / 72 / 80px**
