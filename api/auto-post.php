@@ -31,9 +31,9 @@ $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
 
 $phase = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
-/* `regen` is a manual admin action that only re-runs image generation for an
-   existing post — it bypasses the global enable toggle and doesn't need Claude. */
-if (empty($config['enabled']) && $phase !== 'regen') {
+/* `regen` and `reformat` are manual admin actions on an existing post — they
+   bypass the global enable toggle (it gates cron publishing, not manual repair). */
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -60,6 +60,110 @@ if ($phase === 'regen') {
 
     $is_regen = true;
     $phase    = '2';   // fall through to existing image-generation block
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE = REFORMAT — Claude rewrites an existing post's
+   body so previously-stripped code sections get wrapped
+   back in <pre><code> with HTML entities. Returns the
+   new body for review; does NOT save to DB.
+════════════════════════════════════════════════════ */
+if ($phase === 'reformat') {
+    if (!$anthropic_key) {
+        respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
+    }
+
+    $post_id = (int)($_GET['post_id'] ?? 0);
+    if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for reformat.']);
+
+    $stmt = $pdo->prepare('SELECT title, body FROM posts WHERE id = ?');
+    $stmt->execute([$post_id]);
+    $row = $stmt->fetch();
+    if (!$row) respond(404, ['ok' => false, 'error' => 'Post not found.']);
+
+    $old_body  = $row['body'];
+    $old_title = $row['title'];
+
+    $reformat_prompt = <<<PROMPT
+You are repairing a blog post whose code blocks were destroyed when raw HTML was stripped during publishing. Your job is to identify everything that should be code (PHP, HTML, CSS, JavaScript, shell/bash, .htaccess directives, JSON, regex, file paths, variables, function signatures, etc.) and re-wrap each one as code.
+
+Post title (for context only): $old_title
+
+Current broken body HTML:
+---
+$old_body
+---
+
+CRITICAL RULES — follow exactly:
+- DO NOT change the prose. Keep every sentence and word identical except for adding code wrapping.
+- DO NOT add new content, headings, summaries, or commentary.
+- DO NOT alter existing <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a>, <br>, <hr> structure where it's already correct.
+- Multi-line code MUST be wrapped in <pre><code>...</code></pre>. Inline code (variables, file paths, short identifiers) in <code>...</code>.
+- Inside ANY <pre> or <code>: HTML-escape special characters — &lt; for <, &gt; for >, &amp; for &.
+- Reinsert real newlines inside <pre><code> blocks where the original code clearly had them (one statement per line, opening braces on their own line where appropriate, etc.).
+- Keep the trailing "<!-- auto-generated -->" marker if it exists in the original body.
+- If a snippet doesn't clearly look like code, leave it as prose. Don't over-wrap.
+
+Return ONLY a JSON object with this exact shape:
+{"body": "the corrected complete HTML body"}
+
+Do not include markdown fences, commentary, or any text outside the JSON object.
+PROMPT;
+
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode([
+            'model'      => $model,
+            'max_tokens' => 8192,
+            'messages'   => [['role' => 'user', 'content' => $reformat_prompt]],
+        ]),
+        CURLOPT_TIMEOUT        => 90,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'x-api-key: ' . $anthropic_key,
+            'anthropic-version: 2023-06-01',
+        ],
+    ]);
+    $reformat_raw = curl_exec($ch);
+    $reformat_err = curl_error($ch);
+    curl_close($ch);
+
+    if ($reformat_err) {
+        autoPostLog('Reformat curl error: ' . $reformat_err);
+        respond(502, ['ok' => false, 'error' => 'Claude request failed.']);
+    }
+
+    $reformat_resp = json_decode($reformat_raw, true);
+    $reformat_text = $reformat_resp['content'][0]['text'] ?? '';
+    $reformat_text = preg_replace('/^```(?:json)?\s*/i', '', trim($reformat_text));
+    $reformat_text = preg_replace('/\s*```$/', '', $reformat_text);
+    $reformat_json = json_decode(trim($reformat_text), true);
+
+    if (!$reformat_json || empty($reformat_json['body'])) {
+        autoPostLog('Reformat returned invalid JSON. Raw (first 500 chars): ' . substr($reformat_text, 0, 500));
+        respond(502, ['ok' => false, 'error' => 'Reformat output was not valid JSON.']);
+    }
+
+    $new_body = strip_tags(
+        sanitizeAutoPostCode($reformat_json['body']),
+        '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>'
+    );
+
+    // Preserve the auto-generated marker if it was in the original
+    if (strpos($old_body, '<!-- auto-generated -->') !== false
+        && strpos($new_body, '<!-- auto-generated -->') === false) {
+        $new_body .= "\n<!-- auto-generated -->";
+    }
+
+    /* Intentionally NOT saving to DB. The editor receives the new body, the user
+       reviews it in Quill, and saves via the existing form submit. */
+    respond(200, [
+        'ok'    => true,
+        'phase' => 'reformat',
+        'body'  => $new_body,
+    ]);
 }
 
 /* ════════════════════════════════════════════════════

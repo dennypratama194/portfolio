@@ -9,6 +9,16 @@ require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
+/* ── Auto-post token (lets us call /api/auto-post.php?phase=regen for AI image
+   regeneration on existing posts). Token is generated on the auto-post settings
+   page; if the user hasn't visited that page yet the button is simply hidden. ── */
+$auto_token = '';
+$auto_cfg_file = __DIR__ . '/../api/.auto_post_config.json';
+if (file_exists($auto_cfg_file)) {
+    $auto_cfg = json_decode(@file_get_contents($auto_cfg_file), true);
+    if (is_array($auto_cfg)) $auto_token = $auto_cfg['token'] ?? '';
+}
+
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>'','scheduled_at'=>null,'published_at'=>null];
 $errors = [];
@@ -245,8 +255,15 @@ $sched_val = !empty($post['scheduled_at'])
     }
     .img-action { color: rgba(236,234,226,0.5); }
     .img-action:hover { color: #ECEAE2; }
+    .img-action:disabled { opacity: 0.4; cursor: not-allowed; }
     .img-remove { color: rgba(232,50,10,0.6); }
     .img-remove:hover { color: #E8320A; }
+
+    .img-regen { margin-top: 16px; }
+    .img-regen-status { font-size: 14px; color: rgba(236,234,226,0.5); margin-left: 12px; display: inline-block; }
+    .img-regen-status.ok  { color: #4ade80; }
+    .img-regen-status.err { color: #E8320A; }
+    .img-regen-hint { font-size: 14px; color: rgba(236,234,226,0.35); margin-top: 8px; }
 
   </style>
 </head>
@@ -327,6 +344,15 @@ $sched_val = !empty($post['scheduled_at'])
         </div>
 
         <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
+
+        <?php $can_regen_image = $id && $auto_token; ?>
+        <?php if ($can_regen_image): ?>
+        <div class="img-regen">
+          <button type="button" class="img-action" id="img-regen">✨ Regenerate with AI</button>
+          <span class="img-regen-status" id="img-regen-status"></span>
+          <div class="img-regen-hint">Uses the post's saved title and excerpt. Save first if you've changed either.</div>
+        </div>
+        <?php endif; ?>
       </div>
 
       <div class="field">
@@ -335,6 +361,14 @@ $sched_val = !empty($post['scheduled_at'])
              Quill enhances it; on submit its HTML is synced back into the textarea. -->
         <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
         <div id="quill-editor" style="display:none"><?= $post['body'] ?></div>
+
+        <?php if ($can_regen_image): ?>
+        <div class="img-regen">
+          <button type="button" class="img-action" id="body-reformat">✨ Re-format with AI</button>
+          <span class="img-regen-status" id="body-reformat-status"></span>
+          <div class="img-regen-hint">Rewrites the body — wraps stripped code in proper code blocks while keeping prose untouched. Loads the result into the editor for review; click Save to commit.</div>
+        </div>
+        <?php endif; ?>
       </div>
 
       <div class="field">
@@ -372,6 +406,12 @@ $sched_val = !empty($post['scheduled_at'])
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+  <?php if ($can_regen_image): ?>
+  <script>
+    var REGEN_TOKEN = '<?= addslashes($auto_token) ?>';
+    var POST_ID     = <?= (int)$id ?>;
+  </script>
+  <?php endif; ?>
   <script>
     /* ── Quill editor (enhances the textarea; falls back to it on any failure) ── */
     var quill = null;
@@ -465,6 +505,77 @@ $sched_val = !empty($post['scheduled_at'])
         imgInput.value = '';
         removeFlag.value = '1';
         showDropZone();
+      });
+    }
+
+    /* ── Re-format body with AI via /api/auto-post.php?phase=reformat
+       (Returns body for review; does NOT save until you click the form's Save button.) ── */
+    const bodyReformatBtn    = document.getElementById('body-reformat');
+    const bodyReformatStatus = document.getElementById('body-reformat-status');
+    if (bodyReformatBtn && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
+      bodyReformatBtn.addEventListener('click', () => {
+        if (!confirm('Re-format the body with AI? It will rewrite this post\'s body so stripped code blocks come back. The new content loads into the editor for review — your current draft will be replaced in the editor, but nothing is saved until you click Save.')) return;
+        bodyReformatBtn.disabled = true;
+        bodyReformatStatus.className = 'img-regen-status';
+        bodyReformatStatus.textContent = 'Re-formatting… (this can take 30–60s)';
+
+        fetch('/api/auto-post.php?phase=reformat&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
+          .then(r => r.json())
+          .then(d => {
+            if (d.ok && d.body) {
+              bodyReformatStatus.className = 'img-regen-status ok';
+              bodyReformatStatus.textContent = '✓ Loaded — review and click Save';
+              if (quill) {
+                quill.root.innerHTML = d.body;
+              } else {
+                document.getElementById('body-input').value = d.body;
+              }
+            } else {
+              bodyReformatStatus.className = 'img-regen-status err';
+              bodyReformatStatus.textContent = '✗ ' + (d.error || 'Failed');
+            }
+            bodyReformatBtn.disabled = false;
+          })
+          .catch(() => {
+            bodyReformatStatus.className = 'img-regen-status err';
+            bodyReformatStatus.textContent = '✗ Request failed';
+            bodyReformatBtn.disabled = false;
+          });
+      });
+    }
+
+    /* ── Regenerate featured image via /api/auto-post.php?phase=regen ── */
+    const imgRegen       = document.getElementById('img-regen');
+    const imgRegenStatus = document.getElementById('img-regen-status');
+    if (imgRegen && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
+      imgRegen.addEventListener('click', () => {
+        if (!confirm('Regenerate the featured image with AI? This uses the post\'s saved title + excerpt and replaces the current image.')) return;
+        imgRegen.disabled = true;
+        imgRegenStatus.className = 'img-regen-status';
+        imgRegenStatus.textContent = 'Generating… (this can take ~30–60s)';
+
+        fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
+          .then(r => r.json())
+          .then(d => {
+            if (d.image) {
+              imgRegenStatus.className = 'img-regen-status ok';
+              imgRegenStatus.textContent = '✓ New image saved';
+              /* Update preview without reloading; cache-bust so the new file shows. */
+              imgPreview.src = 'uploads/' + d.image + '?t=' + Date.now();
+              imgInput.value = '';
+              removeFlag.value = '0';
+              showImage();
+            } else {
+              imgRegenStatus.className = 'img-regen-status err';
+              imgRegenStatus.textContent = '✗ ' + (d.image_error || d.error || 'Failed');
+            }
+            imgRegen.disabled = false;
+          })
+          .catch(() => {
+            imgRegenStatus.className = 'img-regen-status err';
+            imgRegenStatus.textContent = '✗ Request failed';
+            imgRegen.disabled = false;
+          });
       });
     }
 
