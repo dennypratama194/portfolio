@@ -5,5 +5,6 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /admin/uploads/
 Disallow: /read/
+Disallow: /ebook/
 
 Sitemap: https://dennypratama.com/sitemap.xml

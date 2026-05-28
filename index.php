@@ -16,7 +16,7 @@ $bp_posts = $bp_stmt->fetchAll();
 
 $title         = 'Denny Pratama — UI/UX Designer & Developer for Startups';
 $description   = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
-$canonical     = 'https://dennypratama.com';
+$canonical     = 'https://dennypratama.com/';
 $og_image      = 'https://dennypratama.com/assets/og-image.png';
 $needs_gsap    = true;
 $meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designer and developer, startup product design, web designer Indonesia, UI designer for hire';
@@ -490,7 +490,7 @@ $jsonld        = json_encode([
     <div class="approach-head">
       <div class="approach-head-main">
         <div class="approach-eyebrow">05 — Process</div>
-        <h2 class="approach-title">From a vague idea to a live product — here's exactly how it works.</h2>
+        <h2 class="approach-title">From a vague idea to a live product.</h2>
       </div>
       <p class="approach-intro">Four phases, no guesswork — a clear path from the first conversation to a product that's live and accountable. No assumptions, no disappearing acts.</p>
     </div>
