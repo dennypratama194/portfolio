@@ -97,16 +97,28 @@ arsort($src_hosts);
 $top_referrers   = array_slice($src_hosts, 0, 10, true);
 $src_total       = array_sum($src_buckets);
 
-/* ── Top countries (NULL = pre-migration or non-Cloudflare traffic, skipped) ── */
-$top_countries = $pdo->query(
-    "SELECT country, COUNT(*) AS v
-     FROM page_views
-     WHERE country IS NOT NULL
-     GROUP BY country
-     ORDER BY v DESC
-     LIMIT 10"
-)->fetchAll();
-$country_total = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE country IS NOT NULL")->fetchColumn();
+/* ── Top countries (NULL = pre-migration or non-Cloudflare traffic, skipped) ──
+   Detect the column first so the dashboard still loads before the migration runs. */
+$has_country = (bool)$pdo->query(
+    "SELECT COUNT(*) FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE()
+       AND TABLE_NAME   = 'page_views'
+       AND COLUMN_NAME  = 'country'"
+)->fetchColumn();
+
+$top_countries = [];
+$country_total = 0;
+if ($has_country) {
+    $top_countries = $pdo->query(
+        "SELECT country, COUNT(*) AS v
+         FROM page_views
+         WHERE country IS NOT NULL
+         GROUP BY country
+         ORDER BY v DESC
+         LIMIT 10"
+    )->fetchAll();
+    $country_total = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE country IS NOT NULL")->fetchColumn();
+}
 
 /* ISO-2 → readable name (only the codes likely to appear; fall back to the code itself) */
 $country_names = [

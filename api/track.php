@@ -95,10 +95,23 @@ if (!preg_match('/^[A-Z]{2}$/', $country) || in_array($country, ['XX', 'T1'], tr
 }
 
 try {
-    $pdo->prepare(
-        'INSERT INTO page_views (page_type, post_slug, ip_hash, country, referrer, viewed_at)
-         VALUES (?, ?, ?, ?, ?, NOW())'
-    )->execute([$page, $slug, $ip_hash, $country, $referrer]);
+    try {
+        $pdo->prepare(
+            'INSERT INTO page_views (page_type, post_slug, ip_hash, country, referrer, viewed_at)
+             VALUES (?, ?, ?, ?, ?, NOW())'
+        )->execute([$page, $slug, $ip_hash, $country, $referrer]);
+    } catch (PDOException $e) {
+        /* Falls here if the `country` column doesn't exist yet (migration 003 not run).
+           Retry without it so views keep recording during the deploy gap. */
+        if ($e->getCode() === '42S22') {
+            $pdo->prepare(
+                'INSERT INTO page_views (page_type, post_slug, ip_hash, referrer, viewed_at)
+                 VALUES (?, ?, ?, ?, NOW())'
+            )->execute([$page, $slug, $ip_hash, $referrer]);
+        } else {
+            throw $e;
+        }
+    }
 
     echo json_encode(['ok' => true, 'view_id' => (int)$pdo->lastInsertId()]);
 } catch (PDOException $e) {
