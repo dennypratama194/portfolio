@@ -57,6 +57,71 @@ $blog_uniq    = (int)($breakdown['blog']['unique_v'] ?? 0);
 $post_views   = (int)($breakdown['post']['views']   ?? 0);
 $post_uniq    = (int)($breakdown['post']['unique_v'] ?? 0);
 
+/* ── Traffic sources: bucket referrers + collect top hostnames ──
+   Direct = no referrer. Search/Social = known host patterns. Referral = the rest. */
+$src_buckets = ['direct' => 0, 'search' => 0, 'social' => 0, 'referral' => 0];
+$src_hosts   = [];
+
+$search_hosts = ['google.', 'bing.', 'yahoo.', 'duckduckgo.', 'yandex.', 'baidu.', 'ecosia.', 'brave.com', 'kagi.com'];
+$social_hosts = ['facebook.', 'fb.com', 'twitter.', 'x.com', 't.co', 'linkedin.', 'lnkd.in',
+                 'instagram.', 'tiktok.', 'youtube.', 'youtu.be', 'pinterest.', 'reddit.',
+                 'threads.net', 'whatsapp.', 'telegram.', 'discord.', 'dribbble.'];
+
+$ref_rows = $pdo->query(
+    "SELECT referrer, COUNT(*) AS v FROM page_views GROUP BY referrer"
+)->fetchAll();
+
+foreach ($ref_rows as $r) {
+    $count = (int)$r['v'];
+    $ref   = trim((string)$r['referrer']);
+
+    if ($ref === '') { $src_buckets['direct'] += $count; continue; }
+
+    $host = parse_url($ref, PHP_URL_HOST);
+    if (!$host) { $src_buckets['direct'] += $count; continue; }
+    $host = strtolower(preg_replace('/^www\./', '', $host));
+
+    /* Skip self-referrals (internal navigation isn't a "source") */
+    if ($host === 'dennypratama.com') { continue; }
+
+    $bucket = 'referral';
+    foreach ($search_hosts as $needle) { if (strpos($host, $needle) !== false) { $bucket = 'search'; break; } }
+    if ($bucket === 'referral') {
+        foreach ($social_hosts as $needle) { if (strpos($host, $needle) !== false) { $bucket = 'social'; break; } }
+    }
+    $src_buckets[$bucket] += $count;
+    $src_hosts[$host] = ($src_hosts[$host] ?? 0) + $count;
+}
+
+arsort($src_hosts);
+$top_referrers   = array_slice($src_hosts, 0, 10, true);
+$src_total       = array_sum($src_buckets);
+
+/* ── Top countries (NULL = pre-migration or non-Cloudflare traffic, skipped) ── */
+$top_countries = $pdo->query(
+    "SELECT country, COUNT(*) AS v
+     FROM page_views
+     WHERE country IS NOT NULL
+     GROUP BY country
+     ORDER BY v DESC
+     LIMIT 10"
+)->fetchAll();
+$country_total = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE country IS NOT NULL")->fetchColumn();
+
+/* ISO-2 → readable name (only the codes likely to appear; fall back to the code itself) */
+$country_names = [
+    'ID' => 'Indonesia', 'US' => 'United States', 'GB' => 'United Kingdom', 'SG' => 'Singapore',
+    'MY' => 'Malaysia', 'AU' => 'Australia', 'CA' => 'Canada', 'DE' => 'Germany', 'FR' => 'France',
+    'NL' => 'Netherlands', 'IN' => 'India', 'JP' => 'Japan', 'KR' => 'South Korea', 'PH' => 'Philippines',
+    'TH' => 'Thailand', 'VN' => 'Vietnam', 'BR' => 'Brazil', 'MX' => 'Mexico', 'ES' => 'Spain',
+    'IT' => 'Italy', 'AE' => 'United Arab Emirates', 'SA' => 'Saudi Arabia', 'NG' => 'Nigeria',
+    'ZA' => 'South Africa', 'TR' => 'Turkey', 'PL' => 'Poland', 'SE' => 'Sweden', 'CH' => 'Switzerland',
+    'IE' => 'Ireland', 'HK' => 'Hong Kong', 'TW' => 'Taiwan', 'CN' => 'China', 'PK' => 'Pakistan',
+    'BD' => 'Bangladesh', 'EG' => 'Egypt', 'AR' => 'Argentina', 'CL' => 'Chile', 'CO' => 'Colombia',
+    'NZ' => 'New Zealand', 'NO' => 'Norway', 'DK' => 'Denmark', 'FI' => 'Finland', 'BE' => 'Belgium',
+    'AT' => 'Austria', 'PT' => 'Portugal', 'RO' => 'Romania', 'CZ' => 'Czechia',
+];
+
 /* ── Top 5 posts (views + unique visitors) ── */
 $top_posts = $pdo->query(
     "SELECT pv.post_slug, p.title,
@@ -252,6 +317,13 @@ for ($i = 11; $i >= 0; $i--) {
     .chart-tab.is-active { color: #E8320A; background: rgba(232,50,10,0.08); }
 
     .empty { color: rgba(236,234,226,0.2); font-size: 14px; padding: 32px 0; }
+
+    /* ── Traffic sources grid (4 buckets) ── */
+    .breakdown-grid.src-grid { grid-template-columns: repeat(4, 1fr); }
+    .section-heading.sub-heading { margin-top: 8px; }
+    @media (max-width: 768px) {
+      .breakdown-grid.src-grid { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -437,6 +509,96 @@ for ($i = 11; $i >= 0; $i--) {
       </div>
       <?php endforeach; ?>
     </div>
+
+    <!-- ── Traffic sources ── -->
+    <div class="section-heading">Traffic Sources</div>
+    <?php if ($src_total === 0): ?>
+      <div class="empty">No traffic source data yet.</div>
+    <?php else: ?>
+      <div class="breakdown-grid src-grid">
+        <?php
+          $src_meta = [
+            'direct'   => ['name' => 'Direct',   'sub' => 'Typed or bookmarked'],
+            'search'   => ['name' => 'Search',   'sub' => 'Google, Bing, etc.'],
+            'social'   => ['name' => 'Social',   'sub' => 'X, LinkedIn, etc.'],
+            'referral' => ['name' => 'Referral', 'sub' => 'Other websites'],
+          ];
+        ?>
+        <?php foreach ($src_meta as $key => $meta): $n = $src_buckets[$key]; ?>
+        <div class="breakdown-card">
+          <div class="breakdown-name"><?= $meta['name'] ?></div>
+          <div class="breakdown-row">
+            <span class="breakdown-metric"><?= $meta['sub'] ?></span>
+            <span class="breakdown-num"><?= number_format($n) ?></span>
+          </div>
+          <hr class="breakdown-divider"/>
+          <div class="breakdown-row">
+            <span class="breakdown-metric">Share</span>
+            <span class="breakdown-num dim"><?= $src_total > 0 ? round($n / $src_total * 100) : 0 ?>%</span>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+
+      <?php if (!empty($top_referrers)): $max_ref = max($top_referrers); ?>
+        <div class="section-heading sub-heading">Top Referrers</div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Source</th><th>Views</th></tr>
+          </thead>
+          <tbody>
+            <?php $i = 0; foreach ($top_referrers as $host => $count): $i++; ?>
+            <tr>
+              <td class="rank"><?= $i ?></td>
+              <td class="post-title-cell"><?= htmlspecialchars($host) ?></td>
+              <td>
+                <div class="view-bar-wrap">
+                  <div class="view-bar-bg">
+                    <div class="view-bar-fill" style="width:<?= round($count / $max_ref * 100) ?>%"></div>
+                  </div>
+                  <span class="view-count"><?= number_format($count) ?></span>
+                </div>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    <?php endif; ?>
+
+    <!-- ── Top countries ── -->
+    <div class="section-heading">Top Countries</div>
+    <?php if (empty($top_countries)): ?>
+      <div class="empty">No country data yet. Cloudflare must be in front of the site and the migration must be run.</div>
+    <?php else: $max_country = (int)$top_countries[0]['v']; ?>
+      <table>
+        <thead>
+          <tr><th>#</th><th>Country</th><th>Views</th></tr>
+        </thead>
+        <tbody>
+          <?php foreach ($top_countries as $i => $row):
+            $code = $row['country'];
+            $name = $country_names[$code] ?? $code;
+          ?>
+          <tr>
+            <td class="rank"><?= $i + 1 ?></td>
+            <td>
+              <div class="post-title-cell"><?= htmlspecialchars($name) ?></div>
+              <div class="post-slug-cell"><?= htmlspecialchars($code) ?></div>
+            </td>
+            <td>
+              <div class="view-bar-wrap">
+                <div class="view-bar-bg">
+                  <div class="view-bar-fill" style="width:<?= round($row['v'] / $max_country * 100) ?>%"></div>
+                </div>
+                <span class="view-count"><?= number_format($row['v']) ?></span>
+              </div>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
 
     <!-- ── Top posts ── -->
     <div class="section-heading">Top Posts</div>

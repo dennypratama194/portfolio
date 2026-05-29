@@ -88,11 +88,17 @@ if ($chk->fetchColumn() > 0) {
 /* ── Insert and return view_id ── */
 $referrer = substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500) ?: null;
 
+/* Country from Cloudflare (2-letter ISO). 'XX' / 'T1' = unknown/Tor → store NULL. */
+$country = strtoupper(trim($_SERVER['HTTP_CF_IPCOUNTRY'] ?? ''));
+if (!preg_match('/^[A-Z]{2}$/', $country) || in_array($country, ['XX', 'T1'], true)) {
+    $country = null;
+}
+
 try {
     $pdo->prepare(
-        'INSERT INTO page_views (page_type, post_slug, ip_hash, referrer, viewed_at)
-         VALUES (?, ?, ?, ?, NOW())'
-    )->execute([$page, $slug, $ip_hash, $referrer]);
+        'INSERT INTO page_views (page_type, post_slug, ip_hash, country, referrer, viewed_at)
+         VALUES (?, ?, ?, ?, ?, NOW())'
+    )->execute([$page, $slug, $ip_hash, $country, $referrer]);
 
     echo json_encode(['ok' => true, 'view_id' => (int)$pdo->lastInsertId()]);
 } catch (PDOException $e) {
