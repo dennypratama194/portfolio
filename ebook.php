@@ -366,7 +366,7 @@ $page_css   = '/css/ebook.css?v=2';
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=23" defer></script>
+<script src="/script.js?v=24" defer></script>
 <script>
   /* ── Ebook page GSAP animations ── */
   document.addEventListener('DOMContentLoaded', function () {

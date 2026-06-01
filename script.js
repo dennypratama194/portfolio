@@ -66,29 +66,33 @@
 })();
 
 /* ── CURSOR ── */
-const ring = document.getElementById('cursor-ring');
-const dot  = document.getElementById('cursor-dot');
-let rX = 0, rY = 0, dX = 0, dY = 0;
-document.addEventListener('mousemove', e => {
-  dX = e.clientX; dY = e.clientY;
-  dot.style.left = dX + 'px'; dot.style.top = dY + 'px';
-});
-function lerpCursor() {
-  const nx = rX + (dX - rX) * 0.12;
-  const ny = rY + (dY - rY) * 0.12;
-  if (Math.abs(nx - rX) > 0.1 || Math.abs(ny - rY) > 0.1) {
-    rX = nx; rY = ny;
-    ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
-  } else {
-    rX = nx; rY = ny;
+/* Skip entirely on touch devices — no pointer means nothing to track */
+const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (hasFinePointer) {
+  const ring = document.getElementById('cursor-ring');
+  const dot  = document.getElementById('cursor-dot');
+  let rX = 0, rY = 0, dX = 0, dY = 0;
+  document.addEventListener('mousemove', e => {
+    dX = e.clientX; dY = e.clientY;
+    dot.style.left = dX + 'px'; dot.style.top = dY + 'px';
+  });
+  function lerpCursor() {
+    const nx = rX + (dX - rX) * 0.12;
+    const ny = rY + (dY - rY) * 0.12;
+    if (Math.abs(nx - rX) > 0.1 || Math.abs(ny - rY) > 0.1) {
+      rX = nx; rY = ny;
+      ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+    } else {
+      rX = nx; rY = ny;
+    }
+    requestAnimationFrame(lerpCursor);
   }
-  requestAnimationFrame(lerpCursor);
+  lerpCursor();
+  /* Single delegated listener — avoids attaching handlers to 100+ elements */
+  document.addEventListener('mouseover', e => {
+    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell'));
+  });
 }
-lerpCursor();
-/* Single delegated listener — avoids attaching handlers to 100+ elements */
-document.addEventListener('mouseover', e => {
-  document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell'));
-});
 
 /* ── NAV BURGER / OVERLAY ── */
 const burger     = document.getElementById('nav-burger');

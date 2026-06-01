@@ -94,6 +94,10 @@
       transform: translate(-50%, -50%);
       transition: width 0.1s, height 0.1s, background 0.2s;
     }
+    /* Touch devices have no real cursor — don't paint or animate it */
+    @media (hover: none), (pointer: coarse) {
+      #cursor-ring, #cursor-dot { display: none !important; }
+    }
     body.cursor-hover #cursor-ring {
       width: 64px; height: 64px;
       background: var(--red);
