@@ -1,9 +1,10 @@
 <?php
-set_time_limit(180); // gpt-image-2 generation can take longer than the old DALL·E call
+set_time_limit(300);
 
 $is_cli = php_sapi_name() === 'cli';
 
 if (!$is_cli) {
+    ob_start(); // capture any stray PHP warnings/notices so they don't corrupt JSON
     header('Content-Type: application/json');
 }
 
@@ -502,7 +503,13 @@ if ($phase === '2' || $phase === 'all') {
 /* ── Helpers ── */
 function respond(int $code, array $data): void {
     global $is_cli;
-    if (!$is_cli) http_response_code($code);
+    if (!$is_cli) {
+        $stray = ob_get_clean(); // discard any PHP warnings so JSON isn't corrupted
+        if ($stray) {
+            $data['_php_warnings'] = substr($stray, 0, 500); // surface for debugging
+        }
+        http_response_code($code);
+    }
     echo json_encode($data) . "\n";
     exit;
 }

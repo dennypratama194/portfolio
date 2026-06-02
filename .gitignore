@@ -7,6 +7,9 @@ api/.auto_post_config.json
 api/logs/
 admin/uploads/
 
+# graphify knowledge graph — regenerate per-machine
+graphify-out/
+
 # OS
 .DS_Store
 Thumbs.db

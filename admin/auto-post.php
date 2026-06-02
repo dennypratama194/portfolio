@@ -365,6 +365,21 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     var runStatus = document.getElementById('run-status');
     var TOKEN     = '<?= addslashes($token) ?>';
 
+    /* Fetch wrapper: returns parsed JSON or throws with the raw body as the message */
+    function fetchJSON(url) {
+      return fetch(url).then(function(r) {
+        return r.text().then(function(txt) {
+          try {
+            var d = JSON.parse(txt);
+            if (d._php_warnings) console.warn('PHP warnings:', d._php_warnings);
+            return d;
+          } catch(e) {
+            throw new Error('Server returned non-JSON (HTTP ' + r.status + '): ' + txt.slice(0, 300));
+          }
+        });
+      });
+    }
+
     if (runBtn) {
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
@@ -372,8 +387,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
 
         /* Phase 1: Claude generates post */
-        fetch('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
-          .then(function(r){ return r.json(); })
+        fetchJSON('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
           .then(function(d1){
             if (!d1.ok) {
               runStatus.className = 'run-status err';
@@ -390,8 +404,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               + '&post_id=' + d1.post_id
               + '&image_prompt=' + encodeURIComponent(d1.image_prompt || '');
 
-            fetch(p2url)
-              .then(function(r){ return r.json(); })
+            fetchJSON(p2url)
               .then(function(d2){
                 if (d2.image) {
                   runStatus.className = 'run-status ok';
@@ -403,16 +416,18 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
                 }
                 setTimeout(function(){ location.reload(); }, 6000);
               })
-              .catch(function(){
+              .catch(function(err){
                 /* Phase 2 failed but post was already created in phase 1 */
                 runStatus.className = 'run-status err';
                 runStatus.textContent = '⚠ Published: "' + d1.title + '" but image request errored.';
+                console.error('Phase 2 error:', err.message);
                 setTimeout(function(){ location.reload(); }, 6000);
               });
           })
-          .catch(function(){
+          .catch(function(err){
             runStatus.className = 'run-status err';
-            runStatus.textContent = '✗ Request failed. Check your API keys and enable status.';
+            runStatus.textContent = '✗ ' + (err && err.message ? err.message : 'Request failed');
+            console.error('Phase 1 error:', err);
             runBtn.disabled = false;
           });
       });
@@ -429,8 +444,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         status.className = 'regen-status';
         status.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
-        fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
-          .then(function (r) { return r.json(); })
+        fetchJSON('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
           .then(function (d) {
             if (d.image) {
               status.className   = 'regen-status ok';
@@ -442,9 +456,10 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               btn.disabled = false;
             }
           })
-          .catch(function () {
+          .catch(function (err) {
             status.className   = 'regen-status err';
-            status.textContent = '✗ Request failed';
+            status.textContent = '✗ ' + (err && err.message ? err.message : 'Request failed');
+            console.error('Regen error:', err);
             btn.disabled = false;
           });
       });
