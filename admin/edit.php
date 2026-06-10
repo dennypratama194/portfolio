@@ -178,12 +178,37 @@ $sched_val = !empty($post['scheduled_at'])
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet"/>
   <style>
-    .main { max-width: 900px; }
+    .main { max-width: 1120px; }
     .top-bar { justify-content: flex-start; gap: 16px; }
     .field { margin-bottom: 28px; }
     textarea { min-height: 80px; }
     textarea.content-fallback { min-height: 320px; resize: vertical; line-height: 1.75; }
     select { font-size: 16px; }
+
+    /* ── Two-column edit layout ── */
+    .edit-layout { display: grid; grid-template-columns: 1fr 272px; gap: 40px; align-items: start; }
+    .edit-main { min-width: 0; }
+    .edit-sidebar { position: sticky; top: 24px; }
+    .sidebar-card {
+      background: rgba(236,234,226,0.03);
+      border: 1px solid rgba(236,234,226,0.08);
+      padding: 24px;
+    }
+    .sidebar-section-label {
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(236,234,226,0.35); margin-bottom: 12px; display: block;
+    }
+    .edit-sidebar .publish-options { flex-direction: column; gap: 6px; margin-bottom: 0; }
+    .sidebar-divider { border: none; border-top: 1px solid rgba(236,234,226,0.08); margin: 20px 0; }
+    .sidebar-actions { display: flex; flex-direction: column; gap: 8px; }
+    .sidebar-actions .btn-save {
+      display: block; text-align: center; width: 100%; box-sizing: border-box;
+    }
+    .sidebar-actions .btn-cancel { display: block; text-align: center; }
+    @media (max-width: 900px) {
+      .edit-layout { grid-template-columns: 1fr; }
+      .edit-sidebar { position: static; }
+    }
 
     /* Quill editor styling to match dark theme */
     .ql-toolbar.ql-snow {
@@ -288,119 +313,133 @@ $sched_val = !empty($post['scheduled_at'])
     <form method="POST" action="edit.php<?= $id ? '?id='.$id : '' ?>" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
 
-      <div class="field">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title"
-               value="<?= htmlspecialchars($post['title']) ?>"
-               placeholder="Post title" required/>
-      </div>
+      <div class="edit-layout">
 
-      <div class="field">
-        <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
-        <input type="text" id="slug" name="slug"
-               value="<?= htmlspecialchars($post['slug']) ?>"
-               placeholder="post-url-slug" required/>
-      </div>
+        <!-- ── Left: content fields ── -->
+        <div class="edit-main">
 
-      <div class="field">
-        <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
-        <textarea id="excerpt" name="excerpt" rows="3"
-                  placeholder="Short summary of the post..."><?= htmlspecialchars($post['excerpt']) ?></textarea>
-      </div>
-
-      <div class="field">
-        <label for="category">Category</label>
-        <select id="category" name="category">
-          <option value="" <?= $post['category']==='' ? 'selected' : '' ?>>— No category —</option>
-          <option value="uiux"        <?= $post['category']==='uiux'        ? 'selected' : '' ?>>UI/UX</option>
-          <option value="development" <?= $post['category']==='development' ? 'selected' : '' ?>>Development</option>
-          <option value="ai"          <?= $post['category']==='ai'          ? 'selected' : '' ?>>AI</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Featured Image</label>
-        <?php $has_img = !empty($post['featured_image']); ?>
-
-        <!-- Drop zone — shown only when there's no image yet -->
-        <div class="drop-zone" id="drop-zone" style="<?= $has_img ? 'display:none' : '' ?>">
-          <input type="file" name="featured_image" id="img-input" accept="image/*"/>
-          <div id="drop-prompt">
-            <div class="drop-icon">⬆</div>
-            <div class="drop-text">Drag &amp; drop image here, or <span>browse</span></div>
-            <div class="drop-filename" id="drop-filename"></div>
+          <div class="field">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title"
+                   value="<?= htmlspecialchars($post['title']) ?>"
+                   placeholder="Post title" required/>
           </div>
-        </div>
 
-        <!-- Preview + actions — shown when an image exists or has just been picked -->
-        <div class="img-wrap" id="img-wrap" style="<?= $has_img ? '' : 'display:none' ?>">
-          <img class="img-preview" id="img-preview"
-               src="<?= $has_img ? 'uploads/' . htmlspecialchars($post['featured_image']) : '' ?>"
-               alt="Featured image"/>
-          <div class="img-actions">
-            <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
-            <button type="button" class="img-remove" id="img-remove">Remove image</button>
+          <div class="field">
+            <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+            <input type="text" id="slug" name="slug"
+                   value="<?= htmlspecialchars($post['slug']) ?>"
+                   placeholder="post-url-slug" required/>
           </div>
-        </div>
 
-        <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
+          <div class="field">
+            <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
+            <textarea id="excerpt" name="excerpt" rows="3"
+                      placeholder="Short summary of the post..."><?= htmlspecialchars($post['excerpt']) ?></textarea>
+          </div>
 
-        <?php $can_regen_image = $id && $auto_token; ?>
-        <?php if ($can_regen_image): ?>
-        <div class="img-regen">
-          <button type="button" class="img-action" id="img-regen">✨ Regenerate with AI</button>
-          <span class="img-regen-status" id="img-regen-status"></span>
-          <div class="img-regen-hint">Uses the post's saved title and excerpt. Save first if you've changed either.</div>
-        </div>
-        <?php endif; ?>
-      </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="" <?= $post['category']==='' ? 'selected' : '' ?>>— No category —</option>
+              <option value="uiux"        <?= $post['category']==='uiux'        ? 'selected' : '' ?>>UI/UX</option>
+              <option value="development" <?= $post['category']==='development' ? 'selected' : '' ?>>Development</option>
+              <option value="ai"          <?= $post['category']==='ai'          ? 'selected' : '' ?>>AI</option>
+            </select>
+          </div>
 
-      <div class="field">
-        <label>Body</label>
-        <!-- The textarea is the actual saved field + fallback if Quill fails to load.
-             Quill enhances it; on submit its HTML is synced back into the textarea. -->
-        <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
-        <div id="quill-editor" style="display:none"><?= $post['body'] ?></div>
+          <div class="field">
+            <label>Featured Image</label>
+            <?php $has_img = !empty($post['featured_image']); ?>
 
-        <?php if ($can_regen_image): ?>
-        <div class="img-regen">
-          <button type="button" class="img-action" id="body-reformat">✨ Re-format with AI</button>
-          <span class="img-regen-status" id="body-reformat-status"></span>
-          <div class="img-regen-hint">Rewrites the body — wraps stripped code in proper code blocks while keeping prose untouched. Loads the result into the editor for review; click Save to commit.</div>
-        </div>
-        <?php endif; ?>
-      </div>
+            <!-- Drop zone — shown only when there's no image yet -->
+            <div class="drop-zone" id="drop-zone" style="<?= $has_img ? 'display:none' : '' ?>">
+              <input type="file" name="featured_image" id="img-input" accept="image/*"/>
+              <div id="drop-prompt">
+                <div class="drop-icon">⬆</div>
+                <div class="drop-text">Drag &amp; drop image here, or <span>browse</span></div>
+                <div class="drop-filename" id="drop-filename"></div>
+              </div>
+            </div>
 
-      <div class="field">
-        <label>Visibility</label>
-        <div class="publish-options">
-          <label class="radio-option">
-            <input type="radio" name="publish_mode" value="draft"
-                   <?= $display_mode === 'draft' ? 'checked' : '' ?>>
-            Draft
-          </label>
-          <label class="radio-option">
-            <input type="radio" name="publish_mode" value="schedule"
-                   <?= $display_mode === 'schedule' ? 'checked' : '' ?>>
-            Schedule
-          </label>
-          <label class="radio-option">
-            <input type="radio" name="publish_mode" value="publish"
-                   <?= $display_mode === 'publish' ? 'checked' : '' ?>>
-            Publish Now
-          </label>
-        </div>
-        <div id="schedule-picker" style="<?= $display_mode === 'schedule' ? '' : 'display:none' ?>">
-          <input type="datetime-local" name="scheduled_at" id="scheduled_at"
-                 value="<?= htmlspecialchars($sched_val) ?>"/>
-          <div class="schedule-hint">Post will go live automatically at the scheduled time.</div>
-        </div>
-      </div>
+            <!-- Preview + actions — shown when an image exists or has just been picked -->
+            <div class="img-wrap" id="img-wrap" style="<?= $has_img ? '' : 'display:none' ?>">
+              <img class="img-preview" id="img-preview"
+                   src="<?= $has_img ? 'uploads/' . htmlspecialchars($post['featured_image']) : '' ?>"
+                   alt="Featured image"/>
+              <div class="img-actions">
+                <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
+                <button type="button" class="img-remove" id="img-remove">Remove image</button>
+              </div>
+            </div>
 
-      <div class="btn-row">
-        <button type="submit" class="btn-save">Save Post →</button>
-        <a class="btn-cancel" href="index.php">Cancel</a>
-      </div>
+            <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
+
+            <?php $can_regen_image = $id && $auto_token; ?>
+            <?php if ($can_regen_image): ?>
+            <div class="img-regen">
+              <button type="button" class="img-action" id="img-regen">✨ Regenerate with AI</button>
+              <span class="img-regen-status" id="img-regen-status"></span>
+              <div class="img-regen-hint">Uses the post's saved title and excerpt. Save first if you've changed either.</div>
+            </div>
+            <?php endif; ?>
+          </div>
+
+          <div class="field">
+            <label>Body</label>
+            <!-- The textarea is the actual saved field + fallback if Quill fails to load.
+                 Quill enhances it; on submit its HTML is synced back into the textarea. -->
+            <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
+            <div id="quill-editor" style="display:none"><?= $post['body'] ?></div>
+
+            <?php if ($can_regen_image): ?>
+            <div class="img-regen">
+              <button type="button" class="img-action" id="body-reformat">✨ Re-format with AI</button>
+              <span class="img-regen-status" id="body-reformat-status"></span>
+              <div class="img-regen-hint">Rewrites the body — wraps stripped code in proper code blocks while keeping prose untouched. Loads the result into the editor for review; click Save to commit.</div>
+            </div>
+            <?php endif; ?>
+          </div>
+
+        </div><!-- /.edit-main -->
+
+        <!-- ── Right: sticky publish sidebar ── -->
+        <div class="edit-sidebar">
+          <div class="sidebar-card">
+            <span class="sidebar-section-label">Visibility</span>
+            <div class="publish-options">
+              <label class="radio-option">
+                <input type="radio" name="publish_mode" value="draft"
+                       <?= $display_mode === 'draft' ? 'checked' : '' ?>>
+                Draft
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="publish_mode" value="schedule"
+                       <?= $display_mode === 'schedule' ? 'checked' : '' ?>>
+                Schedule
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="publish_mode" value="publish"
+                       <?= $display_mode === 'publish' ? 'checked' : '' ?>>
+                Publish Now
+              </label>
+            </div>
+            <div id="schedule-picker" style="margin-top:12px;<?= $display_mode === 'schedule' ? '' : 'display:none' ?>">
+              <input type="datetime-local" name="scheduled_at" id="scheduled_at"
+                     value="<?= htmlspecialchars($sched_val) ?>"/>
+              <div class="schedule-hint">Post will go live automatically at the scheduled time.</div>
+            </div>
+
+            <hr class="sidebar-divider"/>
+
+            <div class="sidebar-actions">
+              <button type="submit" class="btn-save">Save Post →</button>
+              <a class="btn-cancel" href="index.php">Cancel</a>
+            </div>
+          </div>
+        </div><!-- /.edit-sidebar -->
+
+      </div><!-- /.edit-layout -->
 
     </form>
   </main>
