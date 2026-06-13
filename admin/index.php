@@ -102,7 +102,7 @@ $posts = $pdo->query(
           <td>
             <?php $is_live = $p['is_published'] || (!empty($p['scheduled_at']) && strtotime($p['scheduled_at']) <= time()); ?>
             <?php if ($is_live): ?>
-              <a class="action-link" href="/blog/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener"
+              <a class="action-link" href="/blog/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener noreferrer"
                  style="margin-right:14px">View ↗</a>
             <?php endif; ?>
             <form method="POST" action="" style="display:inline"

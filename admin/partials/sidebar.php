@@ -14,13 +14,13 @@ if (in_array($__page, ['index.php', 'edit.php', 'auto-post.php'], true)) {
 }
 ?>
 <div class="mobile-topbar">
-  <div class="mobile-topbar-logo"><a href="/" target="_blank" rel="noopener" title="View site"><img src="/assets/logo.png" alt="Denny Pratama"/></a></div>
+  <div class="mobile-topbar-logo"><a href="/" target="_blank" rel="noopener noreferrer" title="View site"><img src="/assets/logo.png" alt="Denny Pratama"/></a></div>
   <button class="mobile-burger" id="mobile-burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </div>
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <aside class="sidebar" id="sidebar">
-  <a class="sidebar-logo" href="/" target="_blank" rel="noopener" title="View site">
+  <a class="sidebar-logo" href="/" target="_blank" rel="noopener noreferrer" title="View site">
     <img src="/assets/logo.png" alt="Denny Pratama" style="height:28px;width:auto;opacity:0.85;"/>
   </a>
   <nav class="sidebar-nav">

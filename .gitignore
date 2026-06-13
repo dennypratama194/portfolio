@@ -1,4 +1,6 @@
 # Secrets — never commit
+.env
+.env.*
 api/.secrets.php
 api/.admin_hash
 api/.auto_post_config.json

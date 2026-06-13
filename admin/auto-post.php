@@ -71,8 +71,22 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css?v=2"/>
   <style>
-    .main { max-width: 760px; }
+    .main { max-width: 1120px; }
     input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
+
+    /* ── Two-column layout ── */
+    .auto-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
+    .auto-main { min-width: 0; }
+    .auto-sidebar { position: sticky; top: 24px; }
+    .auto-sidebar-card {
+      background: rgba(236,234,226,0.03);
+      border: 1px solid rgba(236,234,226,0.08);
+      padding: 24px;
+    }
+    @media (max-width: 960px) {
+      .auto-layout { grid-template-columns: 1fr; }
+      .auto-sidebar { position: static; }
+    }
 
     .toggle-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -127,13 +141,19 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       background: #E8320A; color: #ECEAE2; border: none;
       font-family: var(--font-sans); font-size: 12px; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; margin-right: 12px;
+      padding: 13px 28px; cursor: pointer; transition: opacity 0.2s;
+      display: block; width: 100%;
     }
     .run-btn:hover { opacity: 0.85; }
     .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .run-status { font-size: 14px; color: rgba(236,234,226,0.5); display: inline-block; margin-top: 0; vertical-align: middle; }
+    .run-status {
+      font-size: 13px; color: rgba(236,234,226,0.5);
+      display: block; margin-top: 10px; line-height: 1.5;
+    }
     .run-status.ok  { color: #4ade80; }
     .run-status.err { color: #E8320A; }
+
+    .sidebar-rule { border: none; border-top: 1px solid rgba(236,234,226,0.08); margin: 20px 0; }
 
     .btn-secondary {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -150,25 +170,32 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       padding: 12px 20px; font-size: 14px; color: #4ade80; margin-bottom: 28px;
     }
 
-    table { margin-bottom: 40px; }
-    td { padding: 16px 16px 16px 0; font-size: 14px; color: rgba(236,234,226,0.7); }
-    .post-title-link { color: #ECEAE2; text-decoration: none; font-weight: 500; }
+    /* Sidebar table — compact */
+    .sidebar-table { width: 100%; border-collapse: collapse; }
+    .sidebar-table th {
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(236,234,226,0.3); padding: 0 0 10px; text-align: left; font-weight: 500;
+    }
+    .sidebar-table td { padding: 12px 8px 12px 0; font-size: 13px; color: rgba(236,234,226,0.7); border-top: 1px solid rgba(236,234,226,0.06); vertical-align: middle; }
+    .sidebar-table td:last-child { white-space: nowrap; }
+    .post-title-link { color: #ECEAE2; text-decoration: none; font-weight: 500; font-size: 13px; line-height: 1.4; display: block; }
     .post-title-link:hover { color: #E8320A; }
-    .empty { font-size: 14px; padding: 24px 0; }
-    .last-run { font-size: 12px; color: rgba(236,234,226,0.3); }
+    .pub-date { font-size: 12px; color: rgba(236,234,226,0.4); white-space: nowrap; }
+    .empty-sidebar { font-size: 13px; color: rgba(236,234,226,0.3); padding: 16px 0 4px; }
+    .last-run { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 4px; display: block; }
 
-    .img-ok      { color: #4ade80; margin-right: 8px; }
-    .img-missing { color: rgba(236,234,226,0.3); margin-right: 8px; }
+    .img-ok      { color: #4ade80; margin-right: 6px; }
+    .img-missing { color: rgba(236,234,226,0.3); margin-right: 6px; }
     .regen-btn {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
       color: rgba(236,234,226,0.5); background: none;
       border: 1px solid rgba(236,234,226,0.12);
-      padding: 4px 12px; cursor: pointer; font-family: inherit;
+      padding: 3px 10px; cursor: pointer; font-family: inherit;
       transition: color 0.2s, border-color 0.2s;
     }
     .regen-btn:hover:not(:disabled) { color: #ECEAE2; border-color: rgba(236,234,226,0.3); }
     .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .regen-status { font-size: 12px; color: rgba(236,234,226,0.5); margin-left: 8px; display: inline-block; }
+    .regen-status { font-size: 11px; color: rgba(236,234,226,0.5); display: block; margin-top: 4px; }
     .regen-status.ok  { color: #4ade80; }
     .regen-status.err { color: #E8320A; }
   </style>
@@ -177,7 +204,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
   <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
-  <main class="main main--medium">
+  <main class="main main--wide">
     <div class="top-bar">
       <h1>Auto Post</h1>
     </div>
@@ -186,160 +213,172 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       <div class="saved-banner">Settings saved.</div>
     <?php endif; ?>
 
-    <!-- ── Enable toggle ── -->
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label-text">Auto-publishing</div>
-        <div class="toggle-sub">When enabled, the cron job will generate and publish a post automatically.</div>
-      </div>
-      <form method="POST" id="toggle-form">
-        <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
-        <label class="toggle-switch" title="<?= $enabled ? 'Enabled' : 'Disabled' ?>">
-          <input type="checkbox" name="enabled" <?= $enabled ? 'checked' : '' ?>
-                 onchange="document.getElementById('toggle-form').submit()"/>
-          <span class="toggle-track"></span>
-        </label>
-        <input type="hidden" name="action" value="save"/>
-        <input type="hidden" name="model" value="<?= htmlspecialchars($model) ?>"/>
-      </form>
-    </div>
+    <div class="auto-layout">
 
-    <!-- ── Settings form ── -->
-    <div class="section-heading">API Keys</div>
-    <form method="POST">
-      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
-      <input type="hidden" name="action" value="save"/>
+      <!-- ── Left: config & cron settings ── -->
+      <div class="auto-main">
 
-      <div class="field">
-        <label>Anthropic API Key (Claude)</label>
-        <input type="password" name="anthropic_api_key"
-               placeholder="<?= $has_ant ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-ant-...' ?>"/>
-        <?php if ($has_ant): ?>
-          <div class="key-set">✓ Key saved</div>
-        <?php else: ?>
-          <div class="hint">Required. Get yours at console.anthropic.com</div>
-        <?php endif; ?>
-      </div>
-
-      <div class="field">
-        <label>OpenAI API Key (gpt-image-2 images)</label>
-        <input type="password" name="openai_api_key"
-               placeholder="<?= $has_oai ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-...' ?>"/>
-        <?php if ($has_oai): ?>
-          <div class="key-set">✓ Key saved</div>
-        <?php else: ?>
-          <div class="hint">Required for featured image generation. Get yours at platform.openai.com</div>
-        <?php endif; ?>
-      </div>
-
-      <div class="section-heading" style="margin-top:32px">Model</div>
-      <div class="field">
-        <label>Claude Model</label>
-        <select name="model">
-          <option value="claude-haiku-4-5-20251001" <?= $model === 'claude-haiku-4-5-20251001' ? 'selected' : '' ?>>
-            Claude Haiku — Fast &amp; cost-effective
-          </option>
-          <option value="claude-sonnet-4-6" <?= $model === 'claude-sonnet-4-6' ? 'selected' : '' ?>>
-            Claude Sonnet — Higher quality
-          </option>
-        </select>
-      </div>
-
-      <div class="btn-row">
-        <button type="submit" class="btn-save">Save Settings →</button>
-      </div>
-    </form>
-
-    <!-- ── Cron setup ── -->
-    <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
-    <div class="cron-box">
-      <?php if ($token): ?>
-        <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:8px;display:block">Your cron URL</label>
-        <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
-        <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
-      <?php else: ?>
-        <div class="hint">Save your settings first to generate the cron URL.</div>
-      <?php endif; ?>
-
-      <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:10px">Suggested schedules</div>
-      <div class="cron-schedules">
-        <div class="cron-row">
-          <span class="cron-expr">0 8 * * 1</span>
-          <span class="cron-desc">Every Monday at 8am</span>
+        <!-- Enable toggle -->
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label-text">Auto-publishing</div>
+            <div class="toggle-sub">When enabled, the cron job will generate and publish a post automatically.</div>
+          </div>
+          <form method="POST" id="toggle-form">
+            <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
+            <label class="toggle-switch" title="<?= $enabled ? 'Enabled' : 'Disabled' ?>">
+              <input type="checkbox" name="enabled" <?= $enabled ? 'checked' : '' ?>
+                     onchange="document.getElementById('toggle-form').submit()"/>
+              <span class="toggle-track"></span>
+            </label>
+            <input type="hidden" name="action" value="save"/>
+            <input type="hidden" name="model" value="<?= htmlspecialchars($model) ?>"/>
+          </form>
         </div>
-        <div class="cron-row">
-          <span class="cron-expr">0 8 * * 1,4</span>
-          <span class="cron-desc">Monday &amp; Thursday at 8am</span>
+
+        <!-- Settings form -->
+        <div class="section-heading">API Keys</div>
+        <form method="POST">
+          <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
+          <input type="hidden" name="action" value="save"/>
+
+          <div class="field">
+            <label>Anthropic API Key (Claude)</label>
+            <input type="password" name="anthropic_api_key"
+                   placeholder="<?= $has_ant ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-ant-...' ?>"/>
+            <?php if ($has_ant): ?>
+              <div class="key-set">✓ Key saved</div>
+            <?php else: ?>
+              <div class="hint">Required. Get yours at console.anthropic.com</div>
+            <?php endif; ?>
+          </div>
+
+          <div class="field">
+            <label>OpenAI API Key (gpt-image-2 images)</label>
+            <input type="password" name="openai_api_key"
+                   placeholder="<?= $has_oai ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-...' ?>"/>
+            <?php if ($has_oai): ?>
+              <div class="key-set">✓ Key saved</div>
+            <?php else: ?>
+              <div class="hint">Required for featured image generation. Get yours at platform.openai.com</div>
+            <?php endif; ?>
+          </div>
+
+          <div class="section-heading" style="margin-top:32px">Model</div>
+          <div class="field">
+            <label>Claude Model</label>
+            <select name="model">
+              <option value="claude-haiku-4-5-20251001" <?= $model === 'claude-haiku-4-5-20251001' ? 'selected' : '' ?>>
+                Claude Haiku — Fast &amp; cost-effective
+              </option>
+              <option value="claude-sonnet-4-6" <?= $model === 'claude-sonnet-4-6' ? 'selected' : '' ?>>
+                Claude Sonnet — Higher quality
+              </option>
+            </select>
+          </div>
+
+          <div class="btn-row">
+            <button type="submit" class="btn-save">Save Settings →</button>
+          </div>
+        </form>
+
+        <!-- Cron setup -->
+        <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
+        <div class="cron-box">
+          <?php if ($token): ?>
+            <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:8px;display:block">Your cron URL</label>
+            <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
+            <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
+          <?php else: ?>
+            <div class="hint">Save your settings first to generate the cron URL.</div>
+          <?php endif; ?>
+
+          <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:10px">Suggested schedules</div>
+          <div class="cron-schedules">
+            <div class="cron-row">
+              <span class="cron-expr">0 8 * * 1</span>
+              <span class="cron-desc">Every Monday at 8am</span>
+            </div>
+            <div class="cron-row">
+              <span class="cron-expr">0 8 * * 1,4</span>
+              <span class="cron-desc">Monday &amp; Thursday at 8am</span>
+            </div>
+            <div class="cron-row">
+              <span class="cron-expr">0 8 * * *</span>
+              <span class="cron-desc">Every day at 8am</span>
+            </div>
+          </div>
+
+          <div class="hint" style="margin-top:16px">
+            In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
+            <code style="color:rgba(236,234,226,0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
+            Or via wget (two requests, each under 30s):<br>
+            <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
+          </div>
+
+          <?php if ($last_run): ?>
+            <div class="last-run" style="margin-top:16px">Last run: <?= date('d M Y, H:i', strtotime($last_run)) ?></div>
+          <?php endif; ?>
         </div>
-        <div class="cron-row">
-          <span class="cron-expr">0 8 * * *</span>
-          <span class="cron-desc">Every day at 8am</span>
+
+        <!-- Regenerate token -->
+        <form method="POST" style="margin-bottom:40px"
+              onsubmit="return confirm('This will invalidate your current cron URL. Update it in cPanel after.')">
+          <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
+          <input type="hidden" name="action" value="regenerate_token"/>
+          <button type="submit" class="btn-secondary">Regenerate secret token</button>
+        </form>
+
+      </div><!-- /.auto-main -->
+
+      <!-- ── Right: sticky run panel ── -->
+      <div class="auto-sidebar">
+        <div class="auto-sidebar-card">
+
+          <div class="section-heading" style="margin-top:0;margin-bottom:16px">Test Run</div>
+          <button class="run-btn" id="run-btn" <?= !$token ? 'disabled' : '' ?>>Run Now</button>
+          <span class="run-status" id="run-status"></span>
+
+          <hr class="sidebar-rule"/>
+
+          <div class="section-heading" style="margin-top:0;margin-bottom:16px">Recent Auto-Posts</div>
+          <?php if (empty($recent)): ?>
+            <div class="empty-sidebar">No auto-generated posts yet.</div>
+          <?php else: ?>
+            <table class="sidebar-table">
+              <thead>
+                <tr><th>Title</th><th>Image</th></tr>
+              </thead>
+              <tbody>
+                <?php foreach ($recent as $r): ?>
+                <tr>
+                  <td>
+                    <a class="post-title-link" href="/blog/<?= htmlspecialchars($r['slug']) ?>" target="_blank" rel="noopener noreferrer">
+                      <?= htmlspecialchars($r['title']) ?>
+                    </a>
+                    <span class="pub-date"><?= $r['published_at'] ? date('d M Y', strtotime($r['published_at'])) : '—' ?></span>
+                  </td>
+                  <td>
+                    <?php if ($r['featured_image']): ?>
+                      <span class="img-ok" title="Image present">✓</span>
+                    <?php else: ?>
+                      <span class="img-missing" title="No image">—</span>
+                    <?php endif; ?>
+                    <button class="regen-btn" data-id="<?= (int)$r['id'] ?>" <?= $token ? '' : 'disabled' ?>>
+                      <?= $r['featured_image'] ? 'Regen' : 'Generate' ?>
+                    </button>
+                    <span class="regen-status" data-status-for="<?= (int)$r['id'] ?>"></span>
+                  </td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          <?php endif; ?>
+
         </div>
-      </div>
+      </div><!-- /.auto-sidebar -->
 
-      <div class="hint" style="margin-top:16px">
-        In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
-        <code style="color:rgba(236,234,226,0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
-        Or via wget (two requests, each under 30s):<br>
-        <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
-      </div>
-
-      <?php if ($last_run): ?>
-        <div class="last-run" style="margin-top:16px">Last run: <?= date('d M Y, H:i', strtotime($last_run)) ?></div>
-      <?php endif; ?>
-    </div>
-
-    <!-- ── Regenerate token ── -->
-    <form method="POST" style="margin-bottom:40px"
-          onsubmit="return confirm('This will invalidate your current cron URL. Update it in cPanel after.')">
-      <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
-      <input type="hidden" name="action" value="regenerate_token"/>
-      <button type="submit" class="btn-secondary">Regenerate secret token</button>
-    </form>
-
-    <!-- ── Run now ── -->
-    <div class="section-heading">Test</div>
-    <div style="margin-bottom:40px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <button class="run-btn" id="run-btn" <?= !$token ? 'disabled' : '' ?>>
-        Run Now
-      </button>
-      <span class="run-status" id="run-status"></span>
-    </div>
-
-    <!-- ── Recent auto-posts ── -->
-    <div class="section-heading">Recent Auto-Posts</div>
-    <?php if (empty($recent)): ?>
-      <div class="empty">No auto-generated posts yet.</div>
-    <?php else: ?>
-      <table>
-        <thead>
-          <tr><th>Title</th><th>Published</th><th>Image</th></tr>
-        </thead>
-        <tbody>
-          <?php foreach ($recent as $r): ?>
-          <tr>
-            <td>
-              <a class="post-title-link" href="/blog/<?= htmlspecialchars($r['slug']) ?>" target="_blank">
-                <?= htmlspecialchars($r['title']) ?>
-              </a>
-            </td>
-            <td><?= $r['published_at'] ? date('d M Y, H:i', strtotime($r['published_at'])) : '—' ?></td>
-            <td>
-              <?php if ($r['featured_image']): ?>
-                <span class="img-ok" title="Image present">✓</span>
-              <?php else: ?>
-                <span class="img-missing" title="No image">—</span>
-              <?php endif; ?>
-              <button class="regen-btn" data-id="<?= (int)$r['id'] ?>" <?= $token ? '' : 'disabled' ?>>
-                <?= $r['featured_image'] ? 'Regenerate' : 'Generate' ?>
-              </button>
-              <span class="regen-status" data-status-for="<?= (int)$r['id'] ?>"></span>
-            </td>
-          </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
+    </div><!-- /.auto-layout -->
 
   </main>
 

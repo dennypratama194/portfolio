@@ -37,7 +37,7 @@ $posts = $stmt->fetchAll();
 $cat_labels = ['uiux' => 'UI/UX', 'development' => 'Development', 'ai' => 'AI'];
 
 $title     = $page > 1 ? "Blog — Page $page · Denny Pratama" : 'Blog — Denny Pratama';
-$description = 'Thoughts and ideas on UI/UX design, development, and AI from Denny Pratama.';
+$description = 'UI/UX design insights, development tips, and AI perspectives from Denny Pratama. Practical articles for designers and developers building better digital products.';
 $canonical = 'https://dennypratama.com/blog' . ($page > 1 ? '?page=' . $page : '');
 $og_image  = 'https://dennypratama.com/assets/og-image.png';
 $jsonld    = json_encode([

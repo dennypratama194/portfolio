@@ -1,6 +1,6 @@
 <?php
 $title       = 'Terms & Conditions — Denny Pratama';
-$description = 'Terms and Conditions for dennypratama.com — governing the use of our site and e-commerce services, under Indonesian law and global consumer protection standards.';
+$description = 'Terms and Conditions for dennypratama.com — governing use of our site and digital commerce services under Indonesian law (UU PDP) and international standards.';
 $canonical   = 'https://dennypratama.com/terms-and-conditions';
 ?>
 <!DOCTYPE html>

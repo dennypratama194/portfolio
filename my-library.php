@@ -1,6 +1,6 @@
 <?php
 $title       = 'My Library — Denny Pratama';
-$description = 'Access all your purchased ebooks from Denny Pratama in one place.';
+$description = 'Access all your purchased ebooks from Denny Pratama. Enter your email to receive your library links — instant delivery, no account required, no expiry.';
 $canonical   = 'https://dennypratama.com/my-library';
 $og_image    = 'https://dennypratama.com/assets/og-image.png';
 $page_css    = '/css/my-library.css?v=1';
@@ -56,7 +56,7 @@ $page_css    = '/css/my-library.css?v=1';
       <!-- ── Sent confirmation state ── -->
       <div id="lib-sent-state" hidden>
         <p class="form-page-eyebrow">Check your inbox</p>
-        <h1 class="form-page-title">Links sent.</h1>
+        <h2 class="form-page-title">Links sent.</h2>
         <p class="form-page-sub">
           If that email has any purchases, we've just sent the access links to it.
           Delivery can take a minute — remember to check your spam folder.

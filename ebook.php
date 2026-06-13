@@ -166,7 +166,8 @@ $page_css   = '/css/ebook.css?v=2';
 
       <form class="eb-form" method="POST" action="/api/ebook-checkout">
         <input type="hidden" name="product_slug" value="<?= htmlspecialchars($slug) ?>"/>
-        <input class="eb-email" type="email" name="email"
+        <label for="eb-email-hero" class="sr-only">Email address</label>
+        <input class="eb-email" type="email" id="eb-email-hero" name="email"
                placeholder="Your email address" required
                autocomplete="email"/>
         <input type="hidden" name="recaptcha_token" class="eb-recaptcha-token" value=""/>
@@ -348,7 +349,8 @@ $page_css   = '/css/ebook.css?v=2';
 
     <form class="eb-form" method="POST" action="/api/ebook-checkout">
       <input type="hidden" name="product_slug" value="<?= htmlspecialchars($slug) ?>"/>
-      <input class="eb-email" type="email" name="email"
+      <label for="eb-email-cta" class="sr-only">Email address</label>
+      <input class="eb-email" type="email" id="eb-email-cta" name="email"
              placeholder="Your email address" required
              autocomplete="email"/>
       <button class="eb-btn-buy" type="submit">

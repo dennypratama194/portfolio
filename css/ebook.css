@@ -72,12 +72,13 @@
   width: 100%;
   background: #fff; border: 1.5px solid var(--ink);
   font-family: var(--font-sans); font-size: 16px;
-  padding: 14px 18px; color: var(--ink); outline: none;
+  padding: 14px 18px; color: var(--ink);
   transition: border-color 0.2s;
   box-sizing: border-box;
 }
 .eb-email::placeholder { color: var(--ink-3); }
 .eb-email:focus { border-color: var(--red); }
+.eb-email:focus-visible { outline: none; }
 
 .eb-btn-buy {
   padding: 18px 48px;

@@ -64,8 +64,10 @@ main { flex: 1; display: flex; align-items: center; }
 
 .lib-card-cta {
   flex-shrink: 0;
-  display: inline-block;
-  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  padding: 16px 20px;
+  min-height: 44px;
   background: var(--ink);
   color: var(--paper);
   font-size: 12px;

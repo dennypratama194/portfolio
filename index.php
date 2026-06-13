@@ -15,7 +15,7 @@ $bp_stmt = $pdo->query(
 $bp_posts = $bp_stmt->fetchAll();
 
 $title         = 'Denny Pratama — UI/UX Designer & Developer for Startups';
-$description   = 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert. Available for new projects.';
+$description   = 'UI/UX designer and developer based in Indonesia, helping startups ship products that look sharp, work flawlessly, and convert. Currently available for new projects.';
 $canonical     = 'https://dennypratama.com/';
 $og_image      = 'https://dennypratama.com/assets/og-image.png';
 $needs_gsap    = true;

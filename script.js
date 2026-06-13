@@ -109,6 +109,7 @@ if (burger && navOverlay) {
     document.body.style.top = -scrollLockY + 'px';
     burger.setAttribute('aria-expanded', 'true');
     navOverlay.setAttribute('aria-hidden', 'false');
+    navOverlay.removeAttribute('inert');
   }
   function closeNav() {
     document.body.classList.remove('nav-open');
@@ -117,6 +118,7 @@ if (burger && navOverlay) {
     window.scrollTo(0, scrollLockY);
     burger.setAttribute('aria-expanded', 'false');
     navOverlay.setAttribute('aria-hidden', 'true');
+    navOverlay.setAttribute('inert', '');
   }
 
   burger.addEventListener('click', function() {
@@ -308,7 +310,6 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
         throw new Error(json.message || ('HTTP ' + res.status));
       }
     } catch (err) {
-      console.error('[contact form]', err);
       sendBtn.classList.remove('loading');
       if (sendBtnLabel) {
         sendBtnLabel.textContent = (err && err.message ? err.message : 'Failed') + ' — try again';
@@ -636,7 +637,9 @@ document.addEventListener('DOMContentLoaded', function () {
     slides.forEach(function (s, i) {
       s.classList.toggle('is-active', i === idx);
       s.querySelectorAll('.bento-dot').forEach(function (d, di) {
-        d.classList.toggle('is-active', di === idx);
+        var active = di === idx;
+        d.classList.toggle('is-active', active);
+        d.setAttribute('aria-current', active ? 'true' : 'false');
       });
     });
   }
