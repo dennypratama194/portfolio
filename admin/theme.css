@@ -6,9 +6,9 @@
 :root {
   --font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --red:  var(--red);
-  --bg:   var(--bg);
-  --text: var(--text);
+  --red:  #E8320A;
+  --bg:   #0D0C09;
+  --text: #ECEAE2;
 }
 
 /* Reset */

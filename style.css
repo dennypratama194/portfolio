@@ -1001,8 +1001,9 @@
       content: ''; width: 28px; height: 1px; background: var(--red);
     }
     .approach-title {
-      font-size: var(--text-h2); font-weight: 500;
-      letter-spacing: -0.03em; line-height: var(--leading-h2);
+      font-family: var(--font-sans); font-style: italic;
+      font-size: var(--text-h1); font-weight: 400;
+      letter-spacing: -0.04em; line-height: var(--leading-h1);
       color: var(--ink); max-width: 720px;
     }
     .approach-intro {

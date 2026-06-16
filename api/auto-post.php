@@ -4,8 +4,14 @@ set_time_limit(300);
 $is_cli = php_sapi_name() === 'cli';
 
 if (!$is_cli) {
-    ob_start(); // capture any stray PHP warnings/notices so they don't corrupt JSON
+    // Send status + Content-Type now so nginx's fastcgi_read_timeout resets before the
+    // long Claude / OpenAI calls start. JSON.parse() tolerates a leading newline.
+    http_response_code(200);
     header('Content-Type: application/json');
+    echo "\n";
+    if (ob_get_level()) ob_end_flush();
+    flush();
+    ob_start(); // capture stray PHP warnings so they don't corrupt the JSON body
 }
 
 /* ── Load config ── */
@@ -508,7 +514,7 @@ function respond(int $code, array $data): void {
         if ($stray) {
             $data['_php_warnings'] = substr($stray, 0, 500); // surface for debugging
         }
-        http_response_code($code);
+        if (!headers_sent()) http_response_code($code);
     }
     echo json_encode($data) . "\n";
     exit;
