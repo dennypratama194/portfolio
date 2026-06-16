@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -9,9 +9,9 @@ require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-/* ── Auto-post token (lets us call /api/auto-post.php?phase=regen for AI image
+/* â”€â”€ Auto-post token (lets us call /api/auto-post.php?phase=regen for AI image
    regeneration on existing posts). Token is generated on the auto-post settings
-   page; if the user hasn't visited that page yet the button is simply hidden. ── */
+   page; if the user hasn't visited that page yet the button is simply hidden. â”€â”€ */
 $auto_token = '';
 $auto_cfg_file = __DIR__ . '/../api/.auto_post_config.json';
 if (file_exists($auto_cfg_file)) {
@@ -23,7 +23,7 @@ $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $post = ['title'=>'','slug'=>'','excerpt'=>'','body'=>'','is_published'=>0,'featured_image'=>'','category'=>'','scheduled_at'=>null,'published_at'=>null];
 $errors = [];
 
-/* ── Load existing post for edit ── */
+/* â”€â”€ Load existing post for edit â”€â”€ */
 if ($id) {
     $stmt = $pdo->prepare('SELECT * FROM posts WHERE id = ?');
     $stmt->execute([$id]);
@@ -31,7 +31,7 @@ if ($id) {
     if ($found) $post = $found;
 }
 
-/* ── Handle form submit ── */
+/* â”€â”€ Handle form submit â”€â”€ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) $errors[] = 'That slug is already in use.';
     }
 
-    /* ── Image upload ── */
+    /* â”€â”€ Image upload â”€â”€ */
     $new_img = $keep_img;
 
     /* Handle explicit remove */
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } catch (PDOException $e) {
             if (str_contains($e->getMessage(), 'category')) {
-                $errors[] = 'Database missing "category" column — run this SQL in phpMyAdmin: ALTER TABLE posts ADD COLUMN category VARCHAR(50) DEFAULT NULL AFTER excerpt;';
+                $errors[] = 'Database missing "category" column â€” run this SQL in phpMyAdmin: ALTER TABLE posts ADD COLUMN category VARCHAR(50) DEFAULT NULL AFTER excerpt;';
             } else {
                 $errors[] = 'Database error: ' . $e->getMessage();
             }
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post['scheduled_at'] = $new_scheduled_at ?? null;
 }
 
-/* ── Derive display mode ── */
+/* â”€â”€ Derive display mode â”€â”€ */
 if ($post['is_published']) {
     $display_mode = 'publish';
 } elseif (!empty($post['scheduled_at'])) {
@@ -168,13 +168,13 @@ $sched_val = !empty($post['scheduled_at'])
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title><?= $id ? 'Edit Post' : 'New Post' ?> — Admin</title>
+  <title><?= $id ? 'Edit Post' : 'New Post' ?> â€” Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=2"/>
+  <link rel="stylesheet" href="theme.css?v=3"/>
   <!-- Quill rich text editor (open source, no API key) -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet"/>
   <style>
@@ -185,7 +185,7 @@ $sched_val = !empty($post['scheduled_at'])
     textarea.content-fallback { min-height: 320px; resize: vertical; line-height: 1.75; }
     select { font-size: 16px; }
 
-    /* ── Two-column edit layout ── */
+    /* â”€â”€ Two-column edit layout â”€â”€ */
     .edit-layout { display: grid; grid-template-columns: 1fr 272px; gap: 40px; align-items: start; }
     .edit-main { min-width: 0; }
     .edit-sidebar { position: sticky; top: 24px; }
@@ -231,7 +231,7 @@ $sched_val = !empty($post['scheduled_at'])
     .ql-snow .ql-picker { color: rgba(236,234,226,0.5); }
     .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
 
-    /* ── Publish mode ── */
+    /* â”€â”€ Publish mode â”€â”€ */
     .publish-options { display: flex; gap: 8px; margin-bottom: 12px; }
     .radio-option {
       display: flex; align-items: center; gap: 8px;
@@ -253,7 +253,7 @@ $sched_val = !empty($post['scheduled_at'])
     input[type=datetime-local]:focus { border-color: #E8320A; }
     .schedule-hint { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 8px; }
 
-    /* ── Drag-and-drop image zone ── */
+    /* â”€â”€ Drag-and-drop image zone â”€â”€ */
     .drop-zone {
       border: 2px dashed rgba(236,234,226,0.15); padding: 36px 24px;
       text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
@@ -298,7 +298,7 @@ $sched_val = !empty($post['scheduled_at'])
 
   <main class="main main--wide">
     <div class="top-bar top-bar--gap">
-      <a class="back-link" href="index.php">← Posts</a>
+      <a class="back-link" href="index.php">â† Posts</a>
       <h1><?= $id ? 'Edit Post' : 'New Post' ?></h1>
     </div>
 
@@ -315,7 +315,7 @@ $sched_val = !empty($post['scheduled_at'])
 
       <div class="edit-layout">
 
-        <!-- ── Left: content fields ── -->
+        <!-- â”€â”€ Left: content fields â”€â”€ -->
         <div class="edit-main">
 
           <div class="field">
@@ -341,7 +341,7 @@ $sched_val = !empty($post['scheduled_at'])
           <div class="field">
             <label for="category">Category</label>
             <select id="category" name="category">
-              <option value="" <?= $post['category']==='' ? 'selected' : '' ?>>— No category —</option>
+              <option value="" <?= $post['category']==='' ? 'selected' : '' ?>>â€” No category â€”</option>
               <option value="uiux"        <?= $post['category']==='uiux'        ? 'selected' : '' ?>>UI/UX</option>
               <option value="development" <?= $post['category']==='development' ? 'selected' : '' ?>>Development</option>
               <option value="ai"          <?= $post['category']==='ai'          ? 'selected' : '' ?>>AI</option>
@@ -352,23 +352,23 @@ $sched_val = !empty($post['scheduled_at'])
             <label>Featured Image</label>
             <?php $has_img = !empty($post['featured_image']); ?>
 
-            <!-- Drop zone — shown only when there's no image yet -->
+            <!-- Drop zone â€” shown only when there's no image yet -->
             <div class="drop-zone" id="drop-zone" style="<?= $has_img ? 'display:none' : '' ?>">
               <input type="file" name="featured_image" id="img-input" accept="image/*"/>
               <div id="drop-prompt">
-                <div class="drop-icon">⬆</div>
+                <div class="drop-icon">â¬†</div>
                 <div class="drop-text">Drag &amp; drop image here, or <span>browse</span></div>
                 <div class="drop-filename" id="drop-filename"></div>
               </div>
             </div>
 
-            <!-- Preview + actions — shown when an image exists or has just been picked -->
+            <!-- Preview + actions â€” shown when an image exists or has just been picked -->
             <div class="img-wrap" id="img-wrap" style="<?= $has_img ? '' : 'display:none' ?>">
               <img class="img-preview" id="img-preview"
                    src="<?= $has_img ? 'uploads/' . htmlspecialchars($post['featured_image']) : '' ?>"
                    alt="Featured image"/>
               <div class="img-actions">
-                <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
+                <button type="button" class="img-action" id="img-replace">â†» Replace image</button>
                 <button type="button" class="img-remove" id="img-remove">Remove image</button>
               </div>
             </div>
@@ -378,7 +378,7 @@ $sched_val = !empty($post['scheduled_at'])
             <?php $can_regen_image = $id && $auto_token; ?>
             <?php if ($can_regen_image): ?>
             <div class="img-regen">
-              <button type="button" class="img-action" id="img-regen">✨ Regenerate with AI</button>
+              <button type="button" class="img-action" id="img-regen">âœ¨ Regenerate with AI</button>
               <span class="img-regen-status" id="img-regen-status"></span>
               <div class="img-regen-hint">Uses the post's saved title and excerpt. Save first if you've changed either.</div>
             </div>
@@ -394,16 +394,16 @@ $sched_val = !empty($post['scheduled_at'])
 
             <?php if ($can_regen_image): ?>
             <div class="img-regen">
-              <button type="button" class="img-action" id="body-reformat">✨ Re-format with AI</button>
+              <button type="button" class="img-action" id="body-reformat">âœ¨ Re-format with AI</button>
               <span class="img-regen-status" id="body-reformat-status"></span>
-              <div class="img-regen-hint">Rewrites the body — wraps stripped code in proper code blocks while keeping prose untouched. Loads the result into the editor for review; click Save to commit.</div>
+              <div class="img-regen-hint">Rewrites the body â€” wraps stripped code in proper code blocks while keeping prose untouched. Loads the result into the editor for review; click Save to commit.</div>
             </div>
             <?php endif; ?>
           </div>
 
         </div><!-- /.edit-main -->
 
-        <!-- ── Right: sticky publish sidebar ── -->
+        <!-- â”€â”€ Right: sticky publish sidebar â”€â”€ -->
         <div class="edit-sidebar">
           <div class="sidebar-card">
             <span class="sidebar-section-label">Visibility</span>
@@ -433,7 +433,7 @@ $sched_val = !empty($post['scheduled_at'])
             <hr class="sidebar-divider"/>
 
             <div class="sidebar-actions">
-              <button type="submit" class="btn-save">Save Post →</button>
+              <button type="submit" class="btn-save">Save Post â†’</button>
               <a class="btn-cancel" href="index.php">Cancel</a>
             </div>
           </div>
@@ -452,7 +452,7 @@ $sched_val = !empty($post['scheduled_at'])
   </script>
   <?php endif; ?>
   <script>
-    /* ── Quill editor (enhances the textarea; falls back to it on any failure) ── */
+    /* â”€â”€ Quill editor (enhances the textarea; falls back to it on any failure) â”€â”€ */
     var quill = null;
     try {
     quill = new Quill('#quill-editor', {
@@ -469,14 +469,14 @@ $sched_val = !empty($post['scheduled_at'])
         ]
       }
     });
-      /* Quill loaded — swap the plain textarea for the rich editor */
+      /* Quill loaded â€” swap the plain textarea for the rich editor */
       document.getElementById('body-input').style.display = 'none';
       document.getElementById('quill-editor').style.display = '';
     } catch (e) {
       console.error('Rich editor failed to load; using plain text fallback.', e);
     }
 
-    /* ── Auto-generate slug from title ── */
+    /* â”€â”€ Auto-generate slug from title â”€â”€ */
     const titleEl = document.getElementById('title');
     const slugEl  = document.getElementById('slug');
     let slugEdited = <?= $id ? 'true' : 'false' ?>;  /* don't overwrite on edit */
@@ -491,7 +491,7 @@ $sched_val = !empty($post['scheduled_at'])
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
 
-    /* ── Featured image: drop-zone (no image) ⇄ preview + actions (has image) ── */
+    /* â”€â”€ Featured image: drop-zone (no image) â‡„ preview + actions (has image) â”€â”€ */
     const dropZone   = document.getElementById('drop-zone');
     const imgInput   = document.getElementById('img-input');
     const imgWrap    = document.getElementById('img-wrap');
@@ -535,7 +535,7 @@ $sched_val = !empty($post['scheduled_at'])
       }
     });
 
-    /* Replace → open the file picker (works even though the drop-zone is hidden) */
+    /* Replace â†’ open the file picker (works even though the drop-zone is hidden) */
     if (imgReplace) imgReplace.addEventListener('click', () => imgInput.click());
 
     if (imgRemove) {
@@ -547,28 +547,28 @@ $sched_val = !empty($post['scheduled_at'])
       });
     }
 
-    /* ── Animated-dots loading indicator (CSS in theme.css → .loading-dots) ── */
+    /* â”€â”€ Animated-dots loading indicator (CSS in theme.css â†’ .loading-dots) â”€â”€ */
     function loadingHtml(verb, suffix) {
       return verb + '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>' + (suffix || '');
     }
 
-    /* ── Re-format body with AI via /api/auto-post.php?phase=reformat
-       (Returns body for review; does NOT save until you click the form's Save button.) ── */
+    /* â”€â”€ Re-format body with AI via /api/auto-post.php?phase=reformat
+       (Returns body for review; does NOT save until you click the form's Save button.) â”€â”€ */
     const bodyReformatBtn    = document.getElementById('body-reformat');
     const bodyReformatStatus = document.getElementById('body-reformat-status');
     if (bodyReformatBtn && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
       bodyReformatBtn.addEventListener('click', () => {
-        if (!confirm('Re-format the body with AI? It will rewrite this post\'s body so stripped code blocks come back. The new content loads into the editor for review — your current draft will be replaced in the editor, but nothing is saved until you click Save.')) return;
+        if (!confirm('Re-format the body with AI? It will rewrite this post\'s body so stripped code blocks come back. The new content loads into the editor for review â€” your current draft will be replaced in the editor, but nothing is saved until you click Save.')) return;
         bodyReformatBtn.disabled = true;
         bodyReformatStatus.className = 'img-regen-status';
-        bodyReformatStatus.innerHTML = loadingHtml('Re-formatting', ' (30–60s)');
+        bodyReformatStatus.innerHTML = loadingHtml('Re-formatting', ' (30â€“60s)');
 
         fetch('/api/auto-post.php?phase=reformat&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
           .then(r => r.json())
           .then(d => {
             if (d.ok && d.body) {
               bodyReformatStatus.className = 'img-regen-status ok';
-              bodyReformatStatus.textContent = '✓ Loaded — review and click Save';
+              bodyReformatStatus.textContent = 'âœ“ Loaded â€” review and click Save';
               if (quill) {
                 quill.root.innerHTML = d.body;
               } else {
@@ -576,19 +576,19 @@ $sched_val = !empty($post['scheduled_at'])
               }
             } else {
               bodyReformatStatus.className = 'img-regen-status err';
-              bodyReformatStatus.textContent = '✗ ' + (d.error || 'Failed');
+              bodyReformatStatus.textContent = 'âœ— ' + (d.error || 'Failed');
             }
             bodyReformatBtn.disabled = false;
           })
           .catch(() => {
             bodyReformatStatus.className = 'img-regen-status err';
-            bodyReformatStatus.textContent = '✗ Request failed';
+            bodyReformatStatus.textContent = 'âœ— Request failed';
             bodyReformatBtn.disabled = false;
           });
       });
     }
 
-    /* ── Regenerate featured image via /api/auto-post.php?phase=regen ── */
+    /* â”€â”€ Regenerate featured image via /api/auto-post.php?phase=regen â”€â”€ */
     const imgRegen       = document.getElementById('img-regen');
     const imgRegenStatus = document.getElementById('img-regen-status');
     if (imgRegen && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
@@ -596,14 +596,14 @@ $sched_val = !empty($post['scheduled_at'])
         if (!confirm('Regenerate the featured image with AI? This uses the post\'s saved title + excerpt and replaces the current image.')) return;
         imgRegen.disabled = true;
         imgRegenStatus.className = 'img-regen-status';
-        imgRegenStatus.innerHTML = loadingHtml('Generating', ' (30–60s)');
+        imgRegenStatus.innerHTML = loadingHtml('Generating', ' (30â€“60s)');
 
         fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
           .then(r => r.json())
           .then(d => {
             if (d.image) {
               imgRegenStatus.className = 'img-regen-status ok';
-              imgRegenStatus.textContent = '✓ New image saved';
+              imgRegenStatus.textContent = 'âœ“ New image saved';
               /* Update preview without reloading; cache-bust so the new file shows. */
               imgPreview.src = 'uploads/' + d.image + '?t=' + Date.now();
               imgInput.value = '';
@@ -611,19 +611,19 @@ $sched_val = !empty($post['scheduled_at'])
               showImage();
             } else {
               imgRegenStatus.className = 'img-regen-status err';
-              imgRegenStatus.textContent = '✗ ' + (d.image_error || d.error || 'Failed');
+              imgRegenStatus.textContent = 'âœ— ' + (d.image_error || d.error || 'Failed');
             }
             imgRegen.disabled = false;
           })
           .catch(() => {
             imgRegenStatus.className = 'img-regen-status err';
-            imgRegenStatus.textContent = '✗ Request failed';
+            imgRegenStatus.textContent = 'âœ— Request failed';
             imgRegen.disabled = false;
           });
       });
     }
 
-    /* ── Toggle schedule date picker ── */
+    /* â”€â”€ Toggle schedule date picker â”€â”€ */
     document.querySelectorAll('input[name=publish_mode]').forEach(radio => {
       radio.addEventListener('change', () => {
         document.getElementById('schedule-picker').style.display =
@@ -631,7 +631,7 @@ $sched_val = !empty($post['scheduled_at'])
       });
     });
 
-    /* ── Sync the rich editor into the textarea before submit (textarea is the saved field) ── */
+    /* â”€â”€ Sync the rich editor into the textarea before submit (textarea is the saved field) â”€â”€ */
     document.querySelector('form').addEventListener('submit', () => {
       if (quill) document.getElementById('body-input').value = quill.root.innerHTML;
     });

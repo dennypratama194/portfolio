@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -13,7 +13,7 @@ $id      = isset($_GET['id']) ? (int)$_GET['id'] : null;
 $product = ['title'=>'','slug'=>'','price'=>'','description'=>'','tagline'=>'','cover_image'=>'','is_active'=>0];
 $errors  = [];
 
-/* ── Load existing product for edit ── */
+/* â”€â”€ Load existing product for edit â”€â”€ */
 if ($id) {
     $stmt = $pdo->prepare('SELECT * FROM ebook_products WHERE id = ?');
     $stmt->execute([$id]);
@@ -21,7 +21,7 @@ if ($id) {
     if ($found) $product = $found;
 }
 
-/* ── Handle form submit ── */
+/* â”€â”€ Handle form submit â”€â”€ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_active   = isset($_POST['is_active']) ? 1 : 0;
     $keep_img    = $product['cover_image'];
 
-    /* ── Validation ── */
+    /* â”€â”€ Validation â”€â”€ */
     if (!$title)   $errors[] = 'Title is required.';
     if (!$slug)    $errors[] = 'Slug is required.';
     if ($price <= 0) $errors[] = 'Price must be a positive number.';
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chk->fetch()) $errors[] = 'That slug is already in use by another product.';
     }
 
-    /* ── Cover image upload ── */
+    /* â”€â”€ Cover image upload â”€â”€ */
     $new_img = $keep_img;
 
     /* Handle explicit remove */
@@ -119,13 +119,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title><?= $id ? 'Edit Ebook' : 'New Ebook' ?> — Admin</title>
+  <title><?= $id ? 'Edit Ebook' : 'New Ebook' ?> â€” Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=1"/>
+  <link rel="stylesheet" href="theme.css?v=3"/>
   <style>
     .main { max-width: 900px; }
     .top-bar { justify-content: flex-start; gap: 16px; }
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .price-wrap input[type=number] { padding-left: 44px; }
 
-    /* ── Active toggle ── */
+    /* â”€â”€ Active toggle â”€â”€ */
     .toggle-option {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <main class="main">
     <div class="top-bar">
-      <a class="back-link" href="ebooks.php">← All Ebooks</a>
+      <a class="back-link" href="ebooks.php">â† All Ebooks</a>
       <h1><?= $id ? 'Edit Ebook' : 'New Ebook' ?></h1>
     </div>
 
@@ -217,23 +217,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Cover Image</label>
         <?php $has_cover = !empty($product['cover_image']); ?>
 
-        <!-- Drop zone — shown only when there's no cover yet -->
+        <!-- Drop zone â€” shown only when there's no cover yet -->
         <div class="drop-zone" id="drop-zone" style="<?= $has_cover ? 'display:none' : '' ?>">
           <input type="file" name="cover_image" id="img-input" accept="image/*"/>
           <div id="drop-prompt">
-            <div class="drop-icon">⬆</div>
+            <div class="drop-icon">â¬†</div>
             <div class="drop-text">Drag &amp; drop cover here, or <span>browse</span></div>
             <div class="drop-filename" id="drop-filename"></div>
           </div>
         </div>
 
-        <!-- Preview + actions — shown when a cover exists or has just been picked -->
+        <!-- Preview + actions â€” shown when a cover exists or has just been picked -->
         <div class="img-wrap" id="img-wrap" style="<?= $has_cover ? '' : 'display:none' ?>">
           <img class="img-preview" id="img-preview"
                src="<?= $has_cover ? 'uploads/' . htmlspecialchars($product['cover_image']) : '' ?>"
                alt="Cover image"/>
           <div class="img-actions">
-            <button type="button" class="img-action" id="img-replace">↻ Replace image</button>
+            <button type="button" class="img-action" id="img-replace">â†» Replace image</button>
             <button type="button" class="img-remove" id="img-remove">Remove image</button>
           </div>
         </div>
@@ -246,13 +246,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label class="toggle-option">
           <input type="checkbox" name="is_active" value="1"
                  <?= $product['is_active'] ? 'checked' : '' ?>/>
-          Active — sales page is live
+          Active â€” sales page is live
         </label>
         <div class="field-hint">When inactive, the sales page returns 404 to the public.</div>
       </div>
 
       <div class="btn-row">
-        <button type="submit" class="btn-save">Save Ebook →</button>
+        <button type="submit" class="btn-save">Save Ebook â†’</button>
         <a class="btn-cancel" href="ebooks.php">Cancel</a>
       </div>
 
@@ -260,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </main>
 
   <script>
-    /* ── Auto-generate slug from title ── */
+    /* â”€â”€ Auto-generate slug from title â”€â”€ */
     const titleEl  = document.getElementById('title');
     const slugEl   = document.getElementById('slug');
     let slugEdited = <?= $id ? 'true' : 'false' ?>;
@@ -275,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     });
     slugEl.addEventListener('input', () => { slugEdited = true; });
 
-    /* ── Cover image: drop-zone (no image) ⇄ preview + actions (has image) ── */
+    /* â”€â”€ Cover image: drop-zone (no image) â‡„ preview + actions (has image) â”€â”€ */
     const dropZone   = document.getElementById('drop-zone');
     const imgInput   = document.getElementById('img-input');
     const imgWrap    = document.getElementById('img-wrap');
@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     });
 
-    /* Replace → open the file picker (works even though the drop-zone is hidden) */
+    /* Replace â†’ open the file picker (works even though the drop-zone is hidden) */
     if (imgReplace) imgReplace.addEventListener('click', () => imgInput.click());
 
     if (imgRemove) {

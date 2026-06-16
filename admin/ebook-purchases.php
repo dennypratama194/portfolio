@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -8,7 +8,7 @@ require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-/* ── Delete purchase ── */
+/* â”€â”€ Delete purchase â”€â”€ */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -28,7 +28,7 @@ $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : null;
 $q          = trim($_GET['q'] ?? '');
 $product    = null;
 
-/* ── Load product if filtering by one ── */
+/* â”€â”€ Load product if filtering by one â”€â”€ */
 if ($product_id) {
     $stmt = $pdo->prepare('SELECT id, title FROM ebook_products WHERE id = ?');
     $stmt->execute([$product_id]);
@@ -36,7 +36,7 @@ if ($product_id) {
     if (!$product) { header('Location: /admin/ebooks'); exit; }
 }
 
-/* ── Build WHERE conditions ── */
+/* â”€â”€ Build WHERE conditions â”€â”€ */
 $where  = [];
 $params = [];
 
@@ -51,7 +51,7 @@ if ($q !== '') {
 
 $where_sql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-/* ── Stats: count + revenue ── */
+/* â”€â”€ Stats: count + revenue â”€â”€ */
 $stats_stmt = $pdo->prepare(
     "SELECT COUNT(*) AS total_count, COALESCE(SUM(ep.price), 0) AS total_revenue
      FROM ebook_purchases pu
@@ -61,7 +61,7 @@ $stats_stmt = $pdo->prepare(
 $stats_stmt->execute($params);
 $stats = $stats_stmt->fetch();
 
-/* ── Purchases list ── */
+/* â”€â”€ Purchases list â”€â”€ */
 $list_stmt = $pdo->prepare(
     "SELECT pu.id, pu.email, pu.token, pu.paid_at, pu.last_read_chapter, pu.product_id,
             ep.title AS product_title
@@ -78,18 +78,18 @@ $purchases = $list_stmt->fetchAll();
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Purchases<?= $product ? ' — ' . htmlspecialchars($product['title']) : '' ?> — Admin</title>
+  <title>Purchases<?= $product ? ' â€” ' . htmlspecialchars($product['title']) : '' ?> â€” Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=1"/>
+  <link rel="stylesheet" href="theme.css?v=3"/>
   <style>
     .top-bar { align-items: flex-start; margin-bottom: 32px; gap: 24px; }
     .top-bar-left { display: flex; flex-direction: column; gap: 6px; }
 
-    /* ── Revenue stat ── */
+    /* â”€â”€ Revenue stat â”€â”€ */
     .revenue-stat {
       font-size: 14px; color: rgba(236,234,226,0.4);
       padding: 12px 20px;
@@ -99,7 +99,7 @@ $purchases = $list_stmt->fetchAll();
     .revenue-stat strong { color: #ECEAE2; font-size: 16px; font-weight: 600; }
     .revenue-count { display: block; font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
 
-    /* ── Search ── */
+    /* â”€â”€ Search â”€â”€ */
     .search-bar { display: flex; gap: 8px; margin-bottom: 32px; }
     .search-input {
       flex: 1; max-width: 320px;
@@ -148,7 +148,7 @@ $purchases = $list_stmt->fetchAll();
 
     .empty { padding: 64px 0; text-align: center; color: rgba(236,234,226,0.2); font-size: 14px; }
 
-    /* ── Toast ── */
+    /* â”€â”€ Toast â”€â”€ */
     #toast {
       position: fixed; bottom: 32px; right: 32px;
       padding: 12px 20px; font-size: 14px;
@@ -169,9 +169,9 @@ $purchases = $list_stmt->fetchAll();
     <div class="top-bar">
       <div class="top-bar-left">
         <?php if ($product): ?>
-          <a class="back-link" href="ebooks.php">← All Ebooks</a>
+          <a class="back-link" href="ebooks.php">â† All Ebooks</a>
         <?php endif; ?>
-        <h1><?= $product ? htmlspecialchars($product['title']) . ' — Purchases' : 'All Purchases' ?></h1>
+        <h1><?= $product ? htmlspecialchars($product['title']) . ' â€” Purchases' : 'All Purchases' ?></h1>
       </div>
       <div class="revenue-stat">
         <strong>IDR <?= number_format((int)$stats['total_revenue'], 0, ',', '.') ?></strong>
@@ -179,14 +179,14 @@ $purchases = $list_stmt->fetchAll();
       </div>
     </div>
 
-    <!-- ── Search ── -->
+    <!-- â”€â”€ Search â”€â”€ -->
     <form class="search-bar" method="GET" action="">
       <?php if ($product_id): ?>
         <input type="hidden" name="product_id" value="<?= $product_id ?>"/>
       <?php endif; ?>
       <input class="search-input" type="text" name="q"
              value="<?= htmlspecialchars($q) ?>"
-             placeholder="Search by email…"/>
+             placeholder="Search by emailâ€¦"/>
       <button class="btn-search" type="submit">Search</button>
       <?php if ($q !== ''): ?>
         <a class="btn-clear"
@@ -194,7 +194,7 @@ $purchases = $list_stmt->fetchAll();
       <?php endif; ?>
     </form>
 
-    <!-- ── Table ── -->
+    <!-- â”€â”€ Table â”€â”€ -->
     <?php if (empty($purchases)): ?>
       <div class="empty">
         <?= $q !== '' ? 'No purchases match "' . htmlspecialchars($q) . '".' : 'No purchases yet.' ?>
@@ -219,9 +219,9 @@ $purchases = $list_stmt->fetchAll();
             <td class="product-cell"><?= htmlspecialchars($pu['product_title']) ?></td>
           <?php endif; ?>
           <td class="date-cell"><?= date('d M Y, H:i', strtotime($pu['paid_at'])) ?></td>
-          <td class="token-cell"><?= htmlspecialchars(substr($pu['token'], 0, 8)) ?>…</td>
+          <td class="token-cell"><?= htmlspecialchars(substr($pu['token'], 0, 8)) ?>â€¦</td>
           <td class="chapter-cell">
-            <?= $pu['last_read_chapter'] !== null ? 'Ch. ' . (int)$pu['last_read_chapter'] : '—' ?>
+            <?= $pu['last_read_chapter'] !== null ? 'Ch. ' . (int)$pu['last_read_chapter'] : 'â€”' ?>
           </td>
           <td style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
             <button class="btn-resend"
@@ -257,13 +257,13 @@ $purchases = $list_stmt->fetchAll();
   <script>
     var CSRF_TOKEN = <?= json_encode($_SESSION['csrf_token']) ?>;
 
-    /* ── Resend magic link ── */
+    /* â”€â”€ Resend magic link â”€â”€ */
     document.querySelectorAll('.btn-resend').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var email     = btn.dataset.email;
         var productId = btn.dataset.product;
         btn.disabled    = true;
-        btn.textContent = 'Sending…';
+        btn.textContent = 'Sendingâ€¦';
 
         fetch('/api/ebook-recover.php', {
           method: 'POST',
@@ -274,7 +274,7 @@ $purchases = $list_stmt->fetchAll();
         .then(function (json) {
           if (json.success) {
             showToast('Link sent to ' + email, 'ok');
-            btn.textContent = 'Sent ✓';
+            btn.textContent = 'Sent âœ“';
           } else {
             showToast(json.message || 'Failed to send link.', 'err');
             btn.disabled    = false;
@@ -282,14 +282,14 @@ $purchases = $list_stmt->fetchAll();
           }
         })
         .catch(function () {
-          showToast('Network error — try again.', 'err');
+          showToast('Network error â€” try again.', 'err');
           btn.disabled    = false;
           btn.textContent = 'Resend Link';
         });
       });
     });
 
-    /* ── Toast ── */
+    /* â”€â”€ Toast â”€â”€ */
     var toastTimer;
     function showToast(msg, type) {
       var el = document.getElementById('toast');
