@@ -326,18 +326,27 @@ PROMPT;
 
         if ($curl_err) {
             autoPostLog('Claude API curl error: ' . $curl_err);
-            respond(502, ['ok' => false, 'error' => 'Generation failed.']);
+            respond(502, ['ok' => false, 'error' => 'Claude curl error: ' . $curl_err]);
         }
 
         $claude_resp = json_decode($claude_raw, true);
+
+        /* Surface API-level errors (auth, rate limit, model not found, etc.) */
+        if (isset($claude_resp['error'])) {
+            $api_err = ($claude_resp['error']['type'] ?? 'error') . ': ' . ($claude_resp['error']['message'] ?? 'unknown');
+            autoPostLog('Claude API error: ' . $api_err);
+            respond(502, ['ok' => false, 'error' => 'Claude API — ' . $api_err]);
+        }
+
         $raw_content = $claude_resp['content'][0]['text'] ?? '';
         $raw_content = preg_replace('/^```(?:json)?\s*/i', '', trim($raw_content));
         $raw_content = preg_replace('/\s*```$/', '', $raw_content);
         $candidate   = json_decode(trim($raw_content), true);
 
         if (!$candidate || empty($candidate['title']) || empty($candidate['body'])) {
-            autoPostLog('Claude returned invalid content. Raw (first 500 chars): ' . substr($raw_content, 0, 500));
-            respond(502, ['ok' => false, 'error' => 'Generation failed.']);
+            $preview = substr($raw_content ?: json_encode($claude_resp), 0, 300);
+            autoPostLog('Claude returned invalid content. Raw (first 300 chars): ' . $preview);
+            respond(502, ['ok' => false, 'error' => 'Claude returned invalid JSON. Preview: ' . $preview]);
         }
 
         /* Jaccard word overlap vs every recent title — ≥0.5 means "same topic". */
