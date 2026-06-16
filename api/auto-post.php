@@ -182,10 +182,11 @@ if ($phase === '1' || $phase === 'all') {
         respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
     }
 
-    /* ── Memory: last 20 published posts (any source) so Claude knows what
-       it (or you) have already covered and won't rehash them. ── */
+    /* ── Memory: last 20 published posts — used for two things:
+       1. Avoid repeating topics (title overlap check)
+       2. Build an internal-link list so Claude can reference existing posts ── */
     $recent_stmt = $pdo->query(
-        "SELECT title, category FROM posts
+        "SELECT title, slug, category FROM posts
          WHERE is_published = 1
          ORDER BY COALESCE(published_at, scheduled_at) DESC
          LIMIT 20"
@@ -264,12 +265,17 @@ if ($phase === '1' || $phase === 'all') {
     ];
     $angle = $angles[(int)date('z') % count($angles)];
 
-    /* ── Build the "avoid repeating these" list for the prompt ── */
-    $recent_list = '';
+    /* ── Build the "avoid repeating" list and the internal-link reference list ── */
+    $recent_list  = '';
+    $internal_links = '';
     foreach ($recent_posts as $r) {
         $recent_list .= '- "' . $r['title'] . '" [' . ($r['category'] ?: '?') . "]\n";
+        $internal_links .= '- "' . $r['title'] . '" → https://dennypratama.com/blog/' . rawurlencode($r['slug']) . "\n";
     }
-    if ($recent_list === '') $recent_list = '(no posts yet — this is the first one)';
+    if ($recent_list === '') {
+        $recent_list    = '(no posts yet — this is the first one)';
+        $internal_links = '(none yet)';
+    }
 
     /* ── Generate with one retry if the result word-overlaps a recent title ── */
     $extra_constraint = '';
@@ -278,30 +284,44 @@ if ($phase === '1' || $phase === 'all') {
 
     for ($attempt = 1; $attempt <= 2; $attempt++) {
         $prompt = <<<PROMPT
-You are a blog writer for Denny Pratama, a UI/UX designer and developer based in Indonesia who works in PHP, vanilla JS, modern CSS, and GSAP on shared cPanel hosting.
+You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write with genuine first-hand expertise: you have hit real bugs, made real tradeoffs, and have opinions formed from actual project work.
 
 REQUIRED CATEGORY for this post: $required_category
 Format / angle for this post: $angle
 
-Topic seed list for this category — pick ONE of these (or invent something equally specific within the same category). Do not default to whichever sounds most familiar:
+Topic seed list — pick ONE (or invent something equally specific within the same category). Avoid the most obvious/generic choice:
 $seed_list
 
-Recent posts already on the site — do NOT repeat, rehash, or write a near-variant of any of these titles or angles:
+Posts already published — do NOT repeat, rehash, or write a near-variant of any of these:
 $recent_list
 $extra_constraint
-Write an original, insightful, practical blog post on the chosen topic.
+
+WRITING REQUIREMENTS:
+- Minimum 1200 words. Aim for 1400–1600.
+- Write in first person where natural: "In my experience...", "I ran into this on a recent project...", "The mistake I kept making was..."
+- Be specific: name real tools, real error messages, real tradeoffs. Avoid vague generalisations.
+- Structure: opening hook → problem framing → practical breakdown (h2/h3 sections) → concrete takeaways → closing paragraph.
+- Where genuinely relevant, link to 1–2 existing posts from the list below using <a href="URL">anchor text</a>. Only link if the topic naturally connects — do not force it.
+
+Existing posts available for internal linking:
+$internal_links
 
 Return ONLY a valid JSON object with these exact fields:
 {
-  "title": "The post title (engaging, specific, not generic)",
+  "title": "The post title (specific and engaging — not generic)",
   "slug": "url-friendly-slug-from-title",
-  "excerpt": "A compelling 2-sentence summary for the blog listing page.",
+  "excerpt": "A compelling 2-sentence summary for the blog listing page (under 160 chars total).",
   "category": "$required_category",
-  "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header image. No text, no people, abstract or conceptual.",
-  "body": "Full blog post in HTML. Use ONLY these tags: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a>, <pre>, <code>, <hr>. Multi-line code MUST be wrapped in <pre><code>...</code></pre>; inline code in <code>...</code>. Inside any <pre> or <code>, HTML-escape special characters as entities — use &lt; for <, &gt; for >, &amp; for &. Never leave raw angle brackets inside code. Minimum 600 words. No inline styles."
+  "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header. No text, no people, abstract or conceptual.",
+  "faq": [
+    {"q": "Question one readers commonly ask about this topic?", "a": "Direct, complete answer in 2–3 sentences."},
+    {"q": "Question two?", "a": "Answer."},
+    {"q": "Question three?", "a": "Answer."}
+  ],
+  "body": "Full blog post in HTML. Use ONLY: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a href=\"...\">, <pre>, <code>, <hr>. End the body with an <h2>Frequently Asked Questions</h2> section that contains the same 3 Q&As from the faq field, each as <h3>question</h3><p>answer</p>. Multi-line code → <pre><code>...</code></pre>. Inline code → <code>...</code>. Inside <pre>/<code>: HTML-escape all special chars (&lt; &gt; &amp;). No raw angle brackets inside code. No inline styles."
 }
 
-Do not include any markdown, explanation, or text outside the JSON object.
+Do not include markdown fences, commentary, or any text outside the JSON object.
 PROMPT;
 
         $ch = curl_init('https://api.anthropic.com/v1/messages');
@@ -374,7 +394,12 @@ PROMPT;
     /* Force code-block contents to be entity-encoded BEFORE strip_tags runs — otherwise
        raw HTML examples inside <pre>/<code> get treated as tags and stripped, leaving
        the code mashed together as plain inline text (the bug we just hit on the blog). */
-    $body     = strip_tags(sanitizeAutoPostCode($post_data['body']), $allowed) . "\n<!-- auto-generated -->";
+    /* Embed FAQ as a JSON comment so post.php can extract it for FAQPage schema */
+    $faq_json = '';
+    if (!empty($post_data['faq']) && is_array($post_data['faq'])) {
+        $faq_json = "\n<!-- faq:" . json_encode($post_data['faq'], JSON_UNESCAPED_UNICODE) . " -->";
+    }
+    $body = strip_tags(sanitizeAutoPostCode($post_data['body']), $allowed) . "\n<!-- auto-generated -->" . $faq_json;
 
     $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($post_data['slug'] ?? $title)), '-');
     $slug = $slug_base; $attempt = 1;

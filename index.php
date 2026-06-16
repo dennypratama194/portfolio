@@ -21,21 +21,36 @@ $og_image      = 'https://dennypratama.com/assets/og-image.png';
 $needs_gsap    = true;
 $meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designer and developer, startup product design, web designer Indonesia, UI designer for hire';
 $jsonld        = json_encode([
-    '@context'    => 'https://schema.org',
-    '@type'       => 'Person',
-    'name'        => 'Denny Pratama',
-    'url'         => 'https://dennypratama.com',
-    'jobTitle'    => 'UI/UX Designer & Developer',
-    'description' => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
-    'image'       => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
-    'email'       => 'dennypratama194@gmail.com',
-    'knowsAbout'  => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'AI'],
-    'sameAs'      => [
+    '@context'      => 'https://schema.org',
+    '@type'         => 'Person',
+    'name'          => 'Denny Pratama',
+    'url'           => 'https://dennypratama.com',
+    'jobTitle'      => 'UI/UX Designer & Developer',
+    'description'   => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
+    'image'         => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+    'email'         => 'hello@dennypratama.com',
+    'nationality'   => ['@type' => 'Country', 'name' => 'Indonesia'],
+    'knowsAbout'    => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'PHP', 'JavaScript', 'CSS', 'GSAP', 'AI Integration'],
+    'knowsLanguage' => ['English', 'Indonesian'],
+    'areaServed'    => 'Worldwide',
+    'hasOccupation' => [
+        '@type'              => 'Occupation',
+        'name'               => 'UI/UX Designer & Developer',
+        'occupationLocation' => ['@type' => 'Country', 'name' => 'Indonesia'],
+        'skills'             => 'UI/UX Design, Product Design, Web Development, PHP, JavaScript, CSS, GSAP, Figma, Design Systems',
+    ],
+    'offers' => [
+        '@type'       => 'Offer',
+        'name'        => 'UI/UX Design & Web Development Services',
+        'description' => 'UI/UX design, web development, brand identity, and AI integration for startups and founders.',
+        'areaServed'  => 'Worldwide',
+    ],
+    'sameAs' => [
         'https://dribbble.com/dennypratama',
         'https://www.linkedin.com/in/denny-pratama-740a14151/',
         'https://instagram.com/dennypratama',
     ],
-]);
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>
 <!DOCTYPE html>
 <html lang="en">

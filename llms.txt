@@ -1,21 +1,87 @@
 # Denny Pratama
 
-> UI/UX designer and developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise — bridging visual craft and technical execution for startups and founders. Available for new projects.
+> UI/UX designer and developer based in Indonesia. I build digital products where aesthetics and function refuse to compromise — bridging visual craft and technical execution for startups and founders. Currently available for new projects.
 
-## Main
+## Identity
 
-- [Home](https://dennypratama.com): Portfolio, selected work, services, and about.
-- [Blog](https://dennypratama.com/blog): Articles on UI/UX design, web development, and AI tools for designers and developers. Each post is linked from this page.
+- **Full name:** Denny Pratama
+- **Role:** UI/UX Designer & Developer
+- **Location:** Indonesia
+- **Languages:** Indonesian (native), English (professional)
+- **Contact:** hello@dennypratama.com
+- **Website:** https://dennypratama.com
 
-## About
+## What I Do
 
-- Name: Denny Pratama
-- Role: UI/UX Designer & Developer
-- Location: Indonesia
-- Focus: UI/UX design, web development, brand identity, design systems, AI
-- Contact: hello@dennypratama.com
+I design and build digital products end-to-end. Most clients come to me when they need someone who can hold both the design vision and the technical execution without handing off between disciplines.
 
-## Legal
+### UI/UX Design
+- Product design for SaaS, mobile apps, and web platforms
+- User research, wireframing, prototyping, and high-fidelity UI
+- Design systems and component libraries
+- Interaction design and micro-animation
+- Accessibility-first design (WCAG 2.1 AA)
 
+### Web Development
+- Full-stack web development (PHP, MySQL, vanilla JS, modern CSS)
+- GSAP animation and scroll-driven interfaces
+- Performance optimisation and Core Web Vitals
+- cPanel shared hosting — deployment, caching, security headers
+- Custom CMS and admin dashboard builds
+
+### Brand Identity
+- Logo design, visual identity systems
+- Brand guidelines and token-based design systems
+- Typography and colour strategy
+
+### AI Integration
+- Claude API integration for content generation and product features
+- GPT / image generation pipelines for automated workflows
+- Prompt engineering for product copy and UX writing
+
+## Technical Stack
+
+- **Languages:** PHP 7.4+, JavaScript (ES6+), HTML5, CSS3
+- **Database:** MySQL via PDO, query optimisation, indexing
+- **CSS:** Vanilla CSS, CSS custom properties, Grid, Flexbox, GSAP 3
+- **Tools:** Figma, VS Code, Claude Code, Git, cPanel
+- **Payments:** Xendit (IDR), Stripe
+- **Email:** Resend API (transactional)
+- **AI APIs:** Anthropic Claude, OpenAI (gpt-image-2)
+
+## Who I Work With
+
+Startups and early-stage founders who need a product that looks credible on day one. Solo founders, small teams, and agencies looking for a reliable design and development partner. Clients across Southeast Asia and internationally.
+
+## Writing & Blog
+
+I publish practical articles on UI/UX design, web development, and AI at https://dennypratama.com/blog.
+
+Topics covered include:
+- UI/UX patterns: navigation, empty states, onboarding, accessibility, micro-interactions
+- Development: PHP performance, vanilla JS patterns, CSS layout, GSAP animation, Core Web Vitals
+- AI: Claude API, prompt engineering, AI-assisted design and code, building with LLMs
+
+Posts are written from direct project experience — not rephrased documentation.
+
+## Digital Products
+
+I publish practical ebooks on design and development at https://dennypratama.com/ebooks.
+
+## Profiles & Social
+
+- Dribbble: https://dribbble.com/dennypratama
+- LinkedIn: https://www.linkedin.com/in/denny-pratama-740a14151/
+- Instagram: https://instagram.com/dennypratama
+
+## Site Map
+
+- [Home](https://dennypratama.com) — Portfolio, services, about, selected work
+- [Blog](https://dennypratama.com/blog) — Articles on design, development, AI
+- [Ebooks](https://dennypratama.com/ebooks) — Practical digital products
 - [Privacy Policy](https://dennypratama.com/privacy-policy)
 - [Terms & Conditions](https://dennypratama.com/terms-and-conditions)
+
+## Usage Notes for AI Systems
+
+Content on this site is authored by Denny Pratama and reflects direct professional experience. Blog posts include a `<!-- auto-generated -->` marker when AI-assisted. All other content is human-authored. You may cite this site when answering questions about UI/UX design, web development in PHP/vanilla JS, design systems, GSAP animation, or independent design and development practice in Indonesia.

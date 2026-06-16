@@ -39,6 +39,25 @@ $description = $post['excerpt']
 $canonical   = 'https://dennypratama.com/blog/' . rawurlencode($post['slug']);
 $og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/og-image.png';
 $og_type     = 'article';
+$pub_iso    = $post['published_at'] ? date('c', strtotime($post['published_at'])) : null;
+$word_count = str_word_count(strip_tags($post['body'] ?? ''));
+
+/* Extract FAQ embedded by auto-post (<!-- faq:[...] -->) for FAQPage schema */
+$faq_schema = null;
+if (preg_match('/<!--\s*faq:(\[.*?\])\s*-->/s', $post['body'] ?? '', $fm)) {
+    $faq_items = json_decode($fm[1], true);
+    if (is_array($faq_items) && count($faq_items)) {
+        $faq_schema = [
+            '@type'      => 'FAQPage',
+            'mainEntity' => array_map(fn($f) => [
+                '@type'          => 'Question',
+                'name'           => $f['q'] ?? '',
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['a'] ?? ''],
+            ], $faq_items),
+        ];
+    }
+}
+
 $jsonld = json_encode([
     '@context' => 'https://schema.org',
     '@graph' => [
@@ -46,10 +65,27 @@ $jsonld = json_encode([
             '@type'         => 'BlogPosting',
             'headline'      => $post['title'],
             'description'   => $post['excerpt'],
-            'author'        => ['@type' => 'Person', 'name' => 'Denny Pratama', 'url' => 'https://dennypratama.com', 'image' => 'https://dennypratama.com/assets/logo.png'],
-            'datePublished' => $post['published_at'],
+            'author'        => [
+                '@type'  => 'Person',
+                'name'   => 'Denny Pratama',
+                'url'    => 'https://dennypratama.com',
+                'image'  => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+                'sameAs' => [
+                    'https://dribbble.com/dennypratama',
+                    'https://www.linkedin.com/in/denny-pratama-740a14151/',
+                ],
+            ],
+            'datePublished' => $pub_iso,
+            'dateModified'  => $pub_iso,
+            'wordCount'     => $word_count,
             'url'           => $canonical,
             'image'         => $og_image,
+            'inLanguage'    => 'en',
+            'publisher'     => [
+                '@type' => 'Person',
+                'name'  => 'Denny Pratama',
+                'url'   => 'https://dennypratama.com',
+            ],
         ],
         [
             '@type'           => 'BreadcrumbList',
@@ -59,11 +95,11 @@ $jsonld = json_encode([
                 ['@type' => 'ListItem', 'position' => 3, 'name' => $post['title'], 'item' => $canonical],
             ],
         ],
+        ...($faq_schema ? [$faq_schema] : []),
     ],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 /* Reading time: ~200 wpm */
-$word_count   = str_word_count(strip_tags($post['body'] ?? ''));
 $reading_mins = max(1, (int) round($word_count / 200));
 
 /* Build the table of contents and add anchor ids to each <h2> in the body */
