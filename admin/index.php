@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -8,7 +8,7 @@ require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-/* â”€â”€ Delete action â”€â”€ */
+/* ── Delete action ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -37,7 +37,7 @@ $posts = $pdo->query(
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin â€” Posts</title>
+  <title>Admin — Posts</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -57,13 +57,13 @@ $posts = $pdo->query(
     <div class="top-bar">
       <h1>Posts</h1>
       <div class="top-bar-actions">
-        <a class="btn-outline" href="auto-post.php">âš¡ Auto Post</a>
+        <a class="btn-outline" href="auto-post.php">⚡ Auto Post</a>
         <a class="btn-new" href="edit.php">+ New Post</a>
       </div>
     </div>
 
     <?php if (empty($posts)): ?>
-      <div class="empty">No posts yet. <a href="edit.php" style="color:#E8320A;text-decoration:none;">Write your first one â†’</a></div>
+      <div class="empty">No posts yet. <a href="edit.php" style="color:#E8320A;text-decoration:none;">Write your first one →</a></div>
     <?php else: ?>
     <table>
       <thead>
@@ -96,14 +96,14 @@ $posts = $pdo->query(
             <?php elseif (!empty($p['scheduled_at'])): ?>
               <?= date('d M Y, H:i', strtotime($p['scheduled_at'])) ?>
             <?php else: ?>
-              â€”
+              —
             <?php endif; ?>
           </td>
           <td>
             <?php $is_live = $p['is_published'] || (!empty($p['scheduled_at']) && strtotime($p['scheduled_at']) <= time()); ?>
             <?php if ($is_live): ?>
               <a class="action-link" href="/blog/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener noreferrer"
-                 style="margin-right:14px">View â†—</a>
+                 style="margin-right:14px">View ↗</a>
             <?php endif; ?>
             <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this post?')">
@@ -122,7 +122,7 @@ $posts = $pdo->query(
   </main>
 
   <script>
-    /* Whole post row is clickable â†’ edit; action buttons (Delete) opt out */
+    /* Whole post row is clickable → edit; action buttons (Delete) opt out */
     document.querySelectorAll('tr.row-link').forEach(function (row) {
       row.addEventListener('click', function (e) {
         if (e.target.closest('a, button, form, input')) return;

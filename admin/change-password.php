@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Change Password â€” Admin</title>
+  <title>Change Password — Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <main class="main main--narrow">
     <div class="top-bar top-bar--gap">
-      <a class="back-link" href="index.php">â† Posts</a>
+      <a class="back-link" href="index.php">← Posts</a>
       <h1>Change Password</h1>
     </div>
 
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" id="confirm_password" name="confirm_password"
                placeholder="Repeat new password" required/>
       </div>
-      <button type="submit" class="btn-save">Update Password â†’</button>
+      <button type="submit" class="btn-save">Update Password →</button>
     </form>
   </main>
 

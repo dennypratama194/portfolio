@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -14,7 +14,7 @@ $config = file_exists($config_file)
 
 $saved = false;
 
-/* â”€â”€ Save settings â”€â”€ */
+/* ── Save settings ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $saved = isset($_GET['saved']);
 
-/* â”€â”€ Recent auto-posts â”€â”€ */
+/* ── Recent auto-posts ── */
 require __DIR__ . '/../api/db.php';
 $recent = $pdo->query(
     "SELECT id, title, slug, published_at, featured_image FROM posts
@@ -63,7 +63,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Auto Post â€” Admin</title>
+  <title>Auto Post — Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -74,7 +74,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     .main { max-width: 1120px; }
     input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
 
-    /* â”€â”€ Two-column layout â”€â”€ */
+    /* ── Two-column layout ── */
     .auto-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
     .auto-main { min-width: 0; }
     .auto-sidebar { position: sticky; top: 24px; }
@@ -170,7 +170,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       padding: 12px 20px; font-size: 14px; color: #4ade80; margin-bottom: 28px;
     }
 
-    /* Sidebar table â€” compact */
+    /* Sidebar table — compact */
     .sidebar-table { width: 100%; border-collapse: collapse; }
     .sidebar-table th {
       font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
@@ -215,7 +215,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     <div class="auto-layout">
 
-      <!-- â”€â”€ Left: config & cron settings â”€â”€ -->
+      <!-- ── Left: config & cron settings ── -->
       <div class="auto-main">
 
         <!-- Enable toggle -->
@@ -245,9 +245,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           <div class="field">
             <label>Anthropic API Key (Claude)</label>
             <input type="password" name="anthropic_api_key"
-                   placeholder="<?= $has_ant ? 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ (saved â€” leave blank to keep)' : 'sk-ant-...' ?>"/>
+                   placeholder="<?= $has_ant ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-ant-...' ?>"/>
             <?php if ($has_ant): ?>
-              <div class="key-set">âœ“ Key saved</div>
+              <div class="key-set">✓ Key saved</div>
             <?php else: ?>
               <div class="hint">Required. Get yours at console.anthropic.com</div>
             <?php endif; ?>
@@ -256,9 +256,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           <div class="field">
             <label>OpenAI API Key (gpt-image-2 images)</label>
             <input type="password" name="openai_api_key"
-                   placeholder="<?= $has_oai ? 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ (saved â€” leave blank to keep)' : 'sk-...' ?>"/>
+                   placeholder="<?= $has_oai ? '••••••••••••••• (saved — leave blank to keep)' : 'sk-...' ?>"/>
             <?php if ($has_oai): ?>
-              <div class="key-set">âœ“ Key saved</div>
+              <div class="key-set">✓ Key saved</div>
             <?php else: ?>
               <div class="hint">Required for featured image generation. Get yours at platform.openai.com</div>
             <?php endif; ?>
@@ -269,16 +269,16 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             <label>Claude Model</label>
             <select name="model">
               <option value="claude-haiku-4-5-20251001" <?= $model === 'claude-haiku-4-5-20251001' ? 'selected' : '' ?>>
-                Claude Haiku â€” Fast &amp; cost-effective
+                Claude Haiku — Fast &amp; cost-effective
               </option>
               <option value="claude-sonnet-4-6" <?= $model === 'claude-sonnet-4-6' ? 'selected' : '' ?>>
-                Claude Sonnet â€” Higher quality
+                Claude Sonnet — Higher quality
               </option>
             </select>
           </div>
 
           <div class="btn-row">
-            <button type="submit" class="btn-save">Save Settings â†’</button>
+            <button type="submit" class="btn-save">Save Settings →</button>
           </div>
         </form>
 
@@ -310,7 +310,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           </div>
 
           <div class="hint" style="margin-top:16px">
-            In cPanel â†’ Cron Jobs, use the PHP CLI command (recommended â€” no HTTP timeout):<br>
+            In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
             <code style="color:rgba(236,234,226,0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
             Or via wget (two requests, each under 30s):<br>
             <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
@@ -331,7 +331,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
       </div><!-- /.auto-main -->
 
-      <!-- â”€â”€ Right: sticky run panel â”€â”€ -->
+      <!-- ── Right: sticky run panel ── -->
       <div class="auto-sidebar">
         <div class="auto-sidebar-card">
 
@@ -356,13 +356,13 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
                     <a class="post-title-link" href="/blog/<?= htmlspecialchars($r['slug']) ?>" target="_blank" rel="noopener noreferrer">
                       <?= htmlspecialchars($r['title']) ?>
                     </a>
-                    <span class="pub-date"><?= $r['published_at'] ? date('d M Y', strtotime($r['published_at'])) : 'â€”' ?></span>
+                    <span class="pub-date"><?= $r['published_at'] ? date('d M Y', strtotime($r['published_at'])) : '—' ?></span>
                   </td>
                   <td>
                     <?php if ($r['featured_image']): ?>
-                      <span class="img-ok" title="Image present">âœ“</span>
+                      <span class="img-ok" title="Image present">✓</span>
                     <?php else: ?>
-                      <span class="img-missing" title="No image">â€”</span>
+                      <span class="img-missing" title="No image">—</span>
                     <?php endif; ?>
                     <button class="regen-btn" data-id="<?= (int)$r['id'] ?>" <?= $token ? '' : 'disabled' ?>>
                       <?= $r['featured_image'] ? 'Regen' : 'Generate' ?>
@@ -383,7 +383,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   </main>
 
   <script>
-    /* â”€â”€ Copy cron URL â”€â”€ */
+    /* ── Copy cron URL ── */
     function copyUrl() {
       var url = document.getElementById('cron-url');
       if (!url) return;
@@ -394,12 +394,12 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       });
     }
 
-    /* â”€â”€ Animated-dots loading indicator (CSS in theme.css â†’ .loading-dots) â”€â”€ */
+    /* ── Animated-dots loading indicator (CSS in theme.css → .loading-dots) ── */
     function loadingHtml(verb, suffix) {
       return verb + '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>' + (suffix || '');
     }
 
-    /* â”€â”€ Run Now (two-phase) â”€â”€ */
+    /* ── Run Now (two-phase) ── */
     var runBtn    = document.getElementById('run-btn');
     var runStatus = document.getElementById('run-status');
     var TOKEN     = '<?= addslashes($token) ?>';
@@ -423,19 +423,19 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         runStatus.className = 'run-status';
-        runStatus.innerHTML = loadingHtml('Phase 1 â€” Generating content with Claude');
+        runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
 
         /* Phase 1: Claude generates post */
         fetchJSON('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
           .then(function(d1){
             if (!d1.ok) {
               runStatus.className = 'run-status err';
-              runStatus.textContent = 'âœ— Phase 1 failed: ' + (d1.error || 'Unknown error');
+              runStatus.textContent = '✗ Phase 1 failed: ' + (d1.error || 'Unknown error');
               runBtn.disabled = false;
               return;
             }
 
-            runStatus.innerHTML = loadingHtml('Phase 2 â€” Generating featured image with gpt-image-2');
+            runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image with gpt-image-2');
 
             /* Phase 2: gpt-image-2 generates image */
             var p2url = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN)
@@ -447,10 +447,10 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               .then(function(d2){
                 if (d2.image) {
                   runStatus.className = 'run-status ok';
-                  runStatus.textContent = 'âœ“ Published: "' + d1.title + '" (with image)';
+                  runStatus.textContent = '✓ Published: "' + d1.title + '" (with image)';
                 } else {
                   runStatus.className = 'run-status err';
-                  runStatus.textContent = 'âš  Published: "' + d1.title + '" â€” image failed: '
+                  runStatus.textContent = '⚠ Published: "' + d1.title + '" — image failed: '
                     + (d2.image_error || 'unknown reason');
                 }
                 setTimeout(function(){ location.reload(); }, 6000);
@@ -458,14 +458,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
               .catch(function(err){
                 /* Phase 2 failed but post was already created in phase 1 */
                 runStatus.className = 'run-status err';
-                runStatus.textContent = 'âš  Published: "' + d1.title + '" but image request errored.';
+                runStatus.textContent = '⚠ Published: "' + d1.title + '" but image request errored.';
                 console.error('Phase 2 error:', err.message);
                 setTimeout(function(){ location.reload(); }, 6000);
               });
           })
           .catch(function(err){
             runStatus.className = 'run-status err';
-            runStatus.textContent = 'âœ— ' + (err && err.message ? err.message : 'Request failed');
+            runStatus.textContent = '✗ ' + (err && err.message ? err.message : 'Request failed');
             console.error('Phase 1 error:', err);
             runBtn.disabled = false;
           });
@@ -473,7 +473,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     }
   </script>
   <script>
-    /* â”€â”€ Per-post image regenerate â”€â”€ */
+    /* ── Per-post image regenerate ── */
     document.querySelectorAll('.regen-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         if (!TOKEN) return;
@@ -481,23 +481,23 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         var status = document.querySelector('.regen-status[data-status-for="' + id + '"]');
         btn.disabled = true;
         status.className = 'regen-status';
-        status.innerHTML = loadingHtml('Generating', ' (30â€“60s)');
+        status.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
         fetchJSON('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
           .then(function (d) {
             if (d.image) {
               status.className   = 'regen-status ok';
-              status.textContent = 'âœ“ Saved â€” reloadingâ€¦';
+              status.textContent = '✓ Saved — reloading…';
               setTimeout(function () { location.reload(); }, 1500);
             } else {
               status.className   = 'regen-status err';
-              status.textContent = 'âœ— ' + (d.image_error || d.error || 'Failed');
+              status.textContent = '✗ ' + (d.image_error || d.error || 'Failed');
               btn.disabled = false;
             }
           })
           .catch(function (err) {
             status.className   = 'regen-status err';
-            status.textContent = 'âœ— ' + (err && err.message ? err.message : 'Request failed');
+            status.textContent = '✗ ' + (err && err.message ? err.message : 'Request failed');
             console.error('Regen error:', err);
             btn.disabled = false;
           });

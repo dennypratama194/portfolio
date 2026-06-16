@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -6,32 +6,32 @@ session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
 
-/* â”€â”€ Stat cards â”€â”€ */
+/* ── Stat cards ── */
 $total_views     = (int)$pdo->query('SELECT COUNT(*) FROM page_views')->fetchColumn();
 $views_today     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE viewed_at >= CURDATE()')->fetchColumn();
 $views_week      = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEARWEEK(viewed_at,1) = YEARWEEK(NOW(),1)')->fetchColumn();
 $views_month     = (int)$pdo->query('SELECT COUNT(*) FROM page_views WHERE YEAR(viewed_at)=YEAR(NOW()) AND MONTH(viewed_at)=MONTH(NOW())')->fetchColumn();
 $unique_visitors = (int)$pdo->query('SELECT COUNT(DISTINCT ip_hash) FROM page_views')->fetchColumn();
 
-/* â”€â”€ Avg session duration â”€â”€ */
+/* ── Avg session duration ── */
 $avg_duration_sec = (int)$pdo->query(
     'SELECT COALESCE(AVG(time_on_page), 0) FROM page_views WHERE time_on_page IS NOT NULL'
 )->fetchColumn();
 
 function fmt_duration($secs) {
-    if ($secs <= 0) return 'â€”';
+    if ($secs <= 0) return '—';
     $m = floor($secs / 60);
     $s = $secs % 60;
     return $m > 0 ? "{$m}m {$s}s" : "{$s}s";
 }
 
-/* â”€â”€ Avg duration per page type â”€â”€ */
+/* ── Avg duration per page type ── */
 $dur_rows = $pdo->query(
     "SELECT page_type, COALESCE(AVG(time_on_page),0) AS avg_sec
      FROM page_views WHERE time_on_page IS NOT NULL GROUP BY page_type"
 )->fetchAll(PDO::FETCH_KEY_PAIR);
 
-/* â”€â”€ Returning vs new visitors â”€â”€ */
+/* ── Returning vs new visitors ── */
 $returning = (int)$pdo->query(
     'SELECT COUNT(*) FROM (
         SELECT ip_hash FROM page_views
@@ -41,7 +41,7 @@ $returning = (int)$pdo->query(
 )->fetchColumn();
 $new_visitors = $unique_visitors - $returning;
 
-/* â”€â”€ Per-page breakdown (views + unique visitors) â”€â”€ */
+/* ── Per-page breakdown (views + unique visitors) ── */
 $breakdown = $pdo->query(
     "SELECT page_type,
             COUNT(*) AS views,
@@ -57,7 +57,7 @@ $blog_uniq    = (int)($breakdown['blog']['unique_v'] ?? 0);
 $post_views   = (int)($breakdown['post']['views']   ?? 0);
 $post_uniq    = (int)($breakdown['post']['unique_v'] ?? 0);
 
-/* â”€â”€ Traffic sources: bucket referrers + collect top hostnames â”€â”€
+/* ── Traffic sources: bucket referrers + collect top hostnames ──
    Direct = no referrer. Search/Social = known host patterns. Referral = the rest. */
 $src_buckets = ['direct' => 0, 'search' => 0, 'social' => 0, 'referral' => 0];
 $src_hosts   = [];
@@ -97,7 +97,7 @@ arsort($src_hosts);
 $top_referrers   = array_slice($src_hosts, 0, 10, true);
 $src_total       = array_sum($src_buckets);
 
-/* â”€â”€ Top countries (NULL = pre-migration or non-Cloudflare traffic, skipped) â”€â”€
+/* ── Top countries (NULL = pre-migration or non-Cloudflare traffic, skipped) ──
    Detect the column first so the dashboard still loads before the migration runs. */
 $has_country = (bool)$pdo->query(
     "SELECT COUNT(*) FROM information_schema.COLUMNS
@@ -120,7 +120,7 @@ if ($has_country) {
     $country_total = (int)$pdo->query("SELECT COUNT(*) FROM page_views WHERE country IS NOT NULL")->fetchColumn();
 }
 
-/* ISO-2 â†’ readable name (only the codes likely to appear; fall back to the code itself) */
+/* ISO-2 → readable name (only the codes likely to appear; fall back to the code itself) */
 $country_names = [
     'ID' => 'Indonesia', 'US' => 'United States', 'GB' => 'United Kingdom', 'SG' => 'Singapore',
     'MY' => 'Malaysia', 'AU' => 'Australia', 'CA' => 'Canada', 'DE' => 'Germany', 'FR' => 'France',
@@ -134,7 +134,7 @@ $country_names = [
     'AT' => 'Austria', 'PT' => 'Portugal', 'RO' => 'Romania', 'CZ' => 'Czechia',
 ];
 
-/* â”€â”€ Top 5 posts (views + unique visitors) â”€â”€ */
+/* ── Top 5 posts (views + unique visitors) ── */
 $top_posts = $pdo->query(
     "SELECT pv.post_slug, p.title,
             COUNT(*) AS view_count,
@@ -147,10 +147,10 @@ $top_posts = $pdo->query(
      LIMIT 5"
 )->fetchAll();
 
-/* â”€â”€ Views-over-time chart: daily / weekly / monthly series â”€â”€ */
+/* ── Views-over-time chart: daily / weekly / monthly series ── */
 $chart_series = ['daily' => [], 'weekly' => [], 'monthly' => []];
 
-/* Daily â€” last 14 days */
+/* Daily — last 14 days */
 $d_rows = $pdo->query(
     "SELECT DATE(viewed_at) AS k, COUNT(*) AS v
      FROM page_views
@@ -162,7 +162,7 @@ for ($i = 13; $i >= 0; $i--) {
     $chart_series['daily'][] = ['label' => date('d/m', strtotime($k)), 'value' => (int)($d_rows[$k] ?? 0)];
 }
 
-/* Weekly â€” last 12 weeks (bucketed by Monday of each week) */
+/* Weekly — last 12 weeks (bucketed by Monday of each week) */
 $w_rows = $pdo->query(
     "SELECT DATE(DATE_SUB(viewed_at, INTERVAL WEEKDAY(viewed_at) DAY)) AS k, COUNT(*) AS v
      FROM page_views
@@ -175,7 +175,7 @@ for ($i = 11; $i >= 0; $i--) {
     $chart_series['weekly'][] = ['label' => date('d/m', strtotime($k)), 'value' => (int)($w_rows[$k] ?? 0)];
 }
 
-/* Monthly â€” last 12 months (bucketed by first of month) */
+/* Monthly — last 12 months (bucketed by first of month) */
 $m_rows = $pdo->query(
     "SELECT DATE_FORMAT(viewed_at, '%Y-%m-01') AS k, COUNT(*) AS v
      FROM page_views
@@ -193,7 +193,7 @@ for ($i = 11; $i >= 0; $i--) {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard â€” Admin</title>
+  <title>Dashboard — Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -201,7 +201,7 @@ for ($i = 11; $i >= 0; $i--) {
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css?v=3"/>
   <style>
-    /* â”€â”€ Stat cards â”€â”€ */
+    /* ── Stat cards ── */
     .stats-grid {
       display: grid; grid-template-columns: repeat(4, 1fr);
       gap: 16px; margin-bottom: 16px;
@@ -227,14 +227,14 @@ for ($i = 11; $i >= 0; $i--) {
       font-size: 14px; color: rgba(236,234,226,0.25); margin-top: 8px;
     }
 
-    /* â”€â”€ Section heading â”€â”€ */
+    /* ── Section heading ── */
     .section-heading {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(236,234,226,0.3); margin-bottom: 16px;
       padding-bottom: 12px; border-bottom: 1px solid rgba(236,234,226,0.07);
     }
 
-    /* â”€â”€ Visitor split â”€â”€ */
+    /* ── Visitor split ── */
     .visitor-split {
       display: grid; grid-template-columns: repeat(2, 1fr);
       gap: 16px; margin-bottom: 40px;
@@ -249,7 +249,7 @@ for ($i = 11; $i >= 0; $i--) {
     .vsplit-value { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
     .vsplit-pct { font-size: 14px; color: rgba(236,234,226,0.25); margin-top: 4px; }
 
-    /* â”€â”€ Breakdown â”€â”€ */
+    /* ── Breakdown ── */
     .breakdown-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 16px; margin-bottom: 40px;
@@ -269,7 +269,7 @@ for ($i = 11; $i >= 0; $i--) {
     .breakdown-num.dim { font-size: 16px; color: rgba(236,234,226,0.5); }
     .breakdown-divider { border: none; border-top: 1px solid rgba(236,234,226,0.05); margin: 12px 0; }
 
-    /* â”€â”€ Top posts table â”€â”€ */
+    /* ── Top posts table ── */
     table { margin-bottom: 40px; }
     .rank { color: rgba(236,234,226,0.25); font-size: 14px; width: 32px; }
     .post-title-cell { color: #ECEAE2; font-weight: 500; }
@@ -280,7 +280,7 @@ for ($i = 11; $i >= 0; $i--) {
     .view-count { font-size: 14px; color: rgba(236,234,226,0.8); min-width: 28px; text-align: right; font-weight: 500; }
     .uniq-count { font-size: 14px; color: rgba(236,234,226,0.35); min-width: 52px; }
 
-    /* â”€â”€ Line chart â”€â”€ */
+    /* ── Line chart ── */
     .chart-wrap {
       border: 1px solid rgba(236,234,226,0.07);
       padding: 32px 24px 20px;
@@ -309,7 +309,7 @@ for ($i = 11; $i >= 0; $i--) {
       font-family: 'Geist Mono', monospace; letter-spacing: 0.04em;
     }
 
-    /* â”€â”€ Chart filter tabs â”€â”€ */
+    /* ── Chart filter tabs ── */
     .chart-head {
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap; margin-bottom: 16px;
@@ -330,7 +330,7 @@ for ($i = 11; $i >= 0; $i--) {
 
     .empty { color: rgba(236,234,226,0.2); font-size: 14px; padding: 32px 0; }
 
-    /* â”€â”€ Traffic sources grid (4 buckets) â”€â”€ */
+    /* ── Traffic sources grid (4 buckets) ── */
     .breakdown-grid.src-grid { grid-template-columns: repeat(4, 1fr); }
     .section-heading.sub-heading { margin-top: 8px; }
     @media (max-width: 768px) {
@@ -347,7 +347,7 @@ for ($i = 11; $i >= 0; $i--) {
       <h1>Dashboard</h1>
     </div>
 
-    <!-- â”€â”€ Row 1: Core stats â”€â”€ -->
+    <!-- ── Row 1: Core stats ── -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Total Views</div>
@@ -371,7 +371,7 @@ for ($i = 11; $i >= 0; $i--) {
       </div>
     </div>
 
-    <!-- â”€â”€ Row 2: Session + visitor stats â”€â”€ -->
+    <!-- ── Row 2: Session + visitor stats ── -->
     <div class="stats-grid-2">
       <div class="stat-card">
         <div class="stat-label">Avg Session Duration</div>
@@ -395,7 +395,7 @@ for ($i = 11; $i >= 0; $i--) {
       </div>
     </div>
 
-    <!-- â”€â”€ Views-over-time chart â”€â”€ -->
+    <!-- ── Views-over-time chart ── -->
     <div class="chart-head">
       <div class="section-heading">Views Over Time</div>
       <div class="chart-tabs" role="tablist">
@@ -422,7 +422,7 @@ for ($i = 11; $i >= 0; $i--) {
         return Math.max(560, Math.round(w));
       }
 
-      /* Catmull-Rom â†’ cubic bezier for a smooth line; control points clamped to the plot */
+      /* Catmull-Rom → cubic bezier for a smooth line; control points clamped to the plot */
       function smoothPath(pts, baseY) {
         if (pts.length < 2) return pts.length ? 'M' + pts[0].x + ',' + pts[0].y : '';
         var d = 'M' + pts[0].x + ',' + pts[0].y;
@@ -471,7 +471,7 @@ for ($i = 11; $i >= 0; $i--) {
             +    '<text class="chart-val" x="' + p.x + '" y="' + Math.max(padT - 6, p.y - 10) + '" text-anchor="middle">' + p.v + '</text>'
             +    '<circle class="chart-dot" cx="' + p.x + '" cy="' + p.y + '" r="3"/>'
             +    '<rect class="chart-hit" x="' + (p.x - bandW / 2).toFixed(1) + '" y="' + padT + '" width="' + bandW.toFixed(1) + '" height="' + plotH + '">'
-            +      '<title>' + esc(p.label) + ' â€” ' + p.v + ' views</title></rect>'
+            +      '<title>' + esc(p.label) + ' — ' + p.v + ' views</title></rect>'
             +  '</g>';
           s += '<text class="chart-xlabel" x="' + p.x + '" y="' + (baseY + 18) + '" text-anchor="middle">' + esc(p.label) + '</text>';
         });
@@ -496,7 +496,7 @@ for ($i = 11; $i >= 0; $i--) {
     })();
     </script>
 
-    <!-- â”€â”€ Per-page breakdown â”€â”€ -->
+    <!-- ── Per-page breakdown ── -->
     <div class="section-heading">By Page</div>
     <div class="breakdown-grid">
       <?php
@@ -522,7 +522,7 @@ for ($i = 11; $i >= 0; $i--) {
       <?php endforeach; ?>
     </div>
 
-    <!-- â”€â”€ Traffic sources â”€â”€ -->
+    <!-- ── Traffic sources ── -->
     <div class="section-heading">Traffic Sources</div>
     <?php if ($src_total === 0): ?>
       <div class="empty">No traffic source data yet.</div>
@@ -578,7 +578,7 @@ for ($i = 11; $i >= 0; $i--) {
       <?php endif; ?>
     <?php endif; ?>
 
-    <!-- â”€â”€ Top countries â”€â”€ -->
+    <!-- ── Top countries ── -->
     <div class="section-heading">Top Countries</div>
     <?php if (empty($top_countries)): ?>
       <div class="empty">No country data yet. Cloudflare must be in front of the site and the migration must be run.</div>
@@ -612,7 +612,7 @@ for ($i = 11; $i >= 0; $i--) {
       </table>
     <?php endif; ?>
 
-    <!-- â”€â”€ Top posts â”€â”€ -->
+    <!-- ── Top posts ── -->
     <div class="section-heading">Top Posts</div>
     <?php if (empty($top_posts)): ?>
       <div class="empty">No post views recorded yet.</div>

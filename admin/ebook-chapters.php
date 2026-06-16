@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -11,7 +11,7 @@ $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
 if (!$product_id) { header('Location: /admin/ebooks'); exit; }
 
-/* â”€â”€ Load product â”€â”€ */
+/* ── Load product ── */
 $stmt = $pdo->prepare('SELECT * FROM ebook_products WHERE id = ?');
 $stmt->execute([$product_id]);
 $product = $stmt->fetch();
@@ -21,16 +21,16 @@ $chapter_id   = isset($_GET['chapter_id']) ? (int)$_GET['chapter_id'] : null;
 $errors       = [];
 $edit_chapter = null;
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   Handle POST actions â€” all before any HTML output
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ──────────────────────────────────────────────────────────
+   Handle POST actions — all before any HTML output
+   ────────────────────────────────────────────────────────── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
     }
     $action = $_POST['action'] ?? '';
 
-    /* â”€â”€ Add chapter â”€â”€ */
+    /* ── Add chapter ── */
     if ($action === 'add_chapter') {
         $max_stmt = $pdo->prepare('SELECT COALESCE(MAX(sort_order), 0) FROM ebook_chapters WHERE product_id = ?');
         $max_stmt->execute([$product_id]);
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    /* â”€â”€ Delete chapter â”€â”€ */
+    /* ── Delete chapter ── */
     if ($action === 'delete_chapter') {
         $del_id = (int)($_POST['chapter_id'] ?? 0);
         if ($del_id) {
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    /* â”€â”€ Reorder chapter (AJAX â€” returns JSON, no HTML) â”€â”€ */
+    /* ── Reorder chapter (AJAX — returns JSON, no HTML) ── */
     if ($action === 'reorder_chapter') {
         header('Content-Type: application/json');
         $cid = (int)($_POST['chapter_id'] ?? 0);
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    /* â”€â”€ Save chapter â”€â”€ */
+    /* ── Save chapter ── */
     if ($action === 'save_chapter') {
         $cid          = (int)($_POST['chapter_id'] ?? 0);
         $title        = trim($_POST['title']        ?? '');
@@ -131,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-/* â”€â”€ Load chapters list â”€â”€ */
+/* ── Load chapters list ── */
 $ch_list_stmt = $pdo->prepare(
     'SELECT id, title, sort_order, is_published FROM ebook_chapters WHERE product_id = ? ORDER BY sort_order ASC'
 );
 $ch_list_stmt->execute([$product_id]);
 $chapters = $ch_list_stmt->fetchAll();
 
-/* â”€â”€ Load selected chapter for editor â”€â”€ */
+/* ── Load selected chapter for editor ── */
 if ($chapter_id && !$edit_chapter) {
     $ch_stmt = $pdo->prepare('SELECT * FROM ebook_chapters WHERE id = ? AND product_id = ?');
     $ch_stmt->execute([$chapter_id, $product_id]);
@@ -155,7 +155,7 @@ if ($chapter_id && !$edit_chapter) {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chapters â€” <?= htmlspecialchars($product['title']) ?> â€” Admin</title>
+  <title>Chapters — <?= htmlspecialchars($product['title']) ?> — Admin</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -168,23 +168,23 @@ if ($chapter_id && !$edit_chapter) {
   <style>
     html, body { height: 100%; overflow: hidden; }
 
-    /* â”€â”€ App shell â”€â”€ */
+    /* ── App shell ── */
     .app-wrap { display: flex; height: 100vh; }
 
-    /* â”€â”€ Main wrap â”€â”€ */
+    /* ── Main wrap ── */
     .main-wrap { margin-left: 220px; flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* â”€â”€ Top bar (override: no margin, has border, smaller h1) â”€â”€ */
+    /* ── Top bar (override: no margin, has border, smaller h1) ── */
     .top-bar {
       flex-shrink: 0; margin-bottom: 0; padding: 20px 32px;
       border-bottom: 1px solid rgba(236,234,226,0.07);
     }
     .top-bar h1 { font-size: 16px; letter-spacing: -0.01em; color: rgba(236,234,226,0.7); }
 
-    /* â”€â”€ Two-panel row â”€â”€ */
+    /* ── Two-panel row ── */
     .panels { flex: 1; display: flex; overflow: hidden; }
 
-    /* â”€â”€ Chapter list panel â”€â”€ */
+    /* ── Chapter list panel ── */
     .panel-list {
       width: 280px; flex-shrink: 0; overflow-y: auto;
       border-right: 1px solid rgba(236,234,226,0.07);
@@ -239,7 +239,7 @@ if ($chapter_id && !$edit_chapter) {
     }
     .btn-add-chapter:hover { background: rgba(232,50,10,0.2); }
 
-    /* â”€â”€ Editor panel â”€â”€ */
+    /* ── Editor panel ── */
     .panel-editor { flex: 1; overflow-y: auto; padding: 40px 48px; min-width: 0; }
     .editor-inner { max-width: 720px; }
 
@@ -249,7 +249,7 @@ if ($chapter_id && !$edit_chapter) {
       font-size: 14px; color: rgba(236,234,226,0.2);
     }
 
-    /* â”€â”€ Form â”€â”€ */
+    /* ── Form ── */
     .field { margin-bottom: 24px; }
     label {
       display: block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -263,7 +263,7 @@ if ($chapter_id && !$edit_chapter) {
     }
     input[type=text]:focus { border-color: #E8320A; }
 
-    /* â”€â”€ Content fallback textarea (shown if Quill fails) â”€â”€ */
+    /* ── Content fallback textarea (shown if Quill fails) ── */
     textarea.content-fallback {
       width: 100%; min-height: 360px; resize: vertical;
       background: rgba(236,234,226,0.05);
@@ -273,7 +273,7 @@ if ($chapter_id && !$edit_chapter) {
     }
     textarea.content-fallback:focus { border-color: #E8320A; }
 
-    /* â”€â”€ Quill dark theme â”€â”€ */
+    /* ── Quill dark theme ── */
     .ql-toolbar.ql-snow {
       background: rgba(236,234,226,0.05);
       border: 1px solid rgba(236,234,226,0.1) !important;
@@ -294,7 +294,7 @@ if ($chapter_id && !$edit_chapter) {
     .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
     .ql-snow .ql-picker-label::before { color: rgba(236,234,226,0.5); }
 
-    /* â”€â”€ Published toggle â”€â”€ */
+    /* ── Published toggle ── */
     .toggle-option {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
@@ -329,19 +329,19 @@ if ($chapter_id && !$edit_chapter) {
 
   <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
-  <!-- â”€â”€ Main wrap â”€â”€ -->
+  <!-- ── Main wrap ── -->
   <div class="main-wrap">
 
     <!-- Top bar -->
     <div class="top-bar">
-      <a class="back-link" href="ebook-edit.php?id=<?= $product_id ?>">â† <?= htmlspecialchars($product['title']) ?></a>
+      <a class="back-link" href="ebook-edit.php?id=<?= $product_id ?>">← <?= htmlspecialchars($product['title']) ?></a>
       <h1>Chapters</h1>
     </div>
 
     <!-- Two-panel row -->
     <div class="panels">
 
-      <!-- â”€â”€ Left: chapter list â”€â”€ -->
+      <!-- ── Left: chapter list ── -->
       <div class="panel-list">
         <div class="panel-list-header">Chapters (<?= count($chapters) ?>)</div>
 
@@ -360,14 +360,14 @@ if ($chapter_id && !$edit_chapter) {
                         title="<?= $ch['is_published'] ? 'Published' : 'Draft' ?>"></span>
                 </a>
                 <div class="chapter-controls">
-                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="up" title="Move up">â†‘</button>
-                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="down" title="Move down">â†“</button>
+                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="up" title="Move up">↑</button>
+                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="down" title="Move down">↓</button>
                   <form method="POST" action="?product_id=<?= $product_id ?>"
                         style="display:inline" onsubmit="return confirm('Delete this chapter? This cannot be undone.')">
                     <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
                     <input type="hidden" name="action" value="delete_chapter"/>
                     <input type="hidden" name="chapter_id" value="<?= $ch['id'] ?>"/>
-                    <button type="submit" class="btn-del-ch" title="Delete chapter">Ã—</button>
+                    <button type="submit" class="btn-del-ch" title="Delete chapter">×</button>
                   </form>
                 </div>
               </div>
@@ -384,7 +384,7 @@ if ($chapter_id && !$edit_chapter) {
         </div>
       </div><!-- /panel-list -->
 
-      <!-- â”€â”€ Right: chapter editor â”€â”€ -->
+      <!-- ── Right: chapter editor ── -->
       <div class="panel-editor">
         <?php if (!$chapter_id || !$edit_chapter): ?>
           <div class="placeholder-msg">Select a chapter from the list to edit it.</div>
@@ -423,10 +423,10 @@ if ($chapter_id && !$edit_chapter) {
               </div>
 
               <div class="field">
-                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on sales page â€” 1â€“2 sentences)</span></label>
+                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
                 <input type="text" id="excerpt" name="excerpt"
                        value="<?= htmlspecialchars($edit_chapter['excerpt'] ?? '') ?>"
-                       placeholder="What readers will learn in this chapterâ€¦"/>
+                       placeholder="What readers will learn in this chapter…"/>
               </div>
 
               <div class="field">
@@ -442,12 +442,12 @@ if ($chapter_id && !$edit_chapter) {
                 <label class="toggle-option">
                   <input type="checkbox" name="is_published" value="1"
                          <?= $edit_chapter['is_published'] ? 'checked' : '' ?>/>
-                  Published â€” visible to readers
+                  Published — visible to readers
                 </label>
               </div>
 
               <div class="btn-row">
-                <button type="submit" class="btn-save">Save Chapter â†’</button>
+                <button type="submit" class="btn-save">Save Chapter →</button>
               </div>
             </form>
           </div>
@@ -462,12 +462,12 @@ if ($chapter_id && !$edit_chapter) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <?php endif; ?>
 <script>
-  /* â”€â”€ CSRF token for AJAX â”€â”€ */
+  /* ── CSRF token for AJAX ── */
   var CSRF_TOKEN = <?= json_encode($_SESSION['csrf_token']) ?>;
   var PRODUCT_ID = <?= $product_id ?>;
 
   <?php if ($chapter_id && $edit_chapter): ?>
-  /* â”€â”€ Quill editor (enhances the textarea; falls back to it on any failure) â”€â”€ */
+  /* ── Quill editor (enhances the textarea; falls back to it on any failure) ── */
   var quill = null;
   try {
   quill = new Quill('#quill-editor', {
@@ -513,15 +513,15 @@ if ($chapter_id && !$edit_chapter) {
       }
     }
   });
-    /* Quill loaded â€” swap the plain textarea for the rich editor */
+    /* Quill loaded — swap the plain textarea for the rich editor */
     document.getElementById('body-input').style.display = 'none';
     document.getElementById('quill-editor').style.display = '';
   } catch (e) {
-    /* Quill failed (CDN/JS error) â€” leave the textarea visible so editing & saving still work */
+    /* Quill failed (CDN/JS error) — leave the textarea visible so editing & saving still work */
     console.error('Rich editor failed to load; using plain text fallback.', e);
   }
 
-  /* â”€â”€ Auto-generate slug from title â”€â”€ */
+  /* ── Auto-generate slug from title ── */
   var titleEl    = document.getElementById('title');
   var slugEl     = document.getElementById('slug');
   var slugEdited = false; /* follows title until user manually edits slug */
@@ -536,14 +536,14 @@ if ($chapter_id && !$edit_chapter) {
   });
   slugEl.addEventListener('input', function () { slugEdited = true; });
 
-  /* â”€â”€ Sync the rich editor into the textarea before submit (textarea is the saved field) â”€â”€ */
+  /* ── Sync the rich editor into the textarea before submit (textarea is the saved field) ── */
   var editForm = document.querySelector('form[action*="chapter_id"]');
   if (editForm) editForm.addEventListener('submit', function () {
     if (quill) document.getElementById('body-input').value = quill.root.innerHTML;
   });
   <?php endif; ?>
 
-  /* â”€â”€ Up / Down reorder â”€â”€ */
+  /* ── Up / Down reorder ── */
   document.querySelectorAll('.btn-order').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var chapterId = btn.dataset.id;

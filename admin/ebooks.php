@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ini_set('session.cookie_httponly', '1');
 ini_set('session.cookie_samesite', 'Lax');
 ini_set('session.cookie_secure', '1');
@@ -8,7 +8,7 @@ require __DIR__ . '/../api/db.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-/* â”€â”€ Delete action â”€â”€ */
+/* ── Delete action ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
     if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
         http_response_code(403); exit('Forbidden.');
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-/* â”€â”€ Fetch products with purchase count â”€â”€ */
+/* ── Fetch products with purchase count ── */
 $products = $pdo->query(
     'SELECT p.*,
             (SELECT COUNT(*) FROM ebook_purchases pu WHERE pu.product_id = p.id) AS purchase_count
@@ -34,7 +34,7 @@ $products = $pdo->query(
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin â€” Ebooks</title>
+  <title>Admin — Ebooks</title>
   <meta name="robots" content="noindex, nofollow"/>
   <script>(function(){var t=localStorage.getItem('admin-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
@@ -58,7 +58,7 @@ $products = $pdo->query(
     </div>
 
     <?php if (empty($products)): ?>
-      <div class="empty">No ebook products yet. <a href="ebook-edit.php" style="color:#E8320A;text-decoration:none;">Create your first one â†’</a></div>
+      <div class="empty">No ebook products yet. <a href="ebook-edit.php" style="color:#E8320A;text-decoration:none;">Create your first one →</a></div>
     <?php else: ?>
     <table>
       <thead>
@@ -90,7 +90,7 @@ $products = $pdo->query(
             <a class="action-link" href="ebook-edit.php?id=<?= $p['id'] ?>">Edit</a>
             <a class="action-link" href="ebook-chapters.php?product_id=<?= $p['id'] ?>">Chapters</a>
             <a class="action-link" href="ebook-purchases.php?product_id=<?= $p['id'] ?>">Purchases</a>
-            <a class="action-link" href="/ebook/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener noreferrer">View â†’</a>
+            <a class="action-link" href="/ebook/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener noreferrer">View →</a>
             <form method="POST" action="" style="display:inline"
                   onsubmit="return confirm('Delete this product and all its chapters? This cannot be undone.')">
               <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
