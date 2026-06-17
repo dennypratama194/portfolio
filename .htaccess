@@ -54,6 +54,11 @@ RewriteCond %{REQUEST_URI} !^/admin/ [NC]
 RewriteCond %{REQUEST_URI} !^/api/   [NC]
 RewriteRule ^blog/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [NC,QSA,L]
 
+# /case-studies/SLUG → case-study.php?slug=SLUG  (/case-studies alone → case-studies.php)
+RewriteCond %{REQUEST_URI} !^/admin/ [NC]
+RewriteCond %{REQUEST_URI} !^/api/   [NC]
+RewriteRule ^case-studies/([A-Za-z0-9_-]+)/?$ case-study.php?slug=$1 [NC,QSA,L]
+
 # Try .php first (e.g. /blog → blog.php, /post → post.php)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f

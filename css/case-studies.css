@@ -1,0 +1,130 @@
+/* ══════════════════════════════════════
+   CASE STUDIES — listing page
+   Loaded via $page_css on case-studies.php
+══════════════════════════════════════ */
+
+.cs-hero {
+  padding: 96px var(--pad-x) 64px;
+  border-bottom: 1px solid var(--border);
+}
+.cs-hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 16px;
+}
+.cs-hero-title {
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.cs-hero-sub {
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  max-width: 560px;
+}
+
+/* ── Card grid ── */
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.cs-card {
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.2s;
+}
+.cs-card:hover { background: rgba(13,12,9,0.025); }
+
+.cs-card-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+}
+.cs-card-cover--empty {
+  aspect-ratio: 16 / 9;
+  background: var(--border);
+}
+
+.cs-card-body {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.cs-card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.cs-card-title {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cs-card-excerpt {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  flex: 1;
+}
+
+.cs-card-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cs-card-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.cs-card-cta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--red);
+}
+
+.cs-empty {
+  grid-column: 1 / -1;
+  padding: 96px var(--pad-x);
+  font-size: 16px;
+  color: var(--ink-3);
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .cs-hero { padding: 64px var(--pad-x-sm) 48px; }
+  .cs-hero-sub { font-size: 16px; }
+  .cs-grid { grid-template-columns: 1fr; }
+  .cs-card-body { padding: 24px; }
+  .cs-card-title { font-size: var(--text-h2); line-height: var(--leading-h2); }
+  .cs-empty { padding: 64px var(--pad-x-sm); }
+}

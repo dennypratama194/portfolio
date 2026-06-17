@@ -7,6 +7,8 @@ if (in_array($__page, ['index.php', 'edit.php', 'auto-post.php'], true)) {
     $__nav = 'posts';
 } elseif (in_array($__page, ['ebooks.php', 'ebook-edit.php', 'ebook-chapters.php', 'ebook-purchases.php'], true)) {
     $__nav = 'ebooks';
+} elseif (in_array($__page, ['projects.php', 'project-edit.php'], true)) {
+    $__nav = 'projects';
 } elseif ($__page === 'change-password.php') {
     $__nav = 'password';
 } else {
@@ -27,6 +29,7 @@ if (in_array($__page, ['index.php', 'edit.php', 'auto-post.php'], true)) {
     <a class="sidebar-link<?= $__nav === 'dashboard' ? ' active' : '' ?>" href="analytics.php">Dashboard</a>
     <a class="sidebar-link<?= $__nav === 'posts' ? ' active' : '' ?>" href="index.php">Posts</a>
     <a class="sidebar-link<?= $__nav === 'ebooks' ? ' active' : '' ?>" href="ebooks.php">Ebooks</a>
+    <a class="sidebar-link<?= $__nav === 'projects' ? ' active' : '' ?>" href="projects.php">Case Studies</a>
     <a class="sidebar-link<?= $__nav === 'password' ? ' active' : '' ?>" href="change-password.php">Change Password</a>
   </nav>
   <div class="sidebar-bottom">
