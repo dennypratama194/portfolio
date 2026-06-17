@@ -123,13 +123,17 @@ $jsonld    = json_encode([
 
   <?php if ($total_pages > 1): ?>
   <nav class="blog-pagination" aria-label="Posts pagination">
-    <?php if ($page > 1): ?>
-      <a class="blog-page-link" href="/blog?page=<?= $page - 1 ?><?= $cat_filter ? '&cat=' . urlencode($cat_filter) : '' ?>">← Newer</a>
-    <?php endif; ?>
-    <span class="blog-page-info"><?= $page ?> / <?= $total_pages ?></span>
-    <?php if ($page < $total_pages): ?>
-      <a class="blog-page-link" href="/blog?page=<?= $page + 1 ?><?= $cat_filter ? '&cat=' . urlencode($cat_filter) : '' ?>">Older →</a>
-    <?php endif; ?>
+    <div class="blog-pag-left">
+      <?php if ($page > 1): ?>
+        <a class="blog-pag-link" href="/blog?page=<?= $page - 1 ?><?= $cat_filter ? '&cat=' . urlencode($cat_filter) : '' ?>">← Newer</a>
+      <?php endif; ?>
+    </div>
+    <span class="blog-pag-count"><?= str_pad($page, 2, '0', STR_PAD_LEFT) ?> / <?= str_pad($total_pages, 2, '0', STR_PAD_LEFT) ?></span>
+    <div class="blog-pag-right">
+      <?php if ($page < $total_pages): ?>
+        <a class="blog-pag-link" href="/blog?page=<?= $page + 1 ?><?= $cat_filter ? '&cat=' . urlencode($cat_filter) : '' ?>">Older →</a>
+      <?php endif; ?>
+    </div>
   </nav>
   <?php endif; ?>
 
