@@ -63,7 +63,7 @@ $jsonld        = json_encode([
   <div class="preloader-window"></div>
   <div class="preloader-label">UIUX Designer</div>
   <div class="preloader-count" id="preloader-count">0</div>
-  <div class="preloader-year">2026</div>
+  <div class="preloader-year"><?= date('Y') ?></div>
 </div>
 <script>
 (function(){
@@ -125,7 +125,7 @@ $jsonld        = json_encode([
       <div class="hero-overline-dot"></div>
       <span class="hero-overline-text">Available for new projects · Indonesia-based, worldwide</span>
     </div>
-    <div class="hero-year">2026</div>
+    <div class="hero-year"><?= date('Y') ?></div>
 
     <h1 class="hero-type">
       <span class="hero-line-1">Your product</span>
@@ -283,7 +283,7 @@ $jsonld        = json_encode([
             <div class="stat-desc">Projects delivered, end to end</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num">5<span class="red">+</span></div>
+            <div class="stat-num">7<span class="red">+</span></div>
             <div class="stat-desc">Years shipping digital products</div>
           </div>
           <div class="stat-cell">
@@ -386,7 +386,7 @@ $jsonld        = json_encode([
       <!-- Stats -->
       <div class="bento-cell bc-stats">
         <div class="bento-stat">
-          <span class="bs-num">6<span class="bs-red">+</span></span>
+          <span class="bs-num">7<span class="bs-red">+</span></span>
           <span class="bs-label">Years of experience</span>
         </div>
         <div class="bento-stat">

@@ -9,6 +9,9 @@
       --ink-3:   #6B6960;
       --red:     #E8320A;
       --border:  rgba(13,12,9,0.1);
+      --white:        #FFFFFF;       /* pure white — for button text, inputs, cursor dot */
+      --ink-surface:  #1a1916;       /* dark lifted surface (clients section cells) */
+      --ink-surface-hover: #211f1c;  /* hover state of ink-surface cells */
       --pad-x:   clamp(24px, 5vw, 88px);
       --pad-x-sm: clamp(16px, 3vw, 48px);
 
@@ -124,7 +127,7 @@
       mix-blend-mode: normal;
     }
     body.cursor-hover #cursor-dot {
-      background: #fff;
+      background: var(--white);
     }
 
     /* ═══════════════════════════════════════
@@ -594,7 +597,7 @@
       justify-content: space-between;
       min-height: 340px;
       padding: 32px;
-      background: #FFFFFF;
+      background: var(--white);
       border: 1px solid var(--border);
       text-decoration: none;
       transition: border-color 0.35s, transform 0.5s cubic-bezier(0.23,1,0.32,1), box-shadow 0.5s;
@@ -1110,7 +1113,7 @@
       display: inline-flex; align-items: center; gap: 12px;
       padding: 18px 40px;
       background: var(--red);
-      color: #fff;
+      color: var(--white);
       font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
       border-radius: 100px; text-decoration: none;
       transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
@@ -1256,7 +1259,7 @@
     .pm-btn-send {
       margin-top: 48px; align-self: flex-start;
       padding: 18px 48px;
-      background: var(--red); color: #fff;
+      background: var(--red); color: var(--white);
       border: none; border-radius: 100px;
       font-family: var(--font-sans);
       font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
@@ -1473,13 +1476,13 @@
       background: var(--ink);
     }
     .cl-cell {
-      background: #1a1916;
+      background: var(--ink-surface);
       min-height: 180px;
       display: flex; align-items: center; justify-content: center;
       padding: 32px;
       transition: background 0.25s;
     }
-    .cl-cell:hover { background: #211f1c; }
+    .cl-cell:hover { background: var(--ink-surface-hover); }
     .cl-eyebrow {
       font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
       color: rgba(236,234,226,0.4); margin-bottom: 16px; display: block;
@@ -1530,7 +1533,7 @@
       border-bottom: 2px solid var(--ink);
     }
     .bento-cell {
-      background: #1a1916;
+      background: var(--ink-surface);
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -1685,7 +1688,7 @@
     .bc-cta-btn:focus-visible {
       background: var(--red);
       border-color: var(--red);
-      color: #fff;
+      color: var(--white);
       transform: translateY(-2px);
     }
 
@@ -2120,7 +2123,7 @@
   font-size: 16px;
   font-family: inherit;
   color: var(--ink);
-  background: #FFFFFF;
+  background: var(--white);
   border: 1px solid rgba(13,12,9,0.18);
   outline: none;
   transition: border-color 0.2s;
@@ -2142,7 +2145,7 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--white);
   background: var(--red);
   border: none;
   cursor: pointer;
@@ -2159,7 +2162,7 @@
   width: 14px;
   height: 14px;
   border: 2px solid rgba(255,255,255,0.35);
-  border-top-color: #fff;
+  border-top-color: var(--white);
   border-radius: 50%;
   animation: form-spin 0.7s linear infinite;
 }
