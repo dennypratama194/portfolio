@@ -41,7 +41,7 @@ $description = $project['excerpt'] ?: 'A UI/UX design case study by Denny Pratam
 $canonical   = 'https://dennypratama.com/case-studies/' . rawurlencode($project['slug']);
 $og_image    = $project['cover_image'] ?: 'https://dennypratama.com/assets/og-image.png';
 $og_type     = 'article';
-$page_css    = '/css/case-study.css?v=1';
+$page_css    = '/css/case-study.css?v=2';
 $jsonld      = json_encode([
     '@context'    => 'https://schema.org',
     '@type'       => 'CreativeWork',

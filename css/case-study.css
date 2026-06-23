@@ -9,6 +9,7 @@
   max-height: 560px;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
+  margin-top: 88px; /* clear fixed nav (28px pad + 32px logo + 28px pad) */
 }
 .csp-cover {
   width: 100%;
@@ -19,7 +20,7 @@
 
 /* ── Project header ── */
 .csp-header {
-  padding: 64px var(--pad-x) 48px;
+  padding: 96px var(--pad-x) 48px; /* top: clears fixed nav (~88px) + breathing room */
   max-width: calc(760px + 2 * var(--pad-x));
 }
 
@@ -197,7 +198,8 @@
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  .csp-header { padding: 48px var(--pad-x-sm) 32px; }
+  .csp-cover-wrap { margin-top: 72px; }
+  .csp-header { padding: 80px var(--pad-x-sm) 32px; }
   .csp-title { font-size: var(--text-h1); line-height: var(--leading-h1); }
   .csp-excerpt { font-size: 16px; }
   .csp-divider { margin: 0 var(--pad-x-sm); }
