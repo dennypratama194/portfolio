@@ -6,10 +6,12 @@ header('Content-Type: application/xml; charset=UTF-8');
 
 $base = 'https://dennypratama.com';
 
-/* Static, indexable pages (ebook URLs intentionally excluded until launch) */
+/* Static, indexable pages (individual /ebook/{slug} URLs intentionally excluded until launch) */
 $urls = [
     ['loc' => $base . '/',                     'changefreq' => 'weekly', 'priority' => '1.0'],
     ['loc' => $base . '/blog',                 'changefreq' => 'weekly', 'priority' => '0.8'],
+    ['loc' => $base . '/case-studies',         'changefreq' => 'weekly', 'priority' => '0.8'],
+    ['loc' => $base . '/ebooks',               'changefreq' => 'monthly', 'priority' => '0.6'],
     ['loc' => $base . '/privacy-policy',       'changefreq' => 'yearly', 'priority' => '0.3'],
     ['loc' => $base . '/terms-and-conditions', 'changefreq' => 'yearly', 'priority' => '0.3'],
 ];
@@ -27,6 +29,20 @@ foreach ($posts as $p) {
     $urls[] = [
         'loc'        => $base . '/blog/' . rawurlencode($p['slug']),
         'lastmod'    => $p['pub'] ? date('Y-m-d', strtotime($p['pub'])) : null,
+        'changefreq' => 'monthly',
+        'priority'   => '0.6',
+    ];
+}
+
+/* Published case studies */
+$projects = $pdo->query(
+    "SELECT slug FROM projects WHERE is_published = 1 ORDER BY sort_order ASC, created_at DESC"
+)->fetchAll();
+
+foreach ($projects as $p) {
+    if (empty($p['slug'])) continue;
+    $urls[] = [
+        'loc'        => $base . '/case-studies/' . rawurlencode($p['slug']),
         'changefreq' => 'monthly',
         'priority'   => '0.6',
     ];

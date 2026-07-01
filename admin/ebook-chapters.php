@@ -177,9 +177,9 @@ if ($chapter_id && !$edit_chapter) {
     /* ── Top bar (override: no margin, has border, smaller h1) ── */
     .top-bar {
       flex-shrink: 0; margin-bottom: 0; padding: 20px 32px;
-      border-bottom: 1px solid rgba(236,234,226,0.07);
+      border-bottom: 1px solid rgba(var(--text-rgb),0.07);
     }
-    .top-bar h1 { font-size: 16px; letter-spacing: -0.01em; color: rgba(236,234,226,0.7); }
+    .top-bar h1 { font-size: 16px; letter-spacing: -0.01em; color: rgba(var(--text-rgb),0.7); }
 
     /* ── Two-panel row ── */
     .panels { flex: 1; display: flex; overflow: hidden; }
@@ -187,57 +187,57 @@ if ($chapter_id && !$edit_chapter) {
     /* ── Chapter list panel ── */
     .panel-list {
       width: 280px; flex-shrink: 0; overflow-y: auto;
-      border-right: 1px solid rgba(236,234,226,0.07);
+      border-right: 1px solid rgba(var(--text-rgb),0.07);
       display: flex; flex-direction: column;
     }
     .panel-list-header {
       padding: 20px 20px 12px;
       font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); flex-shrink: 0;
+      color: rgba(var(--text-rgb),0.3); flex-shrink: 0;
     }
     .chapter-list { flex: 1; }
     .chapter-item {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 12px 10px 16px;
-      border-bottom: 1px solid rgba(236,234,226,0.04);
+      border-bottom: 1px solid rgba(var(--text-rgb),0.04);
       transition: background 0.15s;
     }
-    .chapter-item:hover { background: rgba(236,234,226,0.03); }
-    .chapter-item.active { background: rgba(236,234,226,0.06); }
+    .chapter-item:hover { background: rgba(var(--text-rgb),0.03); }
+    .chapter-item.active { background: rgba(var(--text-rgb),0.06); }
     .chapter-item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-decoration: none; }
     .chapter-num {
-      font-size: 12px; color: rgba(236,234,226,0.25); letter-spacing: 0.06em;
+      font-size: 12px; color: rgba(var(--text-rgb),0.25); letter-spacing: 0.06em;
       flex-shrink: 0; width: 20px; text-align: right;
     }
     .chapter-title-text {
-      font-size: 14px; color: rgba(236,234,226,0.75); white-space: nowrap;
+      font-size: 14px; color: rgba(var(--text-rgb),0.75); white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
     }
-    .chapter-item.active .chapter-title-text { color: #ECEAE2; }
+    .chapter-item.active .chapter-title-text { color: var(--text); }
     .pub-dot {
       width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(236,234,226,0.15);
+      background: rgba(var(--text-rgb),0.15);
     }
     .pub-dot.live { background: #4caf50; }
     .chapter-controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
     .btn-order, .btn-del-ch {
       background: none; border: none; cursor: pointer; padding: 4px 8px;
-      font-size: 12px; color: rgba(236,234,226,0.2); transition: color 0.15s;
+      font-size: 12px; color: rgba(var(--text-rgb),0.2); transition: color 0.15s;
       font-family: inherit; line-height: 1;
     }
-    .btn-order:hover { color: rgba(236,234,226,0.7); }
-    .btn-del-ch { color: rgba(232,50,10,0.3); }
-    .btn-del-ch:hover { color: #E8320A; }
+    .btn-order:hover { color: rgba(var(--text-rgb),0.7); }
+    .btn-del-ch { color: rgba(var(--red-rgb),0.3); }
+    .btn-del-ch:hover { color: var(--red); }
 
     .panel-list-footer { padding: 16px; flex-shrink: 0; }
     .btn-add-chapter {
       display: block; width: 100%; padding: 10px;
-      background: rgba(232,50,10,0.1); border: 1px solid rgba(232,50,10,0.2);
-      color: #E8320A; font-family: var(--font-sans); font-size: 12px;
+      background: rgba(var(--red-rgb),0.1); border: 1px solid rgba(var(--red-rgb),0.2);
+      color: var(--red); font-family: var(--font-sans); font-size: 12px;
       letter-spacing: 0.08em; text-transform: uppercase;
       cursor: pointer; transition: background 0.2s;
     }
-    .btn-add-chapter:hover { background: rgba(232,50,10,0.2); }
+    .btn-add-chapter:hover { background: rgba(var(--red-rgb),0.2); }
 
     /* ── Editor panel ── */
     .panel-editor { flex: 1; overflow-y: auto; padding: 40px 48px; min-width: 0; }
@@ -246,71 +246,71 @@ if ($chapter_id && !$edit_chapter) {
     .placeholder-msg {
       display: flex; align-items: center; justify-content: center;
       height: 100%; min-height: 200px;
-      font-size: 14px; color: rgba(236,234,226,0.2);
+      font-size: 14px; color: rgba(var(--text-rgb),0.2);
     }
 
     /* ── Form ── */
     .field { margin-bottom: 24px; }
     label {
       display: block; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); margin-bottom: 8px;
+      color: rgba(var(--text-rgb),0.4); margin-bottom: 8px;
     }
     input[type=text] {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      width: 100%; background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1); color: var(--text);
       font-family: var(--font-sans); font-size: 16px;
       padding: 12px 16px; outline: none; transition: border-color 0.2s;
     }
-    input[type=text]:focus { border-color: #E8320A; }
+    input[type=text]:focus { border-color: var(--red); }
 
     /* ── Content fallback textarea (shown if Quill fails) ── */
     textarea.content-fallback {
       width: 100%; min-height: 360px; resize: vertical;
-      background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1); color: var(--text);
       font-family: var(--font-sans); font-size: 16px; line-height: 1.75;
       padding: 12px 16px; outline: none;
     }
-    textarea.content-fallback:focus { border-color: #E8320A; }
+    textarea.content-fallback:focus { border-color: var(--red); }
 
     /* ── Quill dark theme ── */
     .ql-toolbar.ql-snow {
-      background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1) !important;
+      background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1) !important;
       border-bottom: none !important;
     }
     .ql-container.ql-snow {
-      border: 1px solid rgba(236,234,226,0.1) !important;
-      background: rgba(236,234,226,0.03);
+      border: 1px solid rgba(var(--text-rgb),0.1) !important;
+      background: rgba(var(--text-rgb),0.03);
     }
     .ql-editor {
-      color: #ECEAE2; font-family: var(--font-sans);
+      color: var(--text); font-family: var(--font-sans);
       font-size: 16px; line-height: 1.75; min-height: 360px;
     }
-    .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }
-    .ql-snow .ql-stroke { stroke: rgba(236,234,226,0.5); }
-    .ql-snow .ql-fill { fill: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker { color: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
-    .ql-snow .ql-picker-label::before { color: rgba(236,234,226,0.5); }
+    .ql-editor.ql-blank::before { color: rgba(var(--text-rgb),0.2); font-style: normal; }
+    .ql-snow .ql-stroke { stroke: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-fill { fill: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-picker { color: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-picker-options { background: var(--select-bg); border: 1px solid rgba(var(--text-rgb),0.1); }
+    .ql-snow .ql-picker-label::before { color: rgba(var(--text-rgb),0.5); }
 
     /* ── Published toggle ── */
     .toggle-option {
       display: inline-flex; align-items: center; gap: 10px;
-      padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.55);
+      padding: 10px 16px; border: 1px solid rgba(var(--text-rgb),0.1);
+      cursor: pointer; font-size: 14px; color: rgba(var(--text-rgb),0.55);
       transition: border-color 0.2s, color 0.2s; user-select: none;
     }
-    .toggle-option:has(input:checked) { border-color: #E8320A; color: #ECEAE2; }
-    .toggle-option input[type=checkbox] { accent-color: #E8320A; cursor: pointer; width: 15px; height: 15px; }
+    .toggle-option:has(input:checked) { border-color: var(--red); color: var(--text); }
+    .toggle-option input[type=checkbox] { accent-color: var(--red); cursor: pointer; width: 15px; height: 15px; }
 
     .btn-row { margin-top: 8px; }
 
     .editor-title {
       font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
-      margin-bottom: 28px; color: rgba(236,234,226,0.5);
+      margin-bottom: 28px; color: rgba(var(--text-rgb),0.5);
     }
-    .editor-title span { color: #ECEAE2; }
+    .editor-title span { color: var(--text); }
 
     @media (max-width: 768px) {
       html, body { overflow: auto; }
@@ -318,7 +318,7 @@ if ($chapter_id && !$edit_chapter) {
       .sidebar { display: none; }
       .main-wrap { margin-left: 0; overflow: visible; }
       .panels { flex-direction: column; overflow: visible; height: auto; }
-      .panel-list { width: 100%; border-right: none; border-bottom: 1px solid rgba(236,234,226,0.07); max-height: 280px; overflow-y: auto; }
+      .panel-list { width: 100%; border-right: none; border-bottom: 1px solid rgba(var(--text-rgb),0.07); max-height: 280px; overflow-y: auto; }
       .panel-content { overflow: visible; }
       .top-bar { padding: 16px 20px; }
     }
@@ -347,7 +347,7 @@ if ($chapter_id && !$edit_chapter) {
 
         <div class="chapter-list">
           <?php if (empty($chapters)): ?>
-            <div style="padding:24px 16px;font-size:14px;color:rgba(236,234,226,0.2);">No chapters yet.</div>
+            <div style="padding:24px 16px;font-size:14px;color:rgba(var(--text-rgb),0.2);">No chapters yet.</div>
           <?php else: ?>
             <?php foreach ($chapters as $ch): ?>
               <?php $is_active_ch = ($chapter_id && $ch['id'] === $chapter_id); ?>
@@ -416,14 +416,14 @@ if ($chapter_id && !$edit_chapter) {
               </div>
 
               <div class="field">
-                <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+                <label for="slug">Slug <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
                 <input type="text" id="slug" name="slug"
                        value="<?= htmlspecialchars($edit_chapter['slug']) ?>"
                        placeholder="chapter-url-slug" required/>
               </div>
 
               <div class="field">
-                <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
+                <label for="excerpt">Excerpt <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on sales page — 1–2 sentences)</span></label>
                 <input type="text" id="excerpt" name="excerpt"
                        value="<?= htmlspecialchars($edit_chapter['excerpt'] ?? '') ?>"
                        placeholder="What readers will learn in this chapter…"/>
@@ -459,7 +459,7 @@ if ($chapter_id && !$edit_chapter) {
 </div><!-- /app-wrap -->
 
 <?php if ($chapter_id && $edit_chapter): ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js" integrity="sha512-P2W2rr8ikUPfa31PLBo5bcBQrsa+TNj8jiKadtaIrHQGMo6hQM6RdPjQYxlNguwHz8AwSQ28VkBK6kHBLgd/8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <?php endif; ?>
 <script>
   /* ── CSRF token for AJAX ── */

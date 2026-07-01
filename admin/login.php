@@ -93,11 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="robots" content="noindex, nofollow"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <script src="https://www.google.com/recaptcha/api.js?render=6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ"></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0D0C09; color: #ECEAE2;
+      background: var(--bg); color: var(--text);
       font-family: var(--font-sans);
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
@@ -105,33 +105,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .login-box {
       width: 100%; max-width: 400px;
       padding: 48px 40px;
-      border: 1px solid rgba(236,234,226,0.08);
+      border: 1px solid rgba(var(--text-rgb),0.08);
     }
     .login-logo {
       font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); margin-bottom: 40px;
+      color: rgba(var(--text-rgb),0.4); margin-bottom: 40px;
     }
     h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 32px; }
     label {
       display: block; font-size: 12px; letter-spacing: 0.12em;
-      text-transform: uppercase; color: rgba(236,234,226,0.4);
+      text-transform: uppercase; color: rgba(var(--text-rgb),0.4);
       margin-bottom: 8px;
     }
     input {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1);
-      color: #ECEAE2; font-family: var(--font-sans);
+      width: 100%; background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1);
+      color: var(--text); font-family: var(--font-sans);
       font-size: 16px; padding: 12px 16px;
       outline: none; margin-bottom: 20px;
       transition: border-color 0.2s;
     }
-    input:focus { border-color: #E8320A; }
+    input:focus { border-color: var(--red); }
     .error {
-      font-size: 14px; color: #E8320A;
+      font-size: 14px; color: var(--red);
       margin-bottom: 20px; letter-spacing: 0.02em;
     }
     button {
-      width: 100%; background: #E8320A; color: #ECEAE2;
+      width: 100%; background: var(--red); color: var(--text);
       border: none; font-family: var(--font-sans);
       font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
       text-transform: uppercase; padding: 14px;

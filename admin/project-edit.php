@@ -140,7 +140,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: /admin/project-edit?id=' . $id . '&saved=1');
             exit;
         } catch (PDOException $e) {
-            $errors[] = 'Database error: ' . $e->getMessage();
+            error_log('admin/project-edit.php: ' . $e->getMessage());
+            $errors[] = 'Database error. Please try again or check the server logs.';
         }
     }
 
@@ -194,7 +195,7 @@ $section_labels = [
       background: rgba(255,255,255,0.02);
     }
     .pe-section-num {
-      font-family: var(--font-mono); font-size: 11px;
+      font-family: var(--font-mono); font-size: 12px;
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--red); flex-shrink: 0;
     }
@@ -244,13 +245,13 @@ $section_labels = [
     .pe-img-upload-row { padding: 12px 20px 0; display: flex; align-items: center; gap: 12px; }
     .pe-img-upload-btn {
       font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
-      border: 1px dashed rgba(236,234,226,0.2); padding: 8px 16px;
+      border: 1px dashed rgba(var(--text-rgb),0.2); padding: 8px 16px;
       border-radius: 6px; cursor: pointer; color: rgba(236,234,226,0.5);
       transition: border-color 0.2s, color 0.2s; background: none;
       font-family: var(--font-mono);
     }
     .pe-img-upload-btn:hover { border-color: rgba(236,234,226,0.5); color: var(--text); }
-    .pe-img-status { font-size: 12px; color: rgba(236,234,226,0.4); }
+    .pe-img-status { font-size: 12px; color: rgba(var(--text-rgb),0.4); }
 
     /* Cover image */
     .cover-preview { max-width: 320px; border-radius: 6px; margin-bottom: 12px; display: block; border: 1px solid rgba(236,234,226,0.1); }
@@ -280,7 +281,7 @@ $section_labels = [
   <?php endif; ?>
 
   <?php if ($errors): ?>
-  <div class="error-banner" style="background:rgba(232,50,10,0.1);border:1px solid rgba(232,50,10,0.3);color:#f87171;padding:12px 16px;border-radius:6px;margin-bottom:24px;font-size:14px;">
+  <div class="error-banner" style="background:rgba(var(--red-rgb),0.1);border:1px solid rgba(var(--red-rgb),0.3);color:var(--error-text);padding:12px 16px;border-radius:6px;margin-bottom:24px;font-size:14px;">
     <?php foreach ($errors as $e): ?>
       <div><?= escHtml($e) ?></div>
     <?php endforeach; ?>
@@ -301,14 +302,14 @@ $section_labels = [
     </div>
 
     <div class="field">
-      <label class="hint" for="slug">Slug <span style="opacity:0.4;font-size:11px;">(/case-studies/SLUG)</span></label>
+      <label class="hint" for="slug">Slug <span style="opacity:0.4;font-size:14px;">(/case-studies/SLUG)</span></label>
       <input class="field-input" type="text" id="slug" name="slug"
              value="<?= escHtml($project['slug']) ?>" placeholder="project-name"
              pattern="[a-z0-9-]+" title="Lowercase letters, numbers and hyphens only"/>
     </div>
 
     <div class="field">
-      <label class="hint" for="excerpt">Excerpt <span style="opacity:0.4;font-size:11px;">(short description for the listing card)</span></label>
+      <label class="hint" for="excerpt">Excerpt <span style="opacity:0.4;font-size:14px;">(short description for the listing card)</span></label>
       <textarea class="field-input" id="excerpt" name="excerpt" rows="2"
                 placeholder="One or two sentences about this project."><?= escHtml($project['excerpt']) ?></textarea>
     </div>
@@ -330,14 +331,14 @@ $section_labels = [
                value="<?= escHtml((string)$project['year']) ?>" min="2000" max="2099"/>
       </div>
       <div class="field">
-        <label class="hint" for="sort_order">Display order <span style="opacity:0.4;font-size:11px;">(lower = first)</span></label>
+        <label class="hint" for="sort_order">Display order <span style="opacity:0.4;font-size:14px;">(lower = first)</span></label>
         <input class="field-input" type="number" id="sort_order" name="sort_order"
                value="<?= (int)$project['sort_order'] ?>" min="0"/>
       </div>
     </div>
 
     <div class="field">
-      <label class="hint" for="tools">Tools <span style="opacity:0.4;font-size:11px;">(comma-separated: Figma, Claude, Figma Make)</span></label>
+      <label class="hint" for="tools">Tools <span style="opacity:0.4;font-size:14px;">(comma-separated: Figma, Claude, Figma Make)</span></label>
       <input class="field-input" type="text" id="tools" name="tools"
              value="<?= escHtml($project['tools']) ?>" placeholder="Figma, Claude, Figma Make"/>
     </div>
@@ -357,8 +358,8 @@ $section_labels = [
           <button type="button" class="cover-remove" id="cover-remove-btn">Remove</button>
         </div>
       <?php else: ?>
-        <div id="cover-drop" style="border:1px dashed rgba(236,234,226,0.2);border-radius:8px;padding:32px;text-align:center;cursor:pointer;margin-bottom:8px;">
-          <span style="font-size:13px;color:rgba(236,234,226,0.4);">Click or drag to upload a cover image</span>
+        <div id="cover-drop" style="border:1px dashed rgba(var(--text-rgb),0.2);border-radius:8px;padding:32px;text-align:center;cursor:pointer;margin-bottom:8px;">
+          <span style="font-size:14px;color:rgba(var(--text-rgb),0.4);">Click or drag to upload a cover image</span>
         </div>
         <input type="file" name="cover_image" id="cover-input" accept="image/*" hidden/>
       <?php endif; ?>
@@ -413,7 +414,7 @@ $section_labels = [
   </form>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js" integrity="sha512-P2W2rr8ikUPfa31PLBo5bcBQrsa+TNj8jiKadtaIrHQGMo6hQM6RdPjQYxlNguwHz8AwSQ28VkBK6kHBLgd/8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function () {
   var CSRF = <?= json_encode($_SESSION['csrf_token']) ?>;

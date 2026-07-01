@@ -12,7 +12,7 @@ $canonical   = 'https://dennypratama.com/privacy-policy';
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <section class="blog-hero">
     <div class="blog-hero-eyebrow">Legal</div>
     <h1 class="blog-hero-title">Privacy Policy</h1>

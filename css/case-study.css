@@ -167,7 +167,9 @@
 .csp-screenshots--single { grid-template-columns: 1fr; }
 .csp-img {
   width: 100%;
+  aspect-ratio: 16/9;
   display: block;
+  object-fit: cover;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--border);

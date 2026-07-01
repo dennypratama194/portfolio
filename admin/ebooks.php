@@ -58,7 +58,7 @@ $products = $pdo->query(
     </div>
 
     <?php if (empty($products)): ?>
-      <div class="empty">No ebook products yet. <a href="ebook-edit.php" style="color:#E8320A;text-decoration:none;">Create your first one →</a></div>
+      <div class="empty">No ebook products yet. <a href="ebook-edit.php" style="color:var(--red);text-decoration:none;">Create your first one →</a></div>
     <?php else: ?>
     <table>
       <thead>

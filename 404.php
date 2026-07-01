@@ -1,11 +1,10 @@
 <?php
 http_response_code(404);
-require __DIR__ . '/api/helpers.php';
 
 $title       = '404 — Page Not Found · Denny Pratama';
 $description = 'The page you\'re looking for doesn\'t exist.';
 $canonical   = 'https://dennypratama.com/404';
-$og_image    = 'https://dennypratama.com/assets/og-image.png';
+$og_image    = 'https://dennypratama.com/assets/logo.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +31,7 @@ $og_image    = 'https://dennypratama.com/assets/og-image.png';
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <section class="error-page">
     <div class="error-page-inner">
       <div class="error-num">404</div>

@@ -337,9 +337,11 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof gsap === 'undefined') return;
   if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── 1. HERO TEXT REVEAL ──────────────────────────────────────────────────────
   (function () {
+    if (reducedMotion) return;
     const heroLines   = document.querySelectorAll('.hero-line-1');
     const heroOutline = document.querySelector('.hero-line-2 .outline-word');
     const heroDesc    = document.querySelector('.hero-desc');
@@ -416,6 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── 3. STATS COUNTER ────────────────────────────────────────────────────────
   (function () {
+    if (reducedMotion) return;
     if (typeof ScrollTrigger === 'undefined') return;
     document.querySelectorAll('.stat-num').forEach(function (el) {
       // The number is in the first text node; the suffix (+ or ×) is in a child <span>
@@ -444,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── 4. SKILLS TICKER — GSAP infinite loop ───────────────────────────────────
   (function () {
+    if (reducedMotion) return; // leave the CSS animation:none reduced-motion rule in control
     const track = document.querySelector('.ticker-track');
     if (!track) return;
 
@@ -469,6 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ── 5. CINEMATIC SCROLL REVEALS ─────────────────────────────────────────────
   (function () {
+    if (reducedMotion) return;
     if (typeof ScrollTrigger === 'undefined') return;
 
     const EASE = 'expo.out';

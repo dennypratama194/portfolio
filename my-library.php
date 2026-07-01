@@ -2,7 +2,7 @@
 $title       = 'My Library — Denny Pratama';
 $description = 'Access all your purchased ebooks from Denny Pratama. Enter your email to receive your library links — instant delivery, no account required, no expiry.';
 $canonical   = 'https://dennypratama.com/my-library';
-$og_image    = 'https://dennypratama.com/assets/og-image.png';
+$og_image    = 'https://dennypratama.com/assets/logo.png';
 $page_css    = '/css/my-library.css?v=1';
 ?>
 <!DOCTYPE html>
@@ -14,7 +14,7 @@ $page_css    = '/css/my-library.css?v=1';
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <section class="form-page-section">
     <div class="form-page-wrap">
 

@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .price-wrap { position: relative; }
     .price-prefix {
       position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-      font-size: 14px; color: rgba(236,234,226,0.35); pointer-events: none;
+      font-size: 14px; color: rgba(var(--text-rgb),0.35); pointer-events: none;
       font-family: var(--font-sans);
     }
     .price-wrap input[type=number] { padding-left: 44px; }
@@ -142,14 +142,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     /* ── Active toggle ── */
     .toggle-option {
       display: inline-flex; align-items: center; gap: 10px;
-      padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.55);
+      padding: 10px 16px; border: 1px solid rgba(var(--text-rgb),0.1);
+      cursor: pointer; font-size: 14px; color: rgba(var(--text-rgb),0.55);
       transition: border-color 0.2s, color 0.2s; user-select: none;
     }
     .toggle-option:has(input:checked) {
-      border-color: #E8320A; color: #ECEAE2;
+      border-color: var(--red); color: var(--text);
     }
-    .toggle-option input[type=checkbox] { accent-color: #E8320A; cursor: pointer; width: 15px; height: 15px; }
+    .toggle-option input[type=checkbox] { accent-color: var(--red); cursor: pointer; width: 15px; height: 15px; }
 
   </style>
 </head>
@@ -182,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="field">
-        <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+        <label for="slug">Slug <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
         <input type="text" id="slug" name="slug"
                value="<?= htmlspecialchars($product['slug']) ?>"
                placeholder="ebook-url-slug" required/>
@@ -200,14 +200,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="field">
-        <label for="tagline">Tagline <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(used for OG meta / social preview)</span></label>
+        <label for="tagline">Tagline <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(used for OG meta / social preview)</span></label>
         <input type="text" id="tagline" name="tagline"
                value="<?= htmlspecialchars($product['tagline'] ?? '') ?>"
                placeholder="Short one-line hook for social sharing"/>
       </div>
 
       <div class="field">
-        <label for="description">Description <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(appears on the sales page)</span></label>
+        <label for="description">Description <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(appears on the sales page)</span></label>
         <textarea id="description" name="description"
                   rows="6"
                   placeholder="Full sales page description..."><?= htmlspecialchars($product['description'] ?? '') ?></textarea>

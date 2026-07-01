@@ -91,62 +91,62 @@ $purchases = $list_stmt->fetchAll();
 
     /* ── Revenue stat ── */
     .revenue-stat {
-      font-size: 14px; color: rgba(236,234,226,0.4);
+      font-size: 14px; color: rgba(var(--text-rgb),0.4);
       padding: 12px 20px;
-      border: 1px solid rgba(236,234,226,0.08);
+      border: 1px solid rgba(var(--text-rgb),0.08);
       text-align: right; white-space: nowrap;
     }
-    .revenue-stat strong { color: #ECEAE2; font-size: 16px; font-weight: 600; }
-    .revenue-count { display: block; font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
+    .revenue-stat strong { color: var(--text); font-size: 16px; font-weight: 600; }
+    .revenue-count { display: block; font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; }
 
     /* ── Search ── */
     .search-bar { display: flex; gap: 8px; margin-bottom: 32px; }
     .search-input {
       flex: 1; max-width: 320px;
-      background: rgba(236,234,226,0.05); border: 1px solid rgba(236,234,226,0.1);
-      color: #ECEAE2; font-family: var(--font-sans); font-size: 14px;
+      background: rgba(var(--text-rgb),0.05); border: 1px solid rgba(var(--text-rgb),0.1);
+      color: var(--text); font-family: var(--font-sans); font-size: 14px;
       padding: 10px 14px; outline: none; transition: border-color 0.2s;
     }
-    .search-input:focus { border-color: #E8320A; }
-    .search-input::placeholder { color: rgba(236,234,226,0.25); }
+    .search-input:focus { border-color: var(--red); }
+    .search-input::placeholder { color: rgba(var(--text-rgb),0.25); }
     .btn-search {
-      background: rgba(236,234,226,0.08); border: 1px solid rgba(236,234,226,0.1);
-      color: rgba(236,234,226,0.6); font-family: var(--font-sans); font-size: 12px;
+      background: rgba(var(--text-rgb),0.08); border: 1px solid rgba(var(--text-rgb),0.1);
+      color: rgba(var(--text-rgb),0.6); font-family: var(--font-sans); font-size: 12px;
       letter-spacing: 0.08em; text-transform: uppercase;
       padding: 10px 18px; cursor: pointer; transition: background 0.2s, color 0.2s;
     }
-    .btn-search:hover { background: rgba(236,234,226,0.12); color: #ECEAE2; }
+    .btn-search:hover { background: rgba(var(--text-rgb),0.12); color: var(--text); }
     .btn-clear {
       font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
-      color: rgba(236,234,226,0.25); text-decoration: none; padding: 10px 0;
+      color: rgba(var(--text-rgb),0.25); text-decoration: none; padding: 10px 0;
       transition: color 0.2s; align-self: center;
     }
-    .btn-clear:hover { color: #ECEAE2; }
+    .btn-clear:hover { color: var(--text); }
 
-    td { color: rgba(236,234,226,0.7); }
-    .email-cell { color: #ECEAE2; font-weight: 500; }
-    .product-cell { font-size: 14px; color: rgba(236,234,226,0.45); }
+    td { color: rgba(var(--text-rgb),0.7); }
+    .email-cell { color: var(--text); font-weight: 500; }
+    .product-cell { font-size: 14px; color: rgba(var(--text-rgb),0.45); }
     .token-cell {
       font-family: monospace; font-size: 14px;
-      color: rgba(236,234,226,0.3); letter-spacing: 0.04em;
+      color: rgba(var(--text-rgb),0.3); letter-spacing: 0.04em;
     }
     .date-cell { font-size: 14px; white-space: nowrap; }
-    .chapter-cell { font-size: 14px; color: rgba(236,234,226,0.4); }
+    .chapter-cell { font-size: 14px; color: rgba(var(--text-rgb),0.4); }
     .btn-resend {
       background: none; border: none; cursor: pointer; padding: 0;
       font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
-      text-transform: uppercase; color: rgba(236,234,226,0.3); transition: color 0.2s;
+      text-transform: uppercase; color: rgba(var(--text-rgb),0.3); transition: color 0.2s;
     }
-    .btn-resend:hover { color: #ECEAE2; }
-    .btn-resend:disabled { color: rgba(236,234,226,0.15); cursor: default; }
+    .btn-resend:hover { color: var(--text); }
+    .btn-resend:disabled { color: rgba(var(--text-rgb),0.15); cursor: default; }
     .btn-delete {
       background: none; border: none; cursor: pointer; padding: 0;
       font-family: var(--font-sans); font-size: 12px; letter-spacing: 0.06em;
-      text-transform: uppercase; color: rgba(232,50,10,0.4); transition: color 0.2s;
+      text-transform: uppercase; color: rgba(var(--red-rgb),0.4); transition: color 0.2s;
     }
-    .btn-delete:hover { color: #E8320A; }
+    .btn-delete:hover { color: var(--red); }
 
-    .empty { padding: 64px 0; text-align: center; color: rgba(236,234,226,0.2); font-size: 14px; }
+    .empty { padding: 64px 0; text-align: center; color: rgba(var(--text-rgb),0.2); font-size: 14px; }
 
     /* ── Toast ── */
     #toast {
@@ -157,7 +157,7 @@ $purchases = $list_stmt->fetchAll();
     }
     #toast.show { opacity: 1; }
     #toast.ok  { background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.35); color: #81c784; }
-    #toast.err { background: rgba(232,50,10,0.12); border: 1px solid rgba(232,50,10,0.3);  color: #E8320A; }
+    #toast.err { background: rgba(var(--red-rgb),0.12); border: 1px solid rgba(var(--red-rgb),0.3);  color: var(--red); }
   </style>
 </head>
 <body>

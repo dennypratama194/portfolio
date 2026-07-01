@@ -8,6 +8,7 @@ api/.auto_post_config.json
 # Generated server-side data
 api/logs/
 admin/uploads/
+*.log
 
 # graphify knowledge graph — regenerate per-machine
 graphify-out/

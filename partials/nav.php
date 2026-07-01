@@ -4,7 +4,7 @@
   <a class="skip-to-content" href="#main-content">Skip to content</a>
 
   <header>
-  <nav>
+  <nav aria-label="Primary">
     <a class="nav-logo" href="/">
       <img src="/assets/logo.png" alt="Denny Pratama" class="nav-logo-img" width="120" height="32" fetchpriority="high" loading="eager"/>
     </a>
@@ -17,7 +17,7 @@
   </header>
 
   <div class="nav-overlay" id="nav-overlay" aria-hidden="true" inert>
-    <nav class="nav-overlay-links">
+    <nav class="nav-overlay-links" aria-label="Site menu">
       <a class="nav-overlay-link" href="/#work"><span class="nav-overlay-num">01</span><span class="nav-overlay-label">Work</span></a>
       <a class="nav-overlay-link" href="/#about"><span class="nav-overlay-num">02</span><span class="nav-overlay-label">About</span></a>
       <a class="nav-overlay-link" href="/blog"><span class="nav-overlay-num">03</span><span class="nav-overlay-label">Blog</span></a>

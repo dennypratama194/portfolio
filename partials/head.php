@@ -24,14 +24,14 @@
   <!-- Open Graph -->
   <meta property="og:title" content="<?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?>"/>
   <meta property="og:description" content="<?= htmlspecialchars($description ?? 'UI/UX Designer & Developer building digital products where aesthetics and function refuse to compromise.') ?>"/>
-  <meta property="og:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/og-image.png') ?>"/>
+  <meta property="og:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/logo.png') ?>"/>
   <meta property="og:url" content="https://dennypratama.com<?= htmlspecialchars(strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>"/>
   <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'website') ?>"/>
   <meta property="og:site_name" content="Denny Pratama"/>
   <meta name="twitter:card" content="summary_large_image"/>
   <meta name="twitter:title" content="<?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?>"/>
   <meta name="twitter:description" content="<?= htmlspecialchars($description ?? 'UI/UX Designer & Developer building digital products where aesthetics and function refuse to compromise.') ?>"/>
-  <meta name="twitter:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/og-image.png') ?>"/>
+  <meta name="twitter:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/logo.png') ?>"/>
   <meta name="twitter:creator" content="@dennypratama"/>
 
   <!-- Canonical -->
@@ -46,7 +46,7 @@
     'url'         => 'https://dennypratama.com',
     'jobTitle'    => 'UI/UX Designer & Developer',
     'description' => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
-    'image'       => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+    'image'       => 'https://dennypratama.com/assets/logo.png',
     'email'       => 'dennypratama194@gmail.com',
     'knowsAbout'  => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'AI'],
     'sameAs'      => [
@@ -84,6 +84,6 @@
 
   <!-- GSAP + ScrollTrigger via CDN — only when the page declares it needs them -->
   <?php if (!empty($needs_gsap)): ?>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <?php endif; ?>

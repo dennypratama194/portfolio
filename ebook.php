@@ -59,7 +59,7 @@ $title       = htmlspecialchars($product['title']) . ' — Denny Pratama';
 $description = htmlspecialchars($product['tagline'] ?: $product['title']);
 $og_image    = $cover_url
     ? 'https://dennypratama.com' . $cover_url
-    : 'https://dennypratama.com/assets/og-image.png';
+    : 'https://dennypratama.com/assets/logo.png';
 $og_type     = 'product';
 $canonical   = 'https://dennypratama.com/ebook/' . rawurlencode($slug);
 
@@ -142,7 +142,7 @@ $page_css   = '/css/ebook.css?v=2';
   </div>
 <?php endif; ?>
 
-<main>
+<main id="main-content">
 
   <!-- ══════════════════════════════════════
        HERO
@@ -359,7 +359,7 @@ $page_css   = '/css/ebook.css?v=2';
       </button>
     </form>
     <p class="eb-form-note">Instant delivery · Magic link via email · No account needed</p>
-    <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:rgba(236,234,226,0.55);text-decoration:none;font-weight:500">View your library →</a></p>
+    <p class="eb-form-note" style="margin-top:6px">Already purchased? <a href="/my-library" style="color:rgba(var(--light-text-rgb),0.55);text-decoration:none;font-weight:500">View your library →</a></p>
     <p class="eb-price"><?= $price_fmt ?> · One-time payment</p>
   </section>
 

@@ -18,6 +18,12 @@ function wlog(string $level, string $message): void {
     );
 }
 
+function maskEmail(string $email): string {
+    $parts = explode('@', $email, 2);
+    if (count($parts) !== 2) return '***';
+    return substr($parts[0], 0, 2) . '***@' . $parts[1];
+}
+
 function wok(): never {
     echo json_encode(['status' => 'ok']);
     exit;
@@ -111,7 +117,7 @@ $pdo->prepare(
      VALUES (?, ?, ?, ?, NOW())'
 )->execute([$product['id'], $payer_email, $token, $invoice_id]);
 
-wlog('OK', 'purchase recorded — email=' . $payer_email . ' product=' . $product_slug
+wlog('OK', 'purchase recorded — email=' . maskEmail($payer_email) . ' product=' . $product_slug
     . ' token=' . substr($token, 0, 8) . '…');
 
 /* ── Build magic link ── */
@@ -156,7 +162,7 @@ $html = <<<HTML
               <!-- CTA button -->
               <table cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
                 <tr>
-                  <td style="background:#E8320A;">
+                  <td style="background:#CC2A08;">
                     <a href="{$magic_link}"
                        style="display:inline-block;padding:14px 32px;
                               font-size:14px;font-weight:600;letter-spacing:0.04em;
@@ -168,7 +174,7 @@ $html = <<<HTML
               </table>
               <!-- Notice -->
               <table cellpadding="0" cellspacing="0" role="presentation"
-                     style="width:100%;background:#F8F7F3;border-left:3px solid #E8320A;
+                     style="width:100%;background:#F8F7F3;border-left:3px solid #CC2A08;
                             margin-bottom:28px;">
                 <tr>
                   <td style="padding:14px 18px;">
@@ -182,7 +188,7 @@ $html = <<<HTML
               </table>
               <p style="margin:0 0 28px;font-size:14px;color:#9E9B93;line-height:1.6;">
                 Lost this email later? Recover all your links at<br/>
-                <a href="{$recover_link}" style="color:#E8320A;text-decoration:none;">{$recover_link}</a>
+                <a href="{$recover_link}" style="color:#CC2A08;text-decoration:none;">{$recover_link}</a>
               </p>
             </td>
           </tr>
@@ -227,9 +233,9 @@ curl_close($ch);
 
 if ($email_err || $email_code < 200 || $email_code >= 300) {
     /* Purchase is recorded — email failure is non-fatal. Admin can resend via dashboard. */
-    wlog('EMAIL_FAIL', 'to=' . $payer_email . ' http=' . $email_code . ' curl_err=' . $email_err);
+    wlog('EMAIL_FAIL', 'to=' . maskEmail($payer_email) . ' http=' . $email_code . ' curl_err=' . $email_err);
 } else {
-    wlog('EMAIL_OK', 'sent to ' . $payer_email);
+    wlog('EMAIL_OK', 'sent to ' . maskEmail($payer_email));
 }
 
 /* ── Respond 200 so Xendit does not retry ── */

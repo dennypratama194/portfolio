@@ -4,7 +4,7 @@ require_once __DIR__ . '/api/db.php';
 $title       = 'Ebooks — Denny Pratama';
 $description = 'Practical ebooks on UI/UX design, product development, and AI by Denny Pratama. Hands-on guides to help you build better digital products and grow your skills.';
 $canonical   = 'https://dennypratama.com/ebooks';
-$og_image    = 'https://dennypratama.com/assets/og-image.png';
+$og_image    = 'https://dennypratama.com/assets/logo.png';
 $jsonld      = json_encode([
     '@context'    => 'https://schema.org',
     '@type'       => 'CollectionPage',
@@ -33,7 +33,7 @@ $page_css = '/css/ebooks.css?v=1';
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <!-- ── HERO ── -->
   <section class="blog-hero">
     <div class="blog-hero-eyebrow">Ebooks</div>

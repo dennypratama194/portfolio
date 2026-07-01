@@ -15,9 +15,9 @@ $bp_stmt = $pdo->query(
 $bp_posts = $bp_stmt->fetchAll();
 
 $title         = 'Denny Pratama — UI/UX Designer & Developer for Startups';
-$description   = 'UI/UX designer and developer based in Indonesia, helping startups ship products that look sharp, work flawlessly, and convert. Currently available for new projects.';
+$description   = 'UI/UX designer and developer based in Indonesia, helping startups ship products that look sharp, work flawlessly, and convert. Available for new projects.';
 $canonical     = 'https://dennypratama.com/';
-$og_image      = 'https://dennypratama.com/assets/og-image.png';
+$og_image      = 'https://dennypratama.com/assets/logo.png';
 $needs_gsap    = true;
 $meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designer and developer, startup product design, web designer Indonesia, UI designer for hire';
 $jsonld        = json_encode([
@@ -27,7 +27,7 @@ $jsonld        = json_encode([
     'url'           => 'https://dennypratama.com',
     'jobTitle'      => 'UI/UX Designer & Developer',
     'description'   => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
-    'image'         => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+    'image'         => 'https://dennypratama.com/assets/logo.png',
     'email'         => 'hello@dennypratama.com',
     'nationality'   => ['@type' => 'Country', 'name' => 'Indonesia'],
     'knowsAbout'    => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'PHP', 'JavaScript', 'CSS', 'GSAP', 'AI Integration'],
@@ -119,7 +119,7 @@ $jsonld        = json_encode([
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <section id="hero">
     <div class="hero-overline">
       <div class="hero-overline-dot"></div>

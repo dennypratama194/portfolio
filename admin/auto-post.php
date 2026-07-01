@@ -79,8 +79,8 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     .auto-main { min-width: 0; }
     .auto-sidebar { position: sticky; top: 24px; }
     .auto-sidebar-card {
-      background: rgba(236,234,226,0.03);
-      border: 1px solid rgba(236,234,226,0.08);
+      background: rgba(var(--text-rgb),0.03);
+      border: 1px solid rgba(var(--text-rgb),0.08);
       padding: 24px;
     }
     @media (max-width: 960px) {
@@ -90,55 +90,55 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     .toggle-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px; border: 1px solid rgba(236,234,226,0.08);
-      background: rgba(236,234,226,0.03); margin-bottom: 28px;
+      padding: 16px 20px; border: 1px solid rgba(var(--text-rgb),0.08);
+      background: rgba(var(--text-rgb),0.03); margin-bottom: 28px;
     }
-    .toggle-label-text { font-size: 14px; color: rgba(236,234,226,0.8); }
-    .toggle-sub { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 4px; }
+    .toggle-label-text { font-size: 14px; color: rgba(var(--text-rgb),0.8); }
+    .toggle-sub { font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; }
     .toggle-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
     .toggle-track {
       position: absolute; inset: 0;
-      background: rgba(236,234,226,0.1); transition: background 0.2s;
+      background: rgba(var(--text-rgb),0.1); transition: background 0.2s;
       border-radius: 24px;
     }
     .toggle-track::after {
       content: ''; position: absolute; top: 3px; left: 3px;
-      width: 18px; height: 18px; background: rgba(236,234,226,0.4);
+      width: 18px; height: 18px; background: rgba(var(--text-rgb),0.4);
       border-radius: 50%; transition: transform 0.2s, background 0.2s;
     }
-    .toggle-switch input:checked + .toggle-track { background: rgba(232,50,10,0.3); }
+    .toggle-switch input:checked + .toggle-track { background: rgba(var(--red-rgb),0.3); }
     .toggle-switch input:checked + .toggle-track::after {
-      transform: translateX(20px); background: #E8320A;
+      transform: translateX(20px); background: var(--red);
     }
 
-    .key-set { font-size: 14px; color: #E8320A; margin-top: 8px; }
+    .key-set { font-size: 14px; color: var(--red); margin-top: 8px; }
 
     .cron-box {
-      background: rgba(236,234,226,0.03); border: 1px solid rgba(236,234,226,0.08);
+      background: rgba(var(--text-rgb),0.03); border: 1px solid rgba(var(--text-rgb),0.08);
       padding: 24px; margin-bottom: 40px;
     }
     .cron-url {
-      font-family: monospace; font-size: 12px; color: rgba(236,234,226,0.7);
-      background: rgba(236,234,226,0.05); padding: 10px 14px;
+      font-family: monospace; font-size: 12px; color: rgba(var(--text-rgb),0.7);
+      background: rgba(var(--text-rgb),0.05); padding: 10px 14px;
       word-break: break-all; margin-bottom: 16px;
-      border: 1px solid rgba(236,234,226,0.08);
+      border: 1px solid rgba(var(--text-rgb),0.08);
     }
     .cron-copy {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.4); background: none;
-      border: 1px solid rgba(236,234,226,0.1);
+      color: rgba(var(--text-rgb),0.4); background: none;
+      border: 1px solid rgba(var(--text-rgb),0.1);
       padding: 6px 14px; cursor: pointer; font-family: inherit;
       transition: color 0.2s, border-color 0.2s; margin-bottom: 20px;
     }
-    .cron-copy:hover { color: #ECEAE2; border-color: rgba(236,234,226,0.3); }
+    .cron-copy:hover { color: var(--text); border-color: rgba(var(--text-rgb),0.3); }
     .cron-schedules { display: flex; flex-direction: column; gap: 8px; }
     .cron-row { display: flex; align-items: center; gap: 16px; }
-    .cron-expr { font-family: monospace; font-size: 12px; color: #E8320A; min-width: 100px; }
-    .cron-desc { font-size: 12px; color: rgba(236,234,226,0.4); }
+    .cron-expr { font-family: monospace; font-size: 12px; color: var(--red); min-width: 100px; }
+    .cron-desc { font-size: 12px; color: rgba(var(--text-rgb),0.4); }
 
     .run-btn {
-      background: #E8320A; color: #ECEAE2; border: none;
+      background: var(--red); color: var(--text); border: none;
       font-family: var(--font-sans); font-size: 12px; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase;
       padding: 13px 28px; cursor: pointer; transition: opacity 0.2s;
@@ -147,22 +147,22 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     .run-btn:hover { opacity: 0.85; }
     .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .run-status {
-      font-size: 13px; color: rgba(236,234,226,0.5);
+      font-size: 14px; color: rgba(var(--text-rgb),0.5);
       display: block; margin-top: 10px; line-height: 1.5;
     }
     .run-status.ok  { color: #4ade80; }
-    .run-status.err { color: #E8320A; }
+    .run-status.err { color: var(--red); }
 
-    .sidebar-rule { border: none; border-top: 1px solid rgba(236,234,226,0.08); margin: 20px 0; }
+    .sidebar-rule { border: none; border-top: 1px solid rgba(var(--text-rgb),0.08); margin: 20px 0; }
 
     .btn-secondary {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.35); background: none;
-      border: 1px solid rgba(236,234,226,0.1);
+      color: rgba(var(--text-rgb),0.35); background: none;
+      border: 1px solid rgba(var(--text-rgb),0.1);
       padding: 8px 16px; cursor: pointer; font-family: inherit;
       transition: color 0.2s, border-color 0.2s;
     }
-    .btn-secondary:hover { color: #ECEAE2; border-color: rgba(236,234,226,0.25); }
+    .btn-secondary:hover { color: var(--text); border-color: rgba(var(--text-rgb),0.25); }
     .btn-row { gap: 12px; margin-top: 32px; }
 
     .saved-banner {
@@ -173,31 +173,31 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     /* Sidebar table — compact */
     .sidebar-table { width: 100%; border-collapse: collapse; }
     .sidebar-table th {
-      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(236,234,226,0.3); padding: 0 0 10px; text-align: left; font-weight: 500;
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(var(--text-rgb),0.3); padding: 0 0 10px; text-align: left; font-weight: 500;
     }
-    .sidebar-table td { padding: 12px 8px 12px 0; font-size: 13px; color: rgba(236,234,226,0.7); border-top: 1px solid rgba(236,234,226,0.06); vertical-align: middle; }
+    .sidebar-table td { padding: 12px 8px 12px 0; font-size: 14px; color: rgba(var(--text-rgb),0.7); border-top: 1px solid rgba(var(--text-rgb),0.06); vertical-align: middle; }
     .sidebar-table td:last-child { white-space: nowrap; }
-    .post-title-link { color: #ECEAE2; text-decoration: none; font-weight: 500; font-size: 13px; line-height: 1.4; display: block; }
-    .post-title-link:hover { color: #E8320A; }
-    .pub-date { font-size: 12px; color: rgba(236,234,226,0.4); white-space: nowrap; }
-    .empty-sidebar { font-size: 13px; color: rgba(236,234,226,0.3); padding: 16px 0 4px; }
-    .last-run { font-size: 12px; color: rgba(236,234,226,0.3); margin-top: 4px; display: block; }
+    .post-title-link { color: var(--text); text-decoration: none; font-weight: 500; font-size: 14px; line-height: 1.4; display: block; }
+    .post-title-link:hover { color: var(--red); }
+    .pub-date { font-size: 12px; color: rgba(var(--text-rgb),0.4); white-space: nowrap; }
+    .empty-sidebar { font-size: 14px; color: rgba(var(--text-rgb),0.3); padding: 16px 0 4px; }
+    .last-run { font-size: 12px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; display: block; }
 
     .img-ok      { color: #4ade80; margin-right: 6px; }
-    .img-missing { color: rgba(236,234,226,0.3); margin-right: 6px; }
+    .img-missing { color: rgba(var(--text-rgb),0.3); margin-right: 6px; }
     .regen-btn {
-      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-      color: rgba(236,234,226,0.5); background: none;
-      border: 1px solid rgba(236,234,226,0.12);
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: rgba(var(--text-rgb),0.5); background: none;
+      border: 1px solid rgba(var(--text-rgb),0.12);
       padding: 3px 10px; cursor: pointer; font-family: inherit;
       transition: color 0.2s, border-color 0.2s;
     }
-    .regen-btn:hover:not(:disabled) { color: #ECEAE2; border-color: rgba(236,234,226,0.3); }
+    .regen-btn:hover:not(:disabled) { color: var(--text); border-color: rgba(var(--text-rgb),0.3); }
     .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .regen-status { font-size: 11px; color: rgba(236,234,226,0.5); display: block; margin-top: 4px; }
+    .regen-status { font-size: 14px; color: rgba(var(--text-rgb),0.5); display: block; margin-top: 4px; }
     .regen-status.ok  { color: #4ade80; }
-    .regen-status.err { color: #E8320A; }
+    .regen-status.err { color: var(--red); }
   </style>
 </head>
 <body>
@@ -286,14 +286,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
         <div class="cron-box">
           <?php if ($token): ?>
-            <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:8px;display:block">Your cron URL</label>
+            <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(var(--text-rgb),0.3);margin-bottom:8px;display:block">Your cron URL</label>
             <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
             <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
           <?php else: ?>
             <div class="hint">Save your settings first to generate the cron URL.</div>
           <?php endif; ?>
 
-          <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(236,234,226,0.3);margin-bottom:10px">Suggested schedules</div>
+          <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(var(--text-rgb),0.3);margin-bottom:10px">Suggested schedules</div>
           <div class="cron-schedules">
             <div class="cron-row">
               <span class="cron-expr">0 8 * * 1</span>
@@ -311,9 +311,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
           <div class="hint" style="margin-top:16px">
             In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
-            <code style="color:rgba(236,234,226,0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
+            <code style="color:rgba(var(--text-rgb),0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
             Or via wget (two requests, each under 30s):<br>
-            <code style="color:rgba(236,234,226,0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
+            <code style="color:rgba(var(--text-rgb),0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
           </div>
 
           <?php if ($last_run): ?>
@@ -410,7 +410,6 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         return r.text().then(function(txt) {
           try {
             var d = JSON.parse(txt);
-            if (d._php_warnings) console.warn('PHP warnings:', d._php_warnings);
             return d;
           } catch(e) {
             throw new Error('Server returned non-JSON (HTTP ' + r.status + '): ' + txt.slice(0, 300));

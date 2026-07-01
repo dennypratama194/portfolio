@@ -84,7 +84,7 @@ $projects = $pdo->query(
         <td>
           <a class="action-link" href="project-edit.php?id=<?= $p['id'] ?>">Edit</a>
           <?php if ($p['is_published']): ?>
-          <a class="action-link" href="/case-studies/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener">View</a>
+          <a class="action-link" href="/case-studies/<?= rawurlencode($p['slug']) ?>" target="_blank" rel="noopener noreferrer">View</a>
           <?php endif; ?>
           <form method="POST" style="display:inline" onsubmit="return confirm('Delete this case study? This cannot be undone.')">
             <input type="hidden" name="action" value="delete"/>

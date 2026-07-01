@@ -101,7 +101,7 @@ foreach ($purchases as $pu) {
               <p style="margin:0 0 16px;font-size:14px;color:#9E9B93;">Purchased {$date_safe}</p>
               <table cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <td style="background:#E8320A;">
+                  <td style="background:#CC2A08;">
                     <a href="{$magic_link}"
                        style="display:inline-block;padding:12px 24px;
                               font-size:14px;font-weight:600;letter-spacing:0.06em;
@@ -162,14 +162,14 @@ $html = <<<HTML
           <tr>
             <td style="padding:24px 40px;">
               <table cellpadding="0" cellspacing="0" role="presentation"
-                     style="width:100%;background:#F8F7F3;border-left:3px solid #E8320A;">
+                     style="width:100%;background:#F8F7F3;border-left:3px solid #CC2A08;">
                 <tr>
                   <td style="padding:14px 18px;">
                     <p style="margin:0;font-size:14px;color:#5A5855;line-height:1.55;">
                       <strong style="color:#0D0C09;">Bookmark your links.</strong>
                       Each link is personal — keep this email somewhere safe,
                       or recover again anytime at
-                      <a href="{$recover_link}" style="color:#E8320A;text-decoration:none;">{$recover_link}</a>.
+                      <a href="{$recover_link}" style="color:#CC2A08;text-decoration:none;">{$recover_link}</a>.
                     </p>
                   </td>
                 </tr>
@@ -220,8 +220,7 @@ if ($curl_err || $email_code < 200 || $email_code >= 300) {
        send failure can't be used to confirm an email has purchases. */
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) { mkdir($log_dir, 0755, true); }
-    $log_entry = date('c') . ' | http=' . $email_code . ' | curl_err=' . $curl_err
-               . ' | resend=' . $resend_body . PHP_EOL;
+    $log_entry = date('c') . ' | http=' . $email_code . ' | curl_err=' . $curl_err . PHP_EOL;
     file_put_contents($log_dir . '/resend-errors.log', $log_entry, FILE_APPEND | LOCK_EX);
 }
 

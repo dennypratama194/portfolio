@@ -101,7 +101,7 @@ $page_title = htmlspecialchars($chapter['title'])
 
   <!-- Minimal OG (page is noindex; OG just makes accidental share previews look right) -->
   <meta property="og:title" content="<?= $page_title ?>"/>
-  <meta property="og:image" content="https://dennypratama.com/assets/og-image.png"/>
+  <meta property="og:image" content="https://dennypratama.com/assets/logo.png"/>
   <meta property="og:type" content="article"/>
 
   <!-- Theme before paint — prevents flash of wrong color scheme -->
@@ -129,7 +129,7 @@ $page_title = htmlspecialchars($chapter['title'])
       --text-2:      #5A5855;
       --text-3:      #9B9895;
       --border:      rgba(26,26,26,0.1);
-      --accent:      #E8320A;
+      --accent:      #CC2A08;
       --header-h:    56px;
       --sidebar-w:   280px;
       --content-max: 680px;
@@ -510,7 +510,7 @@ $page_title = htmlspecialchars($chapter['title'])
 </div><!-- /read-layout -->
 
 <!-- GSAP for page fade-in -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 <script>
   /* ── Theme toggle ── */
   var themeBtn = document.getElementById('theme-toggle');
@@ -560,7 +560,6 @@ $page_title = htmlspecialchars($chapter['title'])
   if (readBody) {
     readBody.addEventListener('contextmenu', function (e) {
       e.preventDefault();
-      console.log('📚 This content is your personal copy — enjoy reading it!');
     });
   }
 

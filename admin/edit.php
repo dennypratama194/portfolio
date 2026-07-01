@@ -136,7 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (str_contains($e->getMessage(), 'category')) {
                 $errors[] = 'Database missing "category" column — run this SQL in phpMyAdmin: ALTER TABLE posts ADD COLUMN category VARCHAR(50) DEFAULT NULL AFTER excerpt;';
             } else {
-                $errors[] = 'Database error: ' . $e->getMessage();
+                error_log('admin/edit.php: ' . $e->getMessage());
+                $errors[] = 'Database error. Please try again or check the server logs.';
             }
         }
     }
@@ -190,16 +191,16 @@ $sched_val = !empty($post['scheduled_at'])
     .edit-main { min-width: 0; }
     .edit-sidebar { position: sticky; top: 24px; }
     .sidebar-card {
-      background: rgba(236,234,226,0.03);
-      border: 1px solid rgba(236,234,226,0.08);
+      background: rgba(var(--text-rgb),0.03);
+      border: 1px solid rgba(var(--text-rgb),0.08);
       padding: 24px;
     }
     .sidebar-section-label {
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(236,234,226,0.35); margin-bottom: 12px; display: block;
+      color: rgba(var(--text-rgb),0.35); margin-bottom: 12px; display: block;
     }
     .edit-sidebar .publish-options { flex-direction: column; gap: 6px; margin-bottom: 0; }
-    .sidebar-divider { border: none; border-top: 1px solid rgba(236,234,226,0.08); margin: 20px 0; }
+    .sidebar-divider { border: none; border-top: 1px solid rgba(var(--text-rgb),0.08); margin: 20px 0; }
     .sidebar-actions { display: flex; flex-direction: column; gap: 8px; }
     .sidebar-actions .btn-save {
       display: block; text-align: center; width: 100%; box-sizing: border-box;
@@ -212,63 +213,63 @@ $sched_val = !empty($post['scheduled_at'])
 
     /* Quill editor styling to match dark theme */
     .ql-toolbar.ql-snow {
-      background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1) !important;
+      background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1) !important;
       border-bottom: none !important;
     }
     .ql-container.ql-snow {
-      border: 1px solid rgba(236,234,226,0.1) !important;
-      background: rgba(236,234,226,0.03);
+      border: 1px solid rgba(var(--text-rgb),0.1) !important;
+      background: rgba(var(--text-rgb),0.03);
     }
     .ql-editor {
-      color: #ECEAE2; font-family: var(--font-sans);
+      color: var(--text); font-family: var(--font-sans);
       font-size: 16px; line-height: 1.75; min-height: 320px;
     }
     .ql-editor p { margin-bottom: 0; }
-    .ql-editor.ql-blank::before { color: rgba(236,234,226,0.2); font-style: normal; }
-    .ql-snow .ql-stroke { stroke: rgba(236,234,226,0.5); }
-    .ql-snow .ql-fill { fill: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker { color: rgba(236,234,226,0.5); }
-    .ql-snow .ql-picker-options { background: #1a1917; border: 1px solid rgba(236,234,226,0.1); }
+    .ql-editor.ql-blank::before { color: rgba(var(--text-rgb),0.2); font-style: normal; }
+    .ql-snow .ql-stroke { stroke: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-fill { fill: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-picker { color: rgba(var(--text-rgb),0.5); }
+    .ql-snow .ql-picker-options { background: var(--select-bg); border: 1px solid rgba(var(--text-rgb),0.1); }
 
     /* ── Publish mode ── */
     .publish-options { display: flex; gap: 8px; margin-bottom: 12px; }
     .radio-option {
       display: flex; align-items: center; gap: 8px;
-      padding: 10px 16px; border: 1px solid rgba(236,234,226,0.1);
-      cursor: pointer; font-size: 14px; color: rgba(236,234,226,0.55);
+      padding: 10px 16px; border: 1px solid rgba(var(--text-rgb),0.1);
+      cursor: pointer; font-size: 14px; color: rgba(var(--text-rgb),0.55);
       transition: border-color 0.2s, color 0.2s; user-select: none;
     }
     .radio-option:has(input:checked) {
-      border-color: #E8320A; color: #ECEAE2;
+      border-color: var(--red); color: var(--text);
     }
-    .radio-option input[type=radio] { accent-color: #E8320A; cursor: pointer; }
+    .radio-option input[type=radio] { accent-color: var(--red); cursor: pointer; }
     input[type=datetime-local] {
-      width: 100%; background: rgba(236,234,226,0.05);
-      border: 1px solid rgba(236,234,226,0.1); color: #ECEAE2;
+      width: 100%; background: rgba(var(--text-rgb),0.05);
+      border: 1px solid rgba(var(--text-rgb),0.1); color: var(--text);
       font-family: var(--font-sans); font-size: 14px;
       padding: 11px 14px; outline: none; transition: border-color 0.2s;
       color-scheme: dark;
     }
-    input[type=datetime-local]:focus { border-color: #E8320A; }
-    .schedule-hint { font-size: 14px; color: rgba(236,234,226,0.3); margin-top: 8px; }
+    input[type=datetime-local]:focus { border-color: var(--red); }
+    .schedule-hint { font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 8px; }
 
     /* ── Drag-and-drop image zone ── */
     .drop-zone {
-      border: 2px dashed rgba(236,234,226,0.15); padding: 36px 24px;
+      border: 2px dashed rgba(var(--text-rgb),0.15); padding: 36px 24px;
       text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s;
       position: relative;
     }
     .drop-zone:hover, .drop-zone.dragover {
-      border-color: #E8320A; background: rgba(232,50,10,0.04);
+      border-color: var(--red); background: rgba(var(--red-rgb),0.04);
     }
     .drop-zone input[type=file] {
       position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
     }
     .drop-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.35; line-height: 1; }
-    .drop-text { font-size: 14px; color: rgba(236,234,226,0.4); }
-    .drop-text span { color: #E8320A; }
-    .drop-filename { font-size: 14px; color: rgba(236,234,226,0.5); margin-top: 8px; }
+    .drop-text { font-size: 14px; color: rgba(var(--text-rgb),0.4); }
+    .drop-text span { color: var(--red); }
+    .drop-filename { font-size: 14px; color: rgba(var(--text-rgb),0.5); margin-top: 8px; }
     .img-preview {
       display: block; width: 100%; max-height: 280px; object-fit: cover;
     }
@@ -278,17 +279,17 @@ $sched_val = !empty($post['scheduled_at'])
       background: none; border: none; font-family: inherit; cursor: pointer;
       padding: 0; transition: color 0.2s;
     }
-    .img-action { color: rgba(236,234,226,0.5); }
-    .img-action:hover { color: #ECEAE2; }
+    .img-action { color: rgba(var(--text-rgb),0.5); }
+    .img-action:hover { color: var(--text); }
     .img-action:disabled { opacity: 0.4; cursor: not-allowed; }
-    .img-remove { color: rgba(232,50,10,0.6); }
-    .img-remove:hover { color: #E8320A; }
+    .img-remove { color: rgba(var(--red-rgb),0.6); }
+    .img-remove:hover { color: var(--red); }
 
     .img-regen { margin-top: 16px; }
-    .img-regen-status { font-size: 14px; color: rgba(236,234,226,0.5); margin-left: 12px; display: inline-block; }
+    .img-regen-status { font-size: 14px; color: rgba(var(--text-rgb),0.5); margin-left: 12px; display: inline-block; }
     .img-regen-status.ok  { color: #4ade80; }
-    .img-regen-status.err { color: #E8320A; }
-    .img-regen-hint { font-size: 14px; color: rgba(236,234,226,0.35); margin-top: 8px; }
+    .img-regen-status.err { color: var(--red); }
+    .img-regen-hint { font-size: 14px; color: rgba(var(--text-rgb),0.35); margin-top: 8px; }
 
   </style>
 </head>
@@ -326,14 +327,14 @@ $sched_val = !empty($post['scheduled_at'])
           </div>
 
           <div class="field">
-            <label for="slug">Slug <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
+            <label for="slug">Slug <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(auto-generated, editable)</span></label>
             <input type="text" id="slug" name="slug"
                    value="<?= htmlspecialchars($post['slug']) ?>"
                    placeholder="post-url-slug" required/>
           </div>
 
           <div class="field">
-            <label for="excerpt">Excerpt <span style="color:rgba(236,234,226,0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
+            <label for="excerpt">Excerpt <span style="color:rgba(var(--text-rgb),0.3);font-size:12px;text-transform:none;letter-spacing:0">(shown on blog listing)</span></label>
             <textarea id="excerpt" name="excerpt" rows="3"
                       placeholder="Short summary of the post..."><?= htmlspecialchars($post['excerpt']) ?></textarea>
           </div>
@@ -349,7 +350,7 @@ $sched_val = !empty($post['scheduled_at'])
           </div>
 
           <div class="field">
-            <label>Featured Image</label>
+            <label for="img-input">Featured Image</label>
             <?php $has_img = !empty($post['featured_image']); ?>
 
             <!-- Drop zone — shown only when there's no image yet -->
@@ -386,11 +387,11 @@ $sched_val = !empty($post['scheduled_at'])
           </div>
 
           <div class="field">
-            <label>Body</label>
+            <label for="body-input" id="body-label">Body</label>
             <!-- The textarea is the actual saved field + fallback if Quill fails to load.
                  Quill enhances it; on submit its HTML is synced back into the textarea. -->
             <textarea name="body" id="body-input" class="content-fallback"><?= htmlspecialchars($post['body'] ?? '') ?></textarea>
-            <div id="quill-editor" style="display:none"><?= $post['body'] ?></div>
+            <div id="quill-editor" aria-labelledby="body-label" style="display:none"><?= $post['body'] ?></div>
 
             <?php if ($can_regen_image): ?>
             <div class="img-regen">
@@ -444,7 +445,7 @@ $sched_val = !empty($post['scheduled_at'])
     </form>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js" integrity="sha512-P2W2rr8ikUPfa31PLBo5bcBQrsa+TNj8jiKadtaIrHQGMo6hQM6RdPjQYxlNguwHz8AwSQ28VkBK6kHBLgd/8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <?php if ($can_regen_image): ?>
   <script>
     var REGEN_TOKEN = '<?= addslashes($auto_token) ?>';

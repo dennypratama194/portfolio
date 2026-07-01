@@ -37,7 +37,7 @@ $title       = $post['title'] . ' — Denny Pratama';
 $description = $post['excerpt']
     ?: 'Read the latest articles on UI/UX design, development, and AI by Denny Pratama.';
 $canonical   = 'https://dennypratama.com/blog/' . rawurlencode($post['slug']);
-$og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/og-image.png';
+$og_image    = $featured_image_url ?: 'https://dennypratama.com/assets/logo.png';
 $og_type     = 'article';
 $pub_iso    = $post['published_at'] ? date('c', strtotime($post['published_at'])) : null;
 $word_count = str_word_count(strip_tags($post['body'] ?? ''));
@@ -69,7 +69,7 @@ $jsonld = json_encode([
                 '@type'  => 'Person',
                 'name'   => 'Denny Pratama',
                 'url'    => 'https://dennypratama.com',
-                'image'  => 'https://dennypratama.com/assets/denny-pratama-portrait.jpg',
+                'image'  => 'https://dennypratama.com/assets/logo.png',
                 'sameAs' => [
                     'https://dribbble.com/dennypratama',
                     'https://www.linkedin.com/in/denny-pratama-740a14151/',
@@ -130,7 +130,7 @@ $related = $related_stmt->fetchAll();
 
 <?php include 'partials/nav.php'; ?>
 
-<main>
+<main id="main-content">
   <article id="post-root">
     <div class="post-hero">
       <div class="post-hero-meta">

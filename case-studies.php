@@ -13,7 +13,7 @@ $projects = $stmt->fetchAll();
 $title       = 'Case Studies — Denny Pratama';
 $description = 'A behind-the-scenes look at how Denny Pratama approaches design projects — from brief and AI-assisted analysis to Figma craft and final delivery.';
 $canonical   = 'https://dennypratama.com/case-studies';
-$og_image    = 'https://dennypratama.com/assets/og-image.png';
+$og_image    = 'https://dennypratama.com/assets/logo.png';
 $page_css    = '/css/case-studies.css?v=1';
 $jsonld      = json_encode([
     '@context' => 'https://schema.org',

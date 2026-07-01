@@ -63,7 +63,7 @@ $posts = $pdo->query(
     </div>
 
     <?php if (empty($posts)): ?>
-      <div class="empty">No posts yet. <a href="edit.php" style="color:#E8320A;text-decoration:none;">Write your first one →</a></div>
+      <div class="empty">No posts yet. <a href="edit.php" style="color:var(--red);text-decoration:none;">Write your first one →</a></div>
     <?php else: ?>
     <table>
       <thead>

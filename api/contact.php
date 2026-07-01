@@ -81,7 +81,7 @@ $html = <<<HTML
       <h1 style="font-size: 24px; font-weight: 600; margin: 0 0 24px;">From {$safe_name}</h1>
       <table style="width: 100%; font-size: 14px; line-height: 1.6;">
         <tr><td style="padding: 8px 0; color: #6B6960; width: 80px;">Name</td><td style="padding: 8px 0;">{$safe_name}</td></tr>
-        <tr><td style="padding: 8px 0; color: #6B6960;">Email</td><td style="padding: 8px 0;"><a href="mailto:{$safe_email}" style="color: #E8320A;">{$safe_email}</a></td></tr>
+        <tr><td style="padding: 8px 0; color: #6B6960;">Email</td><td style="padding: 8px 0;"><a href="mailto:{$safe_email}" style="color: #CC2A08;">{$safe_email}</a></td></tr>
       </table>
       <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(13,12,9,0.1);">
         <p style="font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #6B6960; margin: 0 0 12px;">Message</p>
@@ -125,7 +125,6 @@ if ($http_code >= 200 && $http_code < 300) {
     @file_put_contents($log_dir . '/contact-errors.log',
         '[' . date('c') . '] http=' . $http_code
         . ' curl_err=' . $curl_err
-        . ' response=' . substr((string)$response, 0, 500)
         . "\n",
         FILE_APPEND | LOCK_EX
     );
