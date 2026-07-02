@@ -53,7 +53,12 @@ $config_file = __DIR__ . '/.auto_post_config.json';
 if (!file_exists($config_file)) {
     respond(503, ['ok' => false, 'error' => 'Auto-post not configured yet.']);
 }
-$config = json_decode(file_get_contents($config_file), true);
+/* BOM-strip before decoding: a UTF-8 BOM (added by many Windows editors)
+   makes json_decode fail, silently turning every request into "Forbidden". */
+$config = json_decode(ltrim(file_get_contents($config_file), "\xEF\xBB\xBF"), true);
+if (!is_array($config)) {
+    respond(500, ['ok' => false, 'error' => 'Config file exists but is not valid JSON — open the admin panel and click Save Settings to rewrite it.']);
+}
 
 $token = $is_cli ? ($argv[1] ?? '') : ($_GET['token'] ?? '');
 if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token)) {
@@ -65,9 +70,9 @@ $openai_key    = $config['openai_api_key']    ?? '';
 $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
 $phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
-/* regen/reformat/test are manual admin actions — they bypass the enable
-   toggle (it gates cron publishing, not admin actions). */
-if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test'], true)) {
+/* regen/reformat/test/status are manual admin actions or read-only — they
+   bypass the enable toggle (it gates publishing, not admin diagnostics). */
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -75,13 +80,63 @@ require __DIR__ . '/db.php';
 require __DIR__ . '/helpers.php';
 
 /* A "Run start" line with no follow-up = the host killed the process. */
-register_shutdown_function(function () {
+register_shutdown_function(function () use ($phase) {
     $e = error_get_last();
     if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
         autoPostLog('FATAL: ' . $e['message'] . ' @ ' . basename($e['file']) . ':' . $e['line']);
+        if (in_array($phase, ['1', '2', 'all'], true)) {
+            setRunStatus(['state' => 'error', 'error' => 'PHP fatal: ' . $e['message'], 'done' => true]);
+        }
     }
 });
-autoPostLog('Run start v' . AP_VERSION . ': phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
+if ($phase !== 'status') { // status is polled every few seconds — don't spam the log
+    autoPostLog('Run start v' . AP_VERSION . ': phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE = STATUS — read-only progress of the current /
+   last background run. Polled by the admin UI.
+════════════════════════════════════════════════════ */
+if ($phase === 'status') {
+    $run = null;
+    $sf  = __DIR__ . '/logs/run-status.json';
+    if (file_exists($sf)) {
+        $run = json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: null;
+        if ($run && isset($run['updated'])) $run['age'] = time() - (int)$run['updated'];
+    }
+    respond(200, ['ok' => true, 'phase' => 'status', 'run' => $run]);
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE = START — kick off the full generation as a
+   BACKGROUND process and return immediately. The admin
+   UI then polls phase=status. No browser connection is
+   held open during the minutes-long Claude call, so
+   host/proxy HTTP timeouts can no longer kill a paid run.
+════════════════════════════════════════════════════ */
+if ($phase === 'start') {
+    if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
+
+    $lock_file = __DIR__ . '/logs/run.lock';
+    $sf        = __DIR__ . '/logs/run-status.json';
+    $cur       = file_exists($sf) ? (json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: []) : [];
+
+    $lock_busy   = file_exists($lock_file) && time() - filemtime($lock_file) < 600;
+    $status_busy = $cur && empty($cur['done']) && isset($cur['updated']) && time() - (int)$cur['updated'] < 300;
+    if ($lock_busy || $status_busy) {
+        respond(429, ['ok' => false, 'error' => 'A run is already in progress — wait for the status below to finish before starting another.']);
+    }
+
+    setRunStatus([
+        'state'   => 'starting', 'started' => time(), 'done' => false,
+        'error'   => null, 'post_id' => null, 'title' => null,
+        'image'   => null, 'image_error' => null,
+    ], true);
+
+    $mode = spawnBackgroundRun($token);
+    autoPostLog('Background run spawned (' . $mode . ')');
+    respond(200, ['ok' => true, 'phase' => 'start', 'mode' => $mode]);
+}
 
 /* ════════════════════════════════════════════════════
    PHASE = TEST — near-free pipeline check (~30 tokens).
@@ -204,6 +259,7 @@ PROMPT;
 ════════════════════════════════════════════════════ */
 if ($phase === '1' || $phase === 'all') {
     if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
+    setRunStatus(['state' => 'claude']);
 
     /* Last 20 published posts: dedup source + internal-link list */
     $recent_posts = $pdo->query(
@@ -402,6 +458,7 @@ PROMPT;
         ? $sections['IMAGE_PROMPT']
         : 'Clean, modern, minimal blog header image, abstract and conceptual, no text, no people. Topic: ' . $title;
     autoPostLog('Post created: id=' . $post_id . ' "' . $title . '"');
+    setRunStatus(['state' => 'post_created', 'post_id' => $post_id, 'title' => $title]);
 
     if ($phase === '1') {
         respond(200, [
@@ -426,6 +483,8 @@ if ($phase === '2' || $phase === 'all') {
         $image_prompt = trim($_GET['image_prompt'] ?? '');
         if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for phase 2.']);
     }
+
+    if (!$is_regen) setRunStatus(['state' => 'image']);
 
     $featured_image = '';
     $image_error    = '';
@@ -510,6 +569,11 @@ if ($phase === '2' || $phase === 'all') {
     if (!$is_regen) {
         $config['last_run'] = date('Y-m-d H:i:s');
         file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
+        setRunStatus([
+            'state' => 'done', 'done' => true,
+            'image' => $featured_image ?: null,
+            'image_error' => $image_error ?: null,
+        ]);
     }
 
     respond(200, [
@@ -527,8 +591,13 @@ respond(400, ['ok' => false, 'error' => 'Unknown phase: ' . $phase]);
 ════════════════════════════════════════════════════ */
 
 function respond(int $code, array $data): void {
-    global $is_cli;
+    global $is_cli, $phase;
     $data['v'] = AP_VERSION;
+    /* A failed generation run must surface in the polled status. 429 is excluded:
+       it means "another run is active" and must not overwrite that run's state. */
+    if ($code !== 429 && ($data['ok'] ?? true) === false && in_array($phase ?? '', ['1', '2', 'all'], true)) {
+        setRunStatus(['state' => 'error', 'error' => (string)($data['error'] ?? 'Unknown error'), 'done' => true]);
+    }
     if (!$is_cli) {
         $stray = ob_get_clean();
         if ($stray) $data['_php_warnings'] = substr($stray, 0, 500);
@@ -691,4 +760,44 @@ function autoPostLog(string $msg): void {
     $dir = __DIR__ . '/logs';
     if (!is_dir($dir)) @mkdir($dir, 0755, true);
     @file_put_contents($dir . '/auto-post.log', '[' . date('c') . '] ' . $msg . "\n", FILE_APPEND | LOCK_EX);
+}
+
+/* Merge (or reset) the background-run status file polled by the admin UI. */
+function setRunStatus(array $patch, bool $reset = false): void {
+    $dir = __DIR__ . '/logs';
+    if (!is_dir($dir)) @mkdir($dir, 0755, true);
+    $f   = $dir . '/run-status.json';
+    $cur = [];
+    if (!$reset && file_exists($f)) {
+        $cur = json_decode(ltrim((string)@file_get_contents($f), "\xEF\xBB\xBF"), true) ?: [];
+    }
+    $patch['updated'] = time();
+    @file_put_contents($f, json_encode(array_merge($cur, $patch)), LOCK_EX);
+}
+
+/* Launch the full generation (phase all) detached from this request.
+   Preferred: PHP CLI — immune to every HTTP/gateway/proxy timeout (same
+   mechanism as the recommended cron command). Fallback when exec() is
+   unavailable: fire-and-forget HTTP self-call; the worker survives the
+   1.5s client timeout thanks to ignore_user_abort. */
+function spawnBackgroundRun(string $token): string {
+    $disabled = array_map('trim', explode(',', (string)ini_get('disable_functions')));
+    if (function_exists('exec') && !in_array('exec', $disabled, true) && stripos(PHP_OS, 'WIN') === false) {
+        $php = PHP_BINDIR . '/php';
+        if (!is_executable($php)) $php = 'php';
+        exec(escapeshellarg($php) . ' ' . escapeshellarg(__FILE__) . ' ' . escapeshellarg($token)
+            . ' > /dev/null 2>&1 &');
+        return 'cli';
+    }
+    $host = $_SERVER['HTTP_HOST'] ?? 'dennypratama.com';
+    $ch = curl_init('https://' . $host . '/api/auto-post.php?token=' . rawurlencode($token) . '&phase=all');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT_MS     => 1500,
+        CURLOPT_NOSIGNAL       => true,
+        CURLOPT_SSL_VERIFYPEER => false, // self-call via hostname can resolve to the local vhost
+    ]);
+    @curl_exec($ch);
+    curl_close($ch);
+    return 'http';
 }

@@ -103,6 +103,9 @@ RewriteRule (^|/)\.claude(/|$)          - [F,L]
 # ── Gzip compression ────────────────────────────────
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain application/json image/svg+xml font/woff2
+  # auto-post streams keepalive bytes during long AI calls — compression would
+  # buffer them and let the gateway kill the "silent" connection
+  SetEnvIf Request_URI "api/auto-post\.php" no-gzip
 </IfModule>
 
 # ── Browser caching ─────────────────────────────────

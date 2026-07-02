@@ -8,9 +8,12 @@ if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 $config_file = __DIR__ . '/../api/.auto_post_config.json';
-$config = file_exists($config_file)
-    ? json_decode(file_get_contents($config_file), true)
-    : [];
+$config_raw  = file_exists($config_file) ? file_get_contents($config_file) : '';
+/* BOM-strip: a UTF-8 BOM breaks json_decode, which would empty the token
+   and silently disable the Run Now button with no visible error. */
+$config = json_decode(ltrim($config_raw, "\xEF\xBB\xBF"), true);
+$config_broken = $config_raw !== '' && !is_array($config);
+if (!is_array($config)) $config = [];
 
 $saved = false;
 
@@ -211,6 +214,19 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     <?php if ($saved): ?>
       <div class="saved-banner">Settings saved.</div>
+    <?php endif; ?>
+
+    <?php if ($config_broken): ?>
+      <div class="saved-banner" style="background:rgba(var(--red-rgb),0.08);border-color:rgba(var(--red-rgb),0.25);color:var(--red)">
+        ⚠ api/.auto_post_config.json is corrupted (invalid JSON) — Run Now and the cron are disabled.
+        Click “Save Settings” below to rewrite it (this generates a new token; update your cron URL in cPanel after).
+      </div>
+    <?php endif; ?>
+
+    <?php if (!$token && !$config_broken): ?>
+      <div class="saved-banner" style="background:rgba(var(--red-rgb),0.08);border-color:rgba(var(--red-rgb),0.25);color:var(--red)">
+        ⚠ No secret token yet — Run Now is disabled. Click “Save Settings” to generate one.
+      </div>
     <?php endif; ?>
 
     <div class="auto-layout">
@@ -421,62 +437,87 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       });
     }
 
+    /* ── Run Now: start a BACKGROUND run, then poll its status. No browser
+       request ever waits on the minutes-long Claude call, so HTTP timeouts
+       can no longer kill a paid run or hide its outcome. ── */
     if (runBtn) {
+      var base      = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
+      var pollTimer = null;
+
+      function stopPoll() {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      }
+
+      function showRunState(run) {
+        if (!run) return;
+        if (run.state === 'done') {
+          stopPoll();
+          if (run.image) {
+            runStatus.className = 'run-status ok';
+            runStatus.textContent = '✓ Published: "' + (run.title || '') + '" (with image)';
+          } else {
+            runStatus.className = 'run-status err';
+            runStatus.textContent = '⚠ Published: "' + (run.title || '') + '" — image failed: '
+              + (run.image_error || 'unknown reason');
+          }
+          setTimeout(function(){ location.reload(); }, 5000);
+          return;
+        }
+        if (run.state === 'error') {
+          stopPoll();
+          runStatus.className = 'run-status err';
+          runStatus.textContent = '✗ ' + (run.error || 'Run failed');
+          runBtn.disabled = false;
+          return;
+        }
+        /* Still working — but if the status stopped updating, the host
+           likely killed the background process. */
+        if (run.age > 300) {
+          stopPoll();
+          runStatus.className = 'run-status err';
+          runStatus.textContent = '⚠ The run stopped reporting — check the posts list and api/logs/auto-post.log.';
+          runBtn.disabled = false;
+          return;
+        }
+        if (run.state === 'starting')     runStatus.innerHTML = loadingHtml('Starting background run');
+        else if (run.state === 'claude')  runStatus.innerHTML = loadingHtml('Phase 1 — Claude is writing the post');
+        else                              runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image');
+      }
+
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         runStatus.className = 'run-status';
         runStatus.innerHTML = loadingHtml('Checking connection');
 
-        var base = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
-
-        /* Preflight (~30 tokens): verifies the deployed file + API key
-           BEFORE paying for a full generation. */
+        /* Preflight (~30 tokens): verifies deployed file + API key before
+           any generation is paid for. */
         fetchJSON(base + '&phase=test')
           .then(function(t){
             if (!t.ok) throw new Error(t.error || 'Connection test failed');
             if (!t.v)  throw new Error('Server is running an outdated api/auto-post.php — re-upload it, then retry.');
-            runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
-            return fetchJSON(base + '&phase=1');
+            runStatus.innerHTML = loadingHtml('Starting background run');
+            return fetchJSON(base + '&phase=start');
           })
-          .then(function(d1){
-            if (!d1.ok) throw new Error(d1.error || 'Phase 1 failed');
-
-            runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image with gpt-image-2');
-            var p2url = base + '&phase=2&post_id=' + d1.post_id
-              + '&image_prompt=' + encodeURIComponent(d1.image_prompt || '');
-
-            return fetchJSON(p2url)
-              .then(function(d2){
-                if (d2.image) {
-                  runStatus.className = 'run-status ok';
-                  runStatus.textContent = '✓ Published: "' + d1.title + '" (with image)';
-                } else {
-                  runStatus.className = 'run-status err';
-                  runStatus.textContent = '⚠ Published: "' + d1.title + '" — image failed: '
-                    + (d2.image_error || 'unknown reason');
-                }
-                setTimeout(function(){ location.reload(); }, 6000);
-              })
-              .catch(function(err){
-                /* Post exists; the image request dropped but may still finish server-side */
+          .then(function(s){
+            if (!s.ok) throw new Error(s.error || 'Could not start the run');
+            var polls = 0;
+            pollTimer = setInterval(function(){
+              if (++polls > 160) { // ~8 minutes
+                stopPoll();
                 runStatus.className = 'run-status err';
-                runStatus.textContent = '⚠ Published: "' + d1.title + '" — image request dropped; it may still finish in the background.';
-                console.error('Phase 2 error:', err.message);
-                setTimeout(function(){ location.reload(); }, 8000);
-              });
+                runStatus.textContent = '⚠ Still running after 8 minutes — check the posts list and api/logs/auto-post.log.';
+                runBtn.disabled = false;
+                return;
+              }
+              fetchJSON(base + '&phase=status')
+                .then(function(d){ if (d.ok) showRunState(d.run); })
+                .catch(function(){ /* transient poll failure — keep polling */ });
+            }, 3000);
           })
           .catch(function(err){
-            var msg = (err && err.message) ? err.message : 'Request failed';
             runStatus.className = 'run-status err';
-            if (msg === 'Failed to fetch' || msg.indexOf('non-JSON') !== -1) {
-              /* Connection dropped mid-run. The server finishes and publishes
-                 anyway (ignore_user_abort) — reload to see the result. */
-              runStatus.textContent = '⚠ Connection dropped — the post is likely still publishing in the background. Reloading in 20s to check…';
-              setTimeout(function(){ location.reload(); }, 20000);
-            } else {
-              runStatus.textContent = '✗ ' + msg;
-              runBtn.disabled = false;
-            }
+            runStatus.textContent = '✗ ' + ((err && err.message) ? err.message : 'Request failed');
+            runBtn.disabled = false;
           });
       });
     }
