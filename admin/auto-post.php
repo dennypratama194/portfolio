@@ -404,9 +404,12 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     var runStatus = document.getElementById('run-status');
     var TOKEN     = '<?= addslashes($token) ?>';
 
-    /* Fetch wrapper: returns parsed JSON or throws with the raw body as the message */
+    /* Fetch wrapper: returns parsed JSON or throws with the raw body as the message.
+       Cache-buster + no-store: the run URL is identical every click, so any cache
+       layer (browser/Cloudflare) could replay a stale result instead of running. */
     function fetchJSON(url) {
-      return fetch(url).then(function(r) {
+      url += (url.indexOf('?') === -1 ? '?' : '&') + '_=' + Date.now();
+      return fetch(url, { cache: 'no-store' }).then(function(r) {
         return r.text().then(function(txt) {
           try {
             var d = JSON.parse(txt);

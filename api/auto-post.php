@@ -1,37 +1,57 @@
 <?php
+/* ════════════════════════════════════════════════════════════════
+   Auto-post v2 — AI blog publishing (Claude text + gpt-image-2)
+
+   Entry modes (token-authed):
+     ?token=X                     cron  → phase all (text + image)
+     ?token=X&phase=1             admin → generate + publish post
+     ?token=X&phase=2&post_id&image_prompt   admin → featured image
+     ?token=X&phase=regen&post_id admin → rebuild image for a post
+     ?token=X&phase=reformat&post_id  admin → repair code blocks (no save)
+     CLI: php auto-post.php TOKEN → phase all
+
+   v2 design notes (why this file looks the way it does):
+   - Claude is called with stream:true. Bytes arrive continuously, and
+     heartbeat() relays a space to the browser every ~10s — Cloudflare,
+     LiteSpeed and the browser all see a live connection for the whole
+     60–180s generation. Non-streaming was silent until done and got
+     killed by every layer in turn.
+   - Claude returns ===SECTION=== markers, NOT JSON. A 1500-word HTML
+     body inside a JSON string breaks on unescaped quotes / newlines /
+     truncation; plain markers cannot break. Missing ===END=== or a
+     max_tokens stop reason is reported explicitly.
+   - Every response and log line carries AP_VERSION so a stale deploy
+     is detectable at a glance.
+════════════════════════════════════════════════════════════════ */
+
+const AP_VERSION = '2.0';
 set_time_limit(300);
 
 $is_cli = php_sapi_name() === 'cli';
 
 if (!$is_cli) {
-    // Send status + Content-Type now so nginx's fastcgi_read_timeout resets before the
-    // long Claude / OpenAI calls start. JSON.parse() tolerates a leading newline.
-    // Compression must be off or the keepalive bytes sit in the gzip buffer forever.
+    /* Commit status + headers now, before the long API calls start.
+       Compression off — heartbeat bytes must reach the wire, not a gzip buffer. */
     ini_set('zlib.output_compression', '0');
     if (function_exists('apache_setenv')) @apache_setenv('no-gzip', '1');
+    header('Content-Type: application/json');
+    header('Cache-Control: no-store, no-cache, must-revalidate');
     header('X-Accel-Buffering: no');
     http_response_code(200);
-    header('Content-Type: application/json');
-    echo "\n";
+    echo "\n";  // JSON.parse tolerates leading whitespace
     if (ob_get_level()) ob_end_flush();
     flush();
-    ob_start(); // capture stray PHP warnings so they don't corrupt the JSON body
+    ob_start(); // capture stray PHP warnings so they can't corrupt the JSON body
 }
 
-/* ── Load config ── */
+/* ── Config + auth ─────────────────────────────────── */
 $config_file = __DIR__ . '/.auto_post_config.json';
 if (!file_exists($config_file)) {
     respond(503, ['ok' => false, 'error' => 'Auto-post not configured yet.']);
 }
 $config = json_decode(file_get_contents($config_file), true);
 
-/* ── Auth: token from GET or CLI arg ── */
-if ($is_cli) {
-    $token = $argv[1] ?? '';
-} else {
-    $token = $_GET['token'] ?? '';
-}
-
+$token = $is_cli ? ($argv[1] ?? '') : ($_GET['token'] ?? '');
 if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token)) {
     respond(403, ['ok' => false, 'error' => 'Forbidden.']);
 }
@@ -39,11 +59,10 @@ if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token
 $anthropic_key = $config['anthropic_api_key'] ?? '';
 $openai_key    = $config['openai_api_key']    ?? '';
 $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
+$phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
-$phase = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
-
-/* `regen` and `reformat` are manual admin actions on an existing post — they
-   bypass the global enable toggle (it gates cron publishing, not manual repair). */
+/* regen/reformat are manual repairs on existing posts — they bypass the
+   enable toggle (it gates cron publishing, not admin actions). */
 if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
@@ -51,20 +70,18 @@ if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat'], true))
 require __DIR__ . '/db.php';
 require __DIR__ . '/helpers.php';
 
-/* Diagnostics: log fatals; a "Run start" with no later entries means the host
-   hard-killed the process (wall-clock limit) — no PHP error involved. */
+/* A "Run start" line with no follow-up = the host killed the process. */
 register_shutdown_function(function () {
     $e = error_get_last();
     if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
         autoPostLog('FATAL: ' . $e['message'] . ' @ ' . basename($e['file']) . ':' . $e['line']);
     }
 });
-autoPostLog('Run start: phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
+autoPostLog('Run start v' . AP_VERSION . ': phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
 
 /* ════════════════════════════════════════════════════
-   PHASE = REGEN — rebuild the featured image for an
-   existing post using a prompt synthesised from its
-   title + excerpt. Falls through to phase 2 below.
+   PHASE = REGEN — rebuild image for an existing post.
+   Sets the prompt, then falls through to phase 2.
 ════════════════════════════════════════════════════ */
 $is_regen = false;
 if ($phase === 'regen') {
@@ -80,19 +97,15 @@ if ($phase === 'regen') {
     if (!empty($row['excerpt'])) $image_prompt .= '. Context: ' . $row['excerpt'];
 
     $is_regen = true;
-    $phase    = '2';   // fall through to existing image-generation block
+    $phase    = '2';
 }
 
 /* ════════════════════════════════════════════════════
-   PHASE = REFORMAT — Claude rewrites an existing post's
-   body so previously-stripped code sections get wrapped
-   back in <pre><code> with HTML entities. Returns the
-   new body for review; does NOT save to DB.
+   PHASE = REFORMAT — re-wrap stripped code blocks in an
+   existing post body. Returns body for review; no save.
 ════════════════════════════════════════════════════ */
 if ($phase === 'reformat') {
-    if (!$anthropic_key) {
-        respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
-    }
+    if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
 
     $post_id = (int)($_GET['post_id'] ?? 0);
     if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for reformat.']);
@@ -102,126 +115,77 @@ if ($phase === 'reformat') {
     $row = $stmt->fetch();
     if (!$row) respond(404, ['ok' => false, 'error' => 'Post not found.']);
 
-    $old_body  = $row['body'];
-    $old_title = $row['title'];
+    $prompt = <<<PROMPT
+You are repairing a blog post whose code blocks were destroyed when raw HTML was stripped during publishing. Identify everything that should be code (PHP, HTML, CSS, JavaScript, shell, .htaccess, JSON, regex, file paths, variables, function signatures) and re-wrap it as code.
 
-    $reformat_prompt = <<<PROMPT
-You are repairing a blog post whose code blocks were destroyed when raw HTML was stripped during publishing. Your job is to identify everything that should be code (PHP, HTML, CSS, JavaScript, shell/bash, .htaccess directives, JSON, regex, file paths, variables, function signatures, etc.) and re-wrap each one as code.
-
-Post title (for context only): $old_title
+Post title (context only): {$row['title']}
 
 Current broken body HTML:
 ---
-$old_body
+{$row['body']}
 ---
 
-CRITICAL RULES — follow exactly:
-- DO NOT change the prose. Keep every sentence and word identical except for adding code wrapping.
-- DO NOT add new content, headings, summaries, or commentary.
-- DO NOT alter existing <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a>, <br>, <hr> structure where it's already correct.
-- Multi-line code MUST be wrapped in <pre><code>...</code></pre>. Inline code (variables, file paths, short identifiers) in <code>...</code>.
-- Inside ANY <pre> or <code>: HTML-escape special characters — &lt; for <, &gt; for >, &amp; for &.
-- Reinsert real newlines inside <pre><code> blocks where the original code clearly had them (one statement per line, opening braces on their own line where appropriate, etc.).
-- Keep the trailing "<!-- auto-generated -->" marker if it exists in the original body.
-- If a snippet doesn't clearly look like code, leave it as prose. Don't over-wrap.
+CRITICAL RULES:
+- DO NOT change the prose. Every sentence stays identical except for added code wrapping.
+- DO NOT add new content, headings, or commentary.
+- Keep existing <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a>, <br>, <hr> structure where already correct.
+- Multi-line code → <pre><code>...</code></pre>. Inline code → <code>...</code>.
+- Inside any <pre>/<code>: HTML-escape special characters (&lt; &gt; &amp;).
+- Reinsert real newlines inside <pre><code> where the original code clearly had them.
+- Keep the trailing "<!-- auto-generated -->" marker if present.
+- If a snippet doesn't clearly look like code, leave it as prose.
 
-Return ONLY a JSON object with this exact shape:
-{"body": "the corrected complete HTML body"}
+Return EXACTLY this structure — markers on their own lines, nothing outside them, no markdown fences:
 
-Do not include markdown fences, commentary, or any text outside the JSON object.
+===BODY===
+the corrected complete HTML body
+===END===
 PROMPT;
 
-    $ch = curl_init('https://api.anthropic.com/v1/messages');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode([
-            'model'      => $model,
-            'max_tokens' => 8192,
-            'messages'   => [['role' => 'user', 'content' => $reformat_prompt]],
-        ]),
-        CURLOPT_TIMEOUT          => 180,
-        CURLOPT_CONNECTTIMEOUT   => 10,
-        CURLOPT_NOPROGRESS       => false,
-        CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'x-api-key: ' . $anthropic_key,
-            'anthropic-version: 2023-06-01',
-        ],
-    ]);
-    $reformat_raw = curl_exec($ch);
-    $reformat_err = curl_error($ch);
-    curl_close($ch);
+    $text = claudeCall($prompt, 8192);
+    $sec  = parseSections($text);
 
-    if ($reformat_err) {
-        autoPostLog('Reformat curl error: ' . $reformat_err);
-        respond(502, ['ok' => false, 'error' => 'Claude request failed.']);
-    }
-
-    $reformat_resp = json_decode($reformat_raw, true);
-    $reformat_text = $reformat_resp['content'][0]['text'] ?? '';
-    $reformat_text = preg_replace('/^```(?:json)?\s*/i', '', trim($reformat_text));
-    $reformat_text = preg_replace('/\s*```$/', '', $reformat_text);
-    $reformat_json = json_decode(trim($reformat_text), true);
-
-    if (!$reformat_json || empty($reformat_json['body'])) {
-        autoPostLog('Reformat returned invalid JSON. Raw (first 500 chars): ' . substr($reformat_text, 0, 500));
-        respond(502, ['ok' => false, 'error' => 'Reformat output was not valid JSON.']);
+    if (empty($sec['BODY'])) {
+        autoPostLog('Reformat: no BODY section. Preview: ' . substr($text, 0, 300));
+        respond(502, ['ok' => false, 'error' => 'Reformat output missing body section.']);
     }
 
     $new_body = strip_tags(
-        sanitizeAutoPostCode($reformat_json['body']),
+        sanitizeAutoPostCode($sec['BODY']),
         '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>'
     );
-
-    // Preserve the auto-generated marker if it was in the original
-    if (strpos($old_body, '<!-- auto-generated -->') !== false
+    if (strpos($row['body'], '<!-- auto-generated -->') !== false
         && strpos($new_body, '<!-- auto-generated -->') === false) {
         $new_body .= "\n<!-- auto-generated -->";
     }
 
-    /* Intentionally NOT saving to DB. The editor receives the new body, the user
-       reviews it in Quill, and saves via the existing form submit. */
-    respond(200, [
-        'ok'    => true,
-        'phase' => 'reformat',
-        'body'  => $new_body,
-    ]);
+    /* Not saved — the editor loads it into Quill for review. */
+    respond(200, ['ok' => true, 'phase' => 'reformat', 'body' => $new_body]);
 }
 
 /* ════════════════════════════════════════════════════
-   PHASE 1 — Claude generates the post content
+   PHASE 1 — Claude writes and publishes the post
 ════════════════════════════════════════════════════ */
 if ($phase === '1' || $phase === 'all') {
+    if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
 
-    if (!$anthropic_key) {
-        respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
-    }
-
-    /* ── Memory: last 20 published posts — used for two things:
-       1. Avoid repeating topics (title overlap check)
-       2. Build an internal-link list so Claude can reference existing posts ── */
-    $recent_stmt = $pdo->query(
+    /* Last 20 published posts: dedup source + internal-link list */
+    $recent_posts = $pdo->query(
         "SELECT title, slug, category FROM posts
          WHERE is_published = 1
          ORDER BY COALESCE(published_at, scheduled_at) DESC
          LIMIT 20"
-    );
-    $recent_posts = $recent_stmt->fetchAll();
+    )->fetchAll();
 
-    /* ── Hard category rotation: pick whichever of uiux/development/ai is
-       least represented in the last 9 posts. Guarantees development and
-       AI posts cycle in instead of UI/UX dominating every run. ── */
+    /* Hard category rotation: least represented of the last 9 wins */
     $cat_counts = ['uiux' => 0, 'development' => 0, 'ai' => 0];
     foreach (array_slice($recent_posts, 0, 9) as $r) {
         if (isset($cat_counts[$r['category']])) $cat_counts[$r['category']]++;
     }
-    asort($cat_counts); // ascending — least-published first
+    asort($cat_counts);
     $required_category = array_key_first($cat_counts);
 
-    /* ── Topic seeds per category. Tied to the actual stack on this site
-       (PHP/MySQL/vanilla JS/GSAP/cPanel) so dev posts read native, not generic. ── */
+    /* Topic seeds tied to this site's actual stack */
     $topic_seeds = [
         'uiux' => [
             'empty states and zero-data screens',
@@ -270,9 +234,9 @@ if ($phase === '1' || $phase === 'all') {
             'evaluating AI outputs: when to trust, when to verify',
         ],
     ];
-    $seed_list = "- " . implode("\n- ", $topic_seeds[$required_category]);
+    $seed_list = '- ' . implode("\n- ", $topic_seeds[$required_category]);
 
-    /* ── Format / angle cycle (day-of-year keeps it deterministic per run) ── */
+    /* Deterministic per-day format rotation */
     $angles = [
         'a practical tutorial with concrete step-by-step examples',
         'an opinion piece backed by real evidence and lived experience',
@@ -282,11 +246,9 @@ if ($phase === '1' || $phase === 'all') {
     ];
     $angle = $angles[(int)date('z') % count($angles)];
 
-    /* ── Build the "avoid repeating" list and the internal-link reference list ── */
-    $recent_list  = '';
-    $internal_links = '';
+    $recent_list = $internal_links = '';
     foreach ($recent_posts as $r) {
-        $recent_list .= '- "' . $r['title'] . '" [' . ($r['category'] ?: '?') . "]\n";
+        $recent_list    .= '- "' . $r['title'] . '" [' . ($r['category'] ?: '?') . "]\n";
         $internal_links .= '- "' . $r['title'] . '" → https://dennypratama.com/blog/' . rawurlencode($r['slug']) . "\n";
     }
     if ($recent_list === '') {
@@ -294,167 +256,114 @@ if ($phase === '1' || $phase === 'all') {
         $internal_links = '(none yet)';
     }
 
-    /* ── Generate with one retry if the result word-overlaps a recent title ── */
+    /* Generate, retrying once if the title overlaps a recent post */
     $extra_constraint = '';
-    $post_data = null;
-    $candidate = null;
+    $sections = null;
 
     for ($attempt = 1; $attempt <= 2; $attempt++) {
         $prompt = <<<PROMPT
-You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write with genuine first-hand expertise: you have hit real bugs, made real tradeoffs, and have opinions formed from actual project work.
+You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write with genuine first-hand expertise: real bugs, real tradeoffs, opinions formed from actual project work.
 
 REQUIRED CATEGORY for this post: $required_category
 Format / angle for this post: $angle
 
-Topic seed list — pick ONE (or invent something equally specific within the same category). Avoid the most obvious/generic choice:
+Topic seed list — pick ONE (or invent something equally specific in the same category). Avoid the most obvious/generic choice:
 $seed_list
 
 Posts already published — do NOT repeat, rehash, or write a near-variant of any of these:
 $recent_list
 $extra_constraint
-
 WRITING REQUIREMENTS:
 - Minimum 1200 words. Aim for 1400–1600.
-- Write in first person where natural: "In my experience...", "I ran into this on a recent project...", "The mistake I kept making was..."
-- Be specific: name real tools, real error messages, real tradeoffs. Avoid vague generalisations.
+- First person where natural: "In my experience...", "I ran into this on a recent project..."
+- Be specific: real tools, real error messages, real tradeoffs. No vague generalisations.
 - Structure: opening hook → problem framing → practical breakdown (h2/h3 sections) → concrete takeaways → closing paragraph.
-- Where genuinely relevant, link to 1–2 existing posts from the list below using <a href="URL">anchor text</a>. Only link if the topic naturally connects — do not force it.
+- Where genuinely relevant, link to 1–2 existing posts using <a href="URL">anchor text</a>. Only if the topic naturally connects.
 
 Existing posts available for internal linking:
 $internal_links
 
-Return ONLY a valid JSON object with these exact fields:
-{
-  "title": "The post title (specific and engaging — not generic)",
-  "slug": "url-friendly-slug-from-title",
-  "excerpt": "A compelling 2-sentence summary for the blog listing page (under 160 chars total).",
-  "category": "$required_category",
-  "image_prompt": "A concise image-generation prompt for a clean, modern, minimal blog header. No text, no people, abstract or conceptual.",
-  "faq": [
-    {"q": "Question one readers commonly ask about this topic?", "a": "Direct, complete answer in 2–3 sentences."},
-    {"q": "Question two?", "a": "Answer."},
-    {"q": "Question three?", "a": "Answer."}
-  ],
-  "body": "Full blog post in HTML. Use ONLY: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a href=\"...\">, <pre>, <code>, <hr>. End the body with an <h2>Frequently Asked Questions</h2> section that contains the same 3 Q&As from the faq field, each as <h3>question</h3><p>answer</p>. Multi-line code → <pre><code>...</code></pre>. Inline code → <code>...</code>. Inside <pre>/<code>: HTML-escape all special chars (&lt; &gt; &amp;). No raw angle brackets inside code. No inline styles."
-}
+OUTPUT FORMAT — return EXACTLY this structure. Each ===MARKER=== on its own line. No markdown fences, no commentary outside the markers:
 
-Do not include markdown fences, commentary, or any text outside the JSON object.
+===TITLE===
+The post title (specific and engaging — not generic)
+===SLUG===
+url-friendly-slug-from-title
+===EXCERPT===
+A compelling 2-sentence summary for the blog listing page, under 160 characters total.
+===IMAGE_PROMPT===
+A concise image-generation prompt for a clean, modern, minimal blog header. No text, no people, abstract or conceptual.
+===FAQ===
+Q: Question one readers commonly ask about this topic?
+A: Direct, complete answer in 2–3 sentences.
+Q: Question two?
+A: Answer.
+Q: Question three?
+A: Answer.
+===BODY===
+Full blog post in HTML. Use ONLY: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <a href="...">, <pre>, <code>, <hr>. End the body with an <h2>Frequently Asked Questions</h2> section repeating the same 3 Q&As, each as <h3>question</h3><p>answer</p>. Multi-line code → <pre><code>...</code></pre>. Inline code → <code>...</code>. Inside <pre>/<code>: HTML-escape special chars (&lt; &gt; &amp;). No inline styles.
+===END===
 PROMPT;
 
-        $ch = curl_init('https://api.anthropic.com/v1/messages');
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode([
-                'model'      => $model,
-                /* 1400–1600 words of HTML + FAQ overruns 4000 tokens — the old cap
-                   truncated the JSON mid-body and json_decode() failed every run. */
-                'max_tokens' => 8192,
-                'messages'   => [['role' => 'user', 'content' => $prompt]],
-            ]),
-            /* Non-streaming: no bytes arrive until the full post is generated.
-               1200–1600 words ≈ 40–70s on Haiku, 90s+ on Sonnet — 60s was too tight. */
-            CURLOPT_TIMEOUT          => 180,
-            CURLOPT_CONNECTTIMEOUT   => 10,
-            CURLOPT_NOPROGRESS       => false,
-            CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
-            CURLOPT_HTTPHEADER     => [
-                'Content-Type: application/json',
-                'x-api-key: ' . $anthropic_key,
-                'anthropic-version: 2023-06-01',
-            ],
-        ]);
-        $claude_raw  = curl_exec($ch);
-        $curl_err    = curl_error($ch);
-        $claude_time = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
-        $claude_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $text = claudeCall($prompt, 8192);
 
-        autoPostLog(sprintf('Claude call finished: HTTP %d in %.1fs%s',
-            $claude_code, $claude_time, $curl_err ? ' — ' . $curl_err : ''));
-
-        if ($curl_err) {
-            respond(502, ['ok' => false, 'error' => 'Claude curl error: ' . $curl_err]);
+        if (strpos($text, '===END===') === false) {
+            autoPostLog('Phase 1: output incomplete (no END marker). Tail: ' . substr($text, -300));
+            respond(502, ['ok' => false, 'error' => 'Claude output was cut off before finishing — try again.']);
         }
 
-        $claude_resp = json_decode($claude_raw, true);
-
-        /* Surface API-level errors (auth, rate limit, model not found, etc.) */
-        if (isset($claude_resp['error'])) {
-            $api_err = ($claude_resp['error']['type'] ?? 'error') . ': ' . ($claude_resp['error']['message'] ?? 'unknown');
-            autoPostLog('Claude API error: ' . $api_err);
-            respond(502, ['ok' => false, 'error' => 'Claude API — ' . $api_err]);
+        $sec = parseSections($text);
+        if (empty($sec['TITLE']) || empty($sec['BODY'])) {
+            autoPostLog('Phase 1: missing sections. Preview: ' . substr($text, 0, 300));
+            respond(502, ['ok' => false, 'error' => 'Claude output missing required sections — try again.']);
         }
 
-        if (($claude_resp['stop_reason'] ?? '') === 'max_tokens') {
-            autoPostLog('Claude output truncated at max_tokens cap.');
-            respond(502, ['ok' => false, 'error' => 'Claude output was truncated (hit max_tokens) — the post is too long for the current cap.']);
-        }
-
-        $raw_content = $claude_resp['content'][0]['text'] ?? '';
-        $raw_content = preg_replace('/^```(?:json)?\s*/i', '', trim($raw_content));
-        $raw_content = preg_replace('/\s*```$/', '', $raw_content);
-        $candidate   = json_decode(trim($raw_content), true);
-
-        if (!$candidate || empty($candidate['title']) || empty($candidate['body'])) {
-            $preview = substr($raw_content ?: json_encode($claude_resp), 0, 300);
-            autoPostLog('Claude returned invalid content. Raw (first 300 chars): ' . $preview);
-            respond(502, ['ok' => false, 'error' => 'Claude returned invalid JSON. Preview: ' . $preview]);
-        }
-
-        /* Jaccard word overlap vs every recent title — ≥0.5 means "same topic". */
+        /* Jaccard word overlap vs recent titles — ≥0.5 means "same topic" */
         $clash = null;
         foreach ($recent_posts as $r) {
-            if (titleSimilarity($candidate['title'], $r['title']) >= 0.5) {
-                $clash = $r['title'];
-                break;
-            }
+            if (titleSimilarity($sec['TITLE'], $r['title']) >= 0.5) { $clash = $r['title']; break; }
         }
-        if (!$clash) { $post_data = $candidate; break; }
+        if (!$clash) { $sections = $sec; break; }
 
-        autoPostLog('Attempt ' . $attempt . ' too similar to "' . $clash . '" (proposed: "' . $candidate['title'] . '") — retrying.');
-        $extra_constraint = "\nThe previous attempt produced \"" . $candidate['title'] . "\" which overlaps too much with the existing post \"" . $clash . "\". You MUST pick a COMPLETELY DIFFERENT topic this time.\n";
+        autoPostLog('Attempt ' . $attempt . ' too similar to "' . $clash . '" (proposed: "' . $sec['TITLE'] . '") — retrying.');
+        $extra_constraint = "\nThe previous attempt produced \"{$sec['TITLE']}\" which overlaps the existing post \"$clash\". Pick a COMPLETELY DIFFERENT topic this time.\n";
+        $sections = $sec; // ship the last candidate if both attempts clash
     }
 
-    /* If both attempts clashed, ship the last candidate rather than failing the cron run */
-    if (!$post_data) $post_data = $candidate;
+    /* Sanitize + build post fields */
+    $title   = trim(strip_tags($sections['TITLE']));
+    $excerpt = trim(strip_tags($sections['EXCERPT'] ?? ''));
+    $allowed = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>';
 
-    /* Sanitize and build slug — force the rotated category server-side */
-    $title    = trim(strip_tags($post_data['title']));
-    $excerpt  = trim(strip_tags($post_data['excerpt']));
-    $category = $required_category;
-    $allowed  = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>';
-    /* Force code-block contents to be entity-encoded BEFORE strip_tags runs — otherwise
-       raw HTML examples inside <pre>/<code> get treated as tags and stripped, leaving
-       the code mashed together as plain inline text (the bug we just hit on the blog). */
-    /* Embed FAQ as a JSON comment so post.php can extract it for FAQPage schema */
-    $faq_json = '';
-    if (!empty($post_data['faq']) && is_array($post_data['faq'])) {
-        $faq_json = "\n<!-- faq:" . json_encode($post_data['faq'], JSON_UNESCAPED_UNICODE) . " -->";
-    }
-    $body = strip_tags(sanitizeAutoPostCode($post_data['body']), $allowed) . "\n<!-- auto-generated -->" . $faq_json;
+    $faq      = parseFaq($sections['FAQ'] ?? '');
+    $faq_json = $faq ? "\n<!-- faq:" . json_encode($faq, JSON_UNESCAPED_UNICODE) . ' -->' : '';
 
-    $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($post_data['slug'] ?? $title)), '-');
-    $slug = $slug_base; $attempt = 1;
-    while (true) {
+    /* sanitizeAutoPostCode must run BEFORE strip_tags so raw HTML examples
+       inside <pre>/<code> get entity-encoded instead of stripped. */
+    $body = strip_tags(sanitizeAutoPostCode($sections['BODY']), $allowed)
+          . "\n<!-- auto-generated -->" . $faq_json;
+
+    $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($sections['SLUG'] ?? $title)), '-');
+    $slug = $slug_base;
+    for ($n = 2; ; $n++) {
         $chk = $pdo->prepare('SELECT id FROM posts WHERE slug = ?');
         $chk->execute([$slug]);
         if (!$chk->fetch()) break;
-        $slug = $slug_base . '-' . (++$attempt);
+        $slug = $slug_base . '-' . $n;
     }
 
-    /* Save post (no image yet) */
     $pdo->prepare(
         'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at)
          VALUES (?, ?, ?, ?, ?, ?, 1, NOW())'
-    )->execute([$title, $slug, $excerpt, $body, '', $category]);
+    )->execute([$title, $slug, $excerpt, $body, '', $required_category]);
 
     $post_id      = (int)$pdo->lastInsertId();
-    $image_prompt = $post_data['image_prompt'] ?? '';
+    $image_prompt = !empty($sections['IMAGE_PROMPT'])
+        ? $sections['IMAGE_PROMPT']
+        : 'Clean, modern, minimal blog header image, abstract and conceptual, no text, no people. Topic: ' . $title;
     autoPostLog('Post created: id=' . $post_id . ' "' . $title . '"');
 
     if ($phase === '1') {
-        /* Browser mode: return phase 1 result so JS can call phase 2 */
         respond(200, [
             'ok'           => true,
             'phase'        => 1,
@@ -464,21 +373,19 @@ PROMPT;
             'image_prompt' => $image_prompt,
         ]);
     }
-    /* CLI / 'all' mode: fall through to phase 2 */
+    /* phase=all falls through to the image */
 }
 
 /* ════════════════════════════════════════════════════
-   PHASE 2 — gpt-image-2 generates the featured image
+   PHASE 2 — gpt-image-2 featured image
 ════════════════════════════════════════════════════ */
 if ($phase === '2' || $phase === 'all') {
 
     if ($phase === '2' && !$is_regen) {
-        /* Browser mode: read post_id and image_prompt from GET */
-        $post_id      = (int)($_GET['post_id']      ?? 0);
-        $image_prompt = trim($_GET['image_prompt']  ?? '');
+        $post_id      = (int)($_GET['post_id'] ?? 0);
+        $image_prompt = trim($_GET['image_prompt'] ?? '');
         if (!$post_id) respond(400, ['ok' => false, 'error' => 'post_id required for phase 2.']);
     }
-    /* CLI/all and regen: $post_id and $image_prompt already set above */
 
     $featured_image = '';
     $image_error    = '';
@@ -487,17 +394,15 @@ if ($phase === '2' || $phase === 'all') {
         $image_error = 'OpenAI API key not configured.';
         autoPostLog('Phase 2 skipped: ' . $image_error);
     } elseif (!$image_prompt) {
-        $image_error = 'No image prompt was produced in phase 1.';
+        $image_error = 'No image prompt available.';
         autoPostLog('Phase 2 skipped: ' . $image_error);
     } else {
-        /* gpt-image-2 (DALL·E was retired 2026-05-12). The API returns the image as
-           base64 in data[0].b64_json — there is no URL to download. Note: response_format
-           and style are no longer accepted; quality is low|medium|high|auto. */
+        /* gpt-image-2 returns base64 in data[0].b64_json — no URL variant. */
         $ch = curl_init('https://api.openai.com/v1/images/generations');
         curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode([
+            CURLOPT_RETURNTRANSFER   => true,
+            CURLOPT_POST             => true,
+            CURLOPT_POSTFIELDS       => json_encode([
                 'model'   => 'gpt-image-2',
                 'prompt'  => $image_prompt,
                 'n'       => 1,
@@ -506,9 +411,10 @@ if ($phase === '2' || $phase === 'all') {
             ]),
             CURLOPT_TIMEOUT          => 120,
             CURLOPT_CONNECTTIMEOUT   => 10,
+            /* non-streaming call: heartbeat via progress callback */
             CURLOPT_NOPROGRESS       => false,
-            CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
-            CURLOPT_HTTPHEADER     => [
+            CURLOPT_PROGRESSFUNCTION => function () { heartbeat(); return 0; },
+            CURLOPT_HTTPHEADER       => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $openai_key,
             ],
@@ -526,12 +432,10 @@ if ($phase === '2' || $phase === 'all') {
             $b64      = $img_json['data'][0]['b64_json'] ?? '';
 
             if (!$b64) {
-                $api_msg     = $img_json['error']['message'] ?? 'unknown error';
-                $image_error = 'Image API error (HTTP ' . $img_code . '): ' . $api_msg;
+                $image_error = 'Image API error (HTTP ' . $img_code . '): ' . ($img_json['error']['message'] ?? 'unknown error');
                 autoPostLog('Image API HTTP ' . $img_code . ' — ' . substr((string)$img_raw, 0, 800));
             } else {
                 $image_data = base64_decode($b64);
-
                 if (!$image_data) {
                     $image_error = 'Image API returned data that could not be decoded.';
                     autoPostLog('base64_decode failed on gpt-image-2 response.');
@@ -540,30 +444,29 @@ if ($phase === '2' || $phase === 'all') {
                     if (!is_dir($uploads_dir)) @mkdir($uploads_dir, 0755, true);
                     $base = 'img_' . uniqid('', true);
 
-                    /* Prefer WebP (smaller); fall back to the original JPEG if GD/WebP is unavailable */
+                    /* Prefer WebP; fall back to original PNG if GD/WebP is unavailable */
                     $featured_image = convertToWebp($image_data, $uploads_dir, $base);
-
                     if ($featured_image === null) {
-                        autoPostLog('WebP conversion unavailable — saving original PNG instead.');
-                        $candidate = $base . '.png'; // gpt-image-2 returns PNG bytes
-                        if (@file_put_contents($uploads_dir . $candidate, $image_data) !== false) {
-                            $featured_image = $candidate;
+                        autoPostLog('WebP conversion unavailable — saving original PNG.');
+                        if (@file_put_contents($uploads_dir . $base . '.png', $image_data) !== false) {
+                            $featured_image = $base . '.png';
                         }
                     }
 
                     if ($featured_image) {
                         $pdo->prepare('UPDATE posts SET featured_image = ? WHERE id = ?')
                             ->execute([$featured_image, $post_id]);
+                        autoPostLog('Image saved: ' . $featured_image . ' → post ' . $post_id);
                     } else {
                         $image_error = 'Could not write the image to admin/uploads/ (check permissions).';
-                        autoPostLog('Failed to write image (webp + jpeg fallback both failed) to ' . $uploads_dir);
+                        autoPostLog('Failed to write image to ' . $uploads_dir);
                     }
                 }
             }
         }
     }
 
-    /* Update last_run (skip for manual regen — that's not a cron tick) */
+    /* Update last_run (manual regen is not a cron tick) */
     if (!$is_regen) {
         $config['last_run'] = date('Y-m-d H:i:s');
         file_put_contents($config_file, json_encode($config, JSON_PRETTY_PRINT));
@@ -577,88 +480,171 @@ if ($phase === '2' || $phase === 'all') {
     ]);
 }
 
-/* ── Helpers ── */
+respond(400, ['ok' => false, 'error' => 'Unknown phase: ' . $phase]);
 
-/* cURL progress callback: emits a space every ~15s during long API calls so the
-   hosting gateway doesn't kill the idle connection (it drops anything silent for
-   ~60-120s). JSON.parse() tolerates leading whitespace. No-op on CLI. */
-function keepaliveTick($ch, $dl_total, $dl_now, $ul_total, $ul_now): int {
-    global $is_cli;
-    static $last = 0;
-    if (!$is_cli) {
-        $now = time();
-        if ($now - $last >= 15) {
-            $last = $now;
-            echo ' ';
-            if (ob_get_level()) ob_flush();
-            flush();
-        }
-    }
-    return 0; // non-zero would abort the transfer
-}
+/* ════════════════════════════════════════════════════
+   Helpers
+════════════════════════════════════════════════════ */
 
 function respond(int $code, array $data): void {
     global $is_cli;
+    $data['v'] = AP_VERSION;
     if (!$is_cli) {
-        $stray = ob_get_clean(); // discard any PHP warnings so JSON isn't corrupted
-        if ($stray) {
-            $data['_php_warnings'] = substr($stray, 0, 500); // surface for debugging
-        }
+        $stray = ob_get_clean();
+        if ($stray) $data['_php_warnings'] = substr($stray, 0, 500);
         if (!headers_sent()) http_response_code($code);
     }
     echo json_encode($data) . "\n";
     exit;
 }
 
-/* Normalize Claude's code blocks: ensure every <pre> contains a single <code> with
-   HTML-entity-escaped contents, and any standalone <code> gets the same treatment.
-   Idempotent — runs whether Claude already used entities or wrote raw HTML. Must be
-   called BEFORE strip_tags so raw `<...>` examples inside code don't get stripped. */
+/* Emits a space every ~10s so every proxy layer sees a live connection.
+   Called from streaming/progress callbacks during long API calls. */
+function heartbeat(): void {
+    global $is_cli;
+    static $last = 0;
+    if ($is_cli || time() - $last < 10) return;
+    $last = time();
+    echo ' ';
+    if (ob_get_level()) ob_flush();
+    flush();
+}
+
+/* Streaming call to the Claude API. Returns the full completion text;
+   responds with a clear error (and exits) on any failure, including
+   truncation at max_tokens. */
+function claudeCall(string $prompt, int $max_tokens): string {
+    global $anthropic_key, $model;
+
+    $text = ''; $buf = ''; $stop = ''; $raw = ''; $api_err = '';
+    $t0 = microtime(true);
+
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode([
+            'model'      => $model,
+            'max_tokens' => $max_tokens,
+            'stream'     => true,
+            'messages'   => [['role' => 'user', 'content' => $prompt]],
+        ]),
+        CURLOPT_TIMEOUT        => 240,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'x-api-key: ' . $anthropic_key,
+            'anthropic-version: 2023-06-01',
+        ],
+        CURLOPT_WRITEFUNCTION  => function ($ch, $chunk) use (&$text, &$buf, &$stop, &$raw, &$api_err) {
+            if (strlen($raw) < 2000) $raw .= $chunk; // keep head for error reporting
+            $buf .= $chunk;
+            while (($nl = strpos($buf, "\n")) !== false) {
+                $line = trim(substr($buf, 0, $nl));
+                $buf  = substr($buf, $nl + 1);
+                if (strpos($line, 'data:') !== 0) continue;
+                $ev = json_decode(trim(substr($line, 5)), true);
+                if (!is_array($ev)) continue;
+                switch ($ev['type'] ?? '') {
+                    case 'content_block_delta':
+                        $text .= $ev['delta']['text'] ?? '';
+                        break;
+                    case 'message_delta':
+                        $stop = $ev['delta']['stop_reason'] ?? $stop;
+                        break;
+                    case 'error':
+                        $api_err = ($ev['error']['type'] ?? 'error') . ': ' . ($ev['error']['message'] ?? '');
+                        break;
+                }
+            }
+            heartbeat();
+            return strlen($chunk);
+        },
+    ]);
+    curl_exec($ch);
+    $err  = curl_error($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    autoPostLog(sprintf('Claude call: HTTP %d, %.1fs, %d chars, stop=%s%s',
+        $code, microtime(true) - $t0, strlen($text), $stop ?: '-', $err ? ' — curl: ' . $err : ''));
+
+    if ($err) {
+        respond(502, ['ok' => false, 'error' => 'Claude connection failed: ' . $err]);
+    }
+    if ($code !== 200 || $api_err) {
+        if (!$api_err) {
+            $j = json_decode($raw, true);
+            $api_err = isset($j['error'])
+                ? (($j['error']['type'] ?? 'error') . ': ' . ($j['error']['message'] ?? 'unknown'))
+                : ('HTTP ' . $code . ' — ' . substr($raw, 0, 200));
+        }
+        respond(502, ['ok' => false, 'error' => 'Claude API — ' . $api_err]);
+    }
+    if ($stop === 'max_tokens') {
+        respond(502, ['ok' => false, 'error' => 'Claude output was truncated (max_tokens) — try again.']);
+    }
+    return $text;
+}
+
+/* Splits "===NAME===\ncontent" marker output into [NAME => content]. */
+function parseSections(string $text): array {
+    $out = [];
+    if (preg_match_all('/^===([A-Z_]+)===\s*$(.*?)(?=^===[A-Z_]+===\s*$|\z)/ms', $text, $m, PREG_SET_ORDER)) {
+        foreach ($m as $s) {
+            if ($s[1] !== 'END') $out[$s[1]] = trim($s[2]);
+        }
+    }
+    return $out;
+}
+
+/* "Q: ...\nA: ..." lines → [['q' => ..., 'a' => ...], ...] (multi-line answers ok) */
+function parseFaq(string $block): array {
+    $faq = []; $q = null; $a = null;
+    foreach (preg_split('/\r?\n/', $block) as $line) {
+        $line = trim($line);
+        if (stripos($line, 'Q:') === 0) {
+            if ($q !== null && $a !== null) $faq[] = ['q' => $q, 'a' => trim($a)];
+            $q = trim(substr($line, 2)); $a = null;
+        } elseif (stripos($line, 'A:') === 0) {
+            $a = trim(substr($line, 2));
+        } elseif ($a !== null && $line !== '') {
+            $a .= ' ' . $line;
+        }
+    }
+    if ($q !== null && $a !== null) $faq[] = ['q' => $q, 'a' => trim($a)];
+    return $faq;
+}
+
+/* Normalize code blocks: every <pre> gets a single <code> with entity-encoded
+   contents; standalone <code> same. Idempotent. Must run BEFORE strip_tags. */
 function sanitizeAutoPostCode(string $html): string {
-    // <pre>...</pre>: normalize inner to a single <code> with safely-encoded content
-    $html = preg_replace_callback(
-        '#<pre(?:\s[^>]*)?>(.*?)</pre>#is',
-        function ($m) {
-            $inner = preg_replace('#</?code(?:\s[^>]*)?>#i', '', $m[1]);
-            $inner = htmlspecialchars(
-                html_entity_decode($inner, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-                ENT_QUOTES | ENT_HTML5, 'UTF-8'
-            );
-            return '<pre><code>' . $inner . '</code></pre>';
-        },
-        $html
-    );
-    // Remaining <code>...</code> (inline) — same encode pass; idempotent on already-safe text
-    $html = preg_replace_callback(
-        '#<code(?:\s[^>]*)?>(.*?)</code>#is',
-        function ($m) {
-            $inner = htmlspecialchars(
-                html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-                ENT_QUOTES | ENT_HTML5, 'UTF-8'
-            );
-            return '<code>' . $inner . '</code>';
-        },
-        $html
-    );
+    $html = preg_replace_callback('#<pre(?:\s[^>]*)?>(.*?)</pre>#is', function ($m) {
+        $inner = preg_replace('#</?code(?:\s[^>]*)?>#i', '', $m[1]);
+        $inner = htmlspecialchars(
+            html_entity_decode($inner, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ENT_QUOTES | ENT_HTML5, 'UTF-8'
+        );
+        return '<pre><code>' . $inner . '</code></pre>';
+    }, $html);
+    $html = preg_replace_callback('#<code(?:\s[^>]*)?>(.*?)</code>#is', function ($m) {
+        $inner = htmlspecialchars(
+            html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ENT_QUOTES | ENT_HTML5, 'UTF-8'
+        );
+        return '<code>' . $inner . '</code>';
+    }, $html);
     return $html;
 }
 
-/* Jaccard word overlap on two titles, ignoring filler words. Used to detect
-   "same topic, slightly different wording" duplicates before publishing. */
+/* Jaccard word overlap between titles, ignoring filler words. */
 function titleSimilarity(string $a, string $b): float {
     static $stop = ['the','a','an','of','for','to','in','on','and','or','your','you','i','is',
                     'are','that','this','with','how','why','what','from','at','by','as','it',
                     'its','be','will','can','if','should','do','does','about'];
-    $wa = array_values(array_unique(array_diff(
-        preg_split('/[^a-z0-9]+/', strtolower($a), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop
-    )));
-    $wb = array_values(array_unique(array_diff(
-        preg_split('/[^a-z0-9]+/', strtolower($b), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop
-    )));
+    $wa = array_unique(array_diff(preg_split('/[^a-z0-9]+/', strtolower($a), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop));
+    $wb = array_unique(array_diff(preg_split('/[^a-z0-9]+/', strtolower($b), -1, PREG_SPLIT_NO_EMPTY) ?: [], $stop));
     if (!$wa || !$wb) return 0;
-    $intersect = array_intersect($wa, $wb);
-    $union     = array_unique(array_merge($wa, $wb));
-    return count($intersect) / count($union);
+    return count(array_intersect($wa, $wb)) / count(array_unique(array_merge($wa, $wb)));
 }
 
 function autoPostLog(string $msg): void {
