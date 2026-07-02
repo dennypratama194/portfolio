@@ -141,7 +141,7 @@
     /* ═══════════════════════════════════════
        NAV
     ═══════════════════════════════════════ */
-    nav {
+    header nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       padding: 28px var(--pad-x);
       display: flex; align-items: center; justify-content: space-between;
@@ -149,7 +149,7 @@
       transition: padding 0.4s cubic-bezier(0.23,1,0.32,1),
                   background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
     }
-    nav.scrolled {
+    header nav.scrolled {
       mix-blend-mode: normal;
       padding: 16px var(--pad-x);
       background: rgba(249,249,249,0.75);
@@ -1407,7 +1407,7 @@
       #cursor-ring, #cursor-dot { display: none; }
       body { cursor: auto; }
 
-      nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
+      header nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
       #hero { padding: 0 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }

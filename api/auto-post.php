@@ -51,6 +51,16 @@ if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat'], true))
 require __DIR__ . '/db.php';
 require __DIR__ . '/helpers.php';
 
+/* Diagnostics: log fatals; a "Run start" with no later entries means the host
+   hard-killed the process (wall-clock limit) — no PHP error involved. */
+register_shutdown_function(function () {
+    $e = error_get_last();
+    if ($e && in_array($e['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        autoPostLog('FATAL: ' . $e['message'] . ' @ ' . basename($e['file']) . ':' . $e['line']);
+    }
+});
+autoPostLog('Run start: phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
+
 /* ════════════════════════════════════════════════════
    PHASE = REGEN — rebuild the featured image for an
    existing post using a prompt synthesised from its
@@ -352,12 +362,16 @@ PROMPT;
                 'anthropic-version: 2023-06-01',
             ],
         ]);
-        $claude_raw = curl_exec($ch);
-        $curl_err   = curl_error($ch);
+        $claude_raw  = curl_exec($ch);
+        $curl_err    = curl_error($ch);
+        $claude_time = curl_getinfo($ch, CURLINFO_TOTAL_TIME);
+        $claude_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        autoPostLog(sprintf('Claude call finished: HTTP %d in %.1fs%s',
+            $claude_code, $claude_time, $curl_err ? ' — ' . $curl_err : ''));
+
         if ($curl_err) {
-            autoPostLog('Claude API curl error: ' . $curl_err);
             respond(502, ['ok' => false, 'error' => 'Claude curl error: ' . $curl_err]);
         }
 
@@ -430,6 +444,7 @@ PROMPT;
 
     $post_id      = (int)$pdo->lastInsertId();
     $image_prompt = $post_data['image_prompt'] ?? '';
+    autoPostLog('Post created: id=' . $post_id . ' "' . $title . '"');
 
     if ($phase === '1') {
         /* Browser mode: return phase 1 result so JS can call phase 2 */
