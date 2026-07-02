@@ -6,6 +6,10 @@ $is_cli = php_sapi_name() === 'cli';
 if (!$is_cli) {
     // Send status + Content-Type now so nginx's fastcgi_read_timeout resets before the
     // long Claude / OpenAI calls start. JSON.parse() tolerates a leading newline.
+    // Compression must be off or the keepalive bytes sit in the gzip buffer forever.
+    ini_set('zlib.output_compression', '0');
+    if (function_exists('apache_setenv')) @apache_setenv('no-gzip', '1');
+    header('X-Accel-Buffering: no');
     http_response_code(200);
     header('Content-Type: application/json');
     echo "\n";
@@ -126,8 +130,10 @@ PROMPT;
             'max_tokens' => 8192,
             'messages'   => [['role' => 'user', 'content' => $reformat_prompt]],
         ]),
-        CURLOPT_TIMEOUT        => 180,
-        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT          => 180,
+        CURLOPT_CONNECTTIMEOUT   => 10,
+        CURLOPT_NOPROGRESS       => false,
+        CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
         CURLOPT_HTTPHEADER     => [
             'Content-Type: application/json',
             'x-api-key: ' . $anthropic_key,
@@ -336,8 +342,10 @@ PROMPT;
             ]),
             /* Non-streaming: no bytes arrive until the full post is generated.
                1200–1600 words ≈ 40–70s on Haiku, 90s+ on Sonnet — 60s was too tight. */
-            CURLOPT_TIMEOUT        => 180,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT          => 180,
+            CURLOPT_CONNECTTIMEOUT   => 10,
+            CURLOPT_NOPROGRESS       => false,
+            CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
                 'x-api-key: ' . $anthropic_key,
@@ -474,7 +482,10 @@ if ($phase === '2' || $phase === 'all') {
                 'size'    => '1536x1024',
                 'quality' => 'medium',
             ]),
-            CURLOPT_TIMEOUT        => 120,
+            CURLOPT_TIMEOUT          => 120,
+            CURLOPT_CONNECTTIMEOUT   => 10,
+            CURLOPT_NOPROGRESS       => false,
+            CURLOPT_PROGRESSFUNCTION => 'keepaliveTick',
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $openai_key,
@@ -545,6 +556,25 @@ if ($phase === '2' || $phase === 'all') {
 }
 
 /* ── Helpers ── */
+
+/* cURL progress callback: emits a space every ~15s during long API calls so the
+   hosting gateway doesn't kill the idle connection (it drops anything silent for
+   ~60-120s). JSON.parse() tolerates leading whitespace. No-op on CLI. */
+function keepaliveTick($ch, $dl_total, $dl_now, $ul_total, $ul_now): int {
+    global $is_cli;
+    static $last = 0;
+    if (!$is_cli) {
+        $now = time();
+        if ($now - $last >= 15) {
+            $last = $now;
+            echo ' ';
+            if (ob_get_level()) ob_flush();
+            flush();
+        }
+    }
+    return 0; // non-zero would abort the transfer
+}
+
 function respond(int $code, array $data): void {
     global $is_cli;
     if (!$is_cli) {
