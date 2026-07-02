@@ -126,7 +126,8 @@ PROMPT;
             'max_tokens' => 8192,
             'messages'   => [['role' => 'user', 'content' => $reformat_prompt]],
         ]),
-        CURLOPT_TIMEOUT        => 90,
+        CURLOPT_TIMEOUT        => 180,
+        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_HTTPHEADER     => [
             'Content-Type: application/json',
             'x-api-key: ' . $anthropic_key,
@@ -333,7 +334,10 @@ PROMPT;
                 'max_tokens' => 4000,
                 'messages'   => [['role' => 'user', 'content' => $prompt]],
             ]),
-            CURLOPT_TIMEOUT        => 60,
+            /* Non-streaming: no bytes arrive until the full post is generated.
+               1200–1600 words ≈ 40–70s on Haiku, 90s+ on Sonnet — 60s was too tight. */
+            CURLOPT_TIMEOUT        => 180,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_HTTPHEADER     => [
                 'Content-Type: application/json',
                 'x-api-key: ' . $anthropic_key,

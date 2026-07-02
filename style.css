@@ -1013,8 +1013,8 @@
       content: ''; width: 28px; height: 1px; background: var(--red);
     }
     .approach-title {
-      font-family: var(--font-sans); font-style: italic;
-      font-size: var(--text-h1); font-weight: 400;
+      font-family: var(--font-sans);
+      font-size: var(--text-h1);
       letter-spacing: -0.04em; line-height: var(--leading-h1);
       color: var(--ink); max-width: 720px;
     }
@@ -2356,6 +2356,7 @@ html.pt-leaving body { pointer-events: none; }
 .work-title,
 .wc-name,
 .manifesto-text,
+.approach-title,
 .stat-num,
 .stat-num .red,
 .cta-bg-type,
