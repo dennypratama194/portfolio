@@ -426,6 +426,9 @@ PROMPT;
         $sections = $sec; // ship the last candidate if both attempts clash
     }
 
+    /* The Claude call took minutes — the DB connection may have timed out */
+    ensureDbAlive();
+
     /* Sanitize + build post fields */
     $title   = trim(strip_tags($sections['TITLE']));
     $excerpt = trim(strip_tags($sections['EXCERPT'] ?? ''));
@@ -489,6 +492,7 @@ if ($phase === '2' || $phase === 'all') {
     $featured_image = '';
     $image_error    = '';
 
+    try { // the post already exists — nothing in the image step may fail the run
     if (!$openai_key) {
         $image_error = 'OpenAI API key not configured.';
         autoPostLog('Phase 2 skipped: ' . $image_error);
@@ -553,6 +557,8 @@ if ($phase === '2' || $phase === 'all') {
                     }
 
                     if ($featured_image) {
+                        /* Image generation waits up to 120s — reconnect if needed */
+                        ensureDbAlive();
                         $pdo->prepare('UPDATE posts SET featured_image = ? WHERE id = ?')
                             ->execute([$featured_image, $post_id]);
                         autoPostLog('Image saved: ' . $featured_image . ' → post ' . $post_id);
@@ -563,6 +569,11 @@ if ($phase === '2' || $phase === 'all') {
                 }
             }
         }
+    }
+    } catch (Throwable $e) {
+        $featured_image = '';
+        $image_error    = 'Image step crashed: ' . $e->getMessage();
+        autoPostLog('Image step crashed: ' . $e->getMessage() . ' @ ' . basename($e->getFile()) . ':' . $e->getLine());
     }
 
     /* Update last_run (manual regen is not a cron tick) */
@@ -760,6 +771,25 @@ function autoPostLog(string $msg): void {
     $dir = __DIR__ . '/logs';
     if (!is_dir($dir)) @mkdir($dir, 0755, true);
     @file_put_contents($dir . '/auto-post.log', '[' . date('c') . '] ' . $msg . "\n", FILE_APPEND | LOCK_EX);
+}
+
+/* Shared-hosting MySQL drops connections that sit idle during the 60–150s
+   AI calls ("server has gone away"). Ping and reconnect before using $pdo
+   again after any long wait. Mirrors the connection built in db.php. */
+function ensureDbAlive(): void {
+    global $pdo;
+    try { $pdo->query('SELECT 1'); return; } catch (Throwable $e) {}
+    autoPostLog('DB connection lost during long API call — reconnecting.');
+    $pdo = new PDO(
+        'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4',
+        DB_USER,
+        DB_PASS,
+        [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ]
+    );
 }
 
 /* Merge (or reset) the background-run status file polled by the admin UI. */

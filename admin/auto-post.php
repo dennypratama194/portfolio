@@ -457,8 +457,8 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             runStatus.textContent = '✓ Published: "' + (run.title || '') + '" (with image)';
           } else {
             runStatus.className = 'run-status err';
-            runStatus.textContent = '⚠ Published: "' + (run.title || '') + '" — image failed: '
-              + (run.image_error || 'unknown reason');
+            runStatus.textContent = '⚠ Published: "' + (run.title || '') + '" — image failed ('
+              + (run.image_error || 'unknown reason') + '). Use the Generate button next to the post to add one.';
           }
           setTimeout(function(){ location.reload(); }, 5000);
           return;
@@ -466,8 +466,16 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         if (run.state === 'error') {
           stopPoll();
           runStatus.className = 'run-status err';
-          runStatus.textContent = '✗ ' + (run.error || 'Run failed');
-          runBtn.disabled = false;
+          if (run.post_id) {
+            /* The post was created before the failure — this is a partial
+               success, not a failed run. The image can be regenerated. */
+            runStatus.textContent = '⚠ Published: "' + (run.title || '') + '" — a later step failed: '
+              + (run.error || 'unknown') + '. Use the Generate button next to the post to add an image.';
+            setTimeout(function(){ location.reload(); }, 7000);
+          } else {
+            runStatus.textContent = '✗ ' + (run.error || 'Run failed');
+            runBtn.disabled = false;
+          }
           return;
         }
         /* Still working — but if the status stopped updating, the host
