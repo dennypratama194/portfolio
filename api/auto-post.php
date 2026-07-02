@@ -347,7 +347,9 @@ PROMPT;
             CURLOPT_POST           => true,
             CURLOPT_POSTFIELDS     => json_encode([
                 'model'      => $model,
-                'max_tokens' => 4000,
+                /* 1400–1600 words of HTML + FAQ overruns 4000 tokens — the old cap
+                   truncated the JSON mid-body and json_decode() failed every run. */
+                'max_tokens' => 8192,
                 'messages'   => [['role' => 'user', 'content' => $prompt]],
             ]),
             /* Non-streaming: no bytes arrive until the full post is generated.
@@ -382,6 +384,11 @@ PROMPT;
             $api_err = ($claude_resp['error']['type'] ?? 'error') . ': ' . ($claude_resp['error']['message'] ?? 'unknown');
             autoPostLog('Claude API error: ' . $api_err);
             respond(502, ['ok' => false, 'error' => 'Claude API — ' . $api_err]);
+        }
+
+        if (($claude_resp['stop_reason'] ?? '') === 'max_tokens') {
+            autoPostLog('Claude output truncated at max_tokens cap.');
+            respond(502, ['ok' => false, 'error' => 'Claude output was truncated (hit max_tokens) — the post is too long for the current cap.']);
         }
 
         $raw_content = $claude_resp['content'][0]['text'] ?? '';
