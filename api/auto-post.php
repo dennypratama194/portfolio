@@ -24,8 +24,12 @@
      is detectable at a glance.
 ════════════════════════════════════════════════════════════════ */
 
-const AP_VERSION = '2.0';
+const AP_VERSION = '2.1';
 set_time_limit(300);
+
+/* If the browser or a proxy drops mid-run, FINISH ANYWAY — the tokens are
+   already paid for. The post publishes server-side and appears on reload. */
+ignore_user_abort(true);
 
 $is_cli = php_sapi_name() === 'cli';
 
@@ -61,9 +65,9 @@ $openai_key    = $config['openai_api_key']    ?? '';
 $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
 $phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
-/* regen/reformat are manual repairs on existing posts — they bypass the
-   enable toggle (it gates cron publishing, not admin actions). */
-if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat'], true)) {
+/* regen/reformat/test are manual admin actions — they bypass the enable
+   toggle (it gates cron publishing, not admin actions). */
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -78,6 +82,38 @@ register_shutdown_function(function () {
     }
 });
 autoPostLog('Run start v' . AP_VERSION . ': phase=' . $phase . ' model=' . $model . ($is_cli ? ' (cli)' : ''));
+
+/* ════════════════════════════════════════════════════
+   PHASE = TEST — near-free pipeline check (~30 tokens).
+   Verifies deployed version, API key, and streaming
+   connectivity WITHOUT paying for a full post.
+════════════════════════════════════════════════════ */
+if ($phase === 'test') {
+    if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
+    $t0  = microtime(true);
+    $out = claudeCall('Reply with exactly: OK', 16);
+    respond(200, [
+        'ok'      => true,
+        'phase'   => 'test',
+        'model'   => $model,
+        'claude'  => trim($out),
+        'seconds' => round(microtime(true) - $t0, 1),
+    ]);
+}
+
+/* Single-flight lock: a second click while a run is still generating would
+   pay for the same post twice. Stale locks (>10 min) are ignored. */
+if ($phase === '1' || $phase === 'all') {
+    $lock_file = __DIR__ . '/logs/run.lock';
+    if (file_exists($lock_file) && time() - filemtime($lock_file) < 600) {
+        respond(429, ['ok' => false, 'error' =>
+            'A run is already in progress (started ' . (time() - filemtime($lock_file)) . 's ago). '
+            . 'It publishes even if this page showed a connection error — check the posts list before retrying.']);
+    }
+    if (!is_dir(__DIR__ . '/logs')) @mkdir(__DIR__ . '/logs', 0755, true);
+    @file_put_contents($lock_file, date('c'));
+    register_shutdown_function(function () use ($lock_file) { @unlink($lock_file); });
+}
 
 /* ════════════════════════════════════════════════════
    PHASE = REGEN — rebuild image for an existing post.
@@ -307,15 +343,19 @@ PROMPT;
 
         $text = claudeCall($prompt, 8192);
 
+        /* Paid output is never lost: keep the raw text so a failed parse can
+           be recovered manually instead of paying for another generation. */
+        @file_put_contents(__DIR__ . '/logs/last-run-raw.txt', $text);
+
         if (strpos($text, '===END===') === false) {
             autoPostLog('Phase 1: output incomplete (no END marker). Tail: ' . substr($text, -300));
-            respond(502, ['ok' => false, 'error' => 'Claude output was cut off before finishing — try again.']);
+            respond(502, ['ok' => false, 'error' => 'Claude output was cut off before finishing. Raw text saved in api/logs/last-run-raw.txt.']);
         }
 
         $sec = parseSections($text);
         if (empty($sec['TITLE']) || empty($sec['BODY'])) {
             autoPostLog('Phase 1: missing sections. Preview: ' . substr($text, 0, 300));
-            respond(502, ['ok' => false, 'error' => 'Claude output missing required sections — try again.']);
+            respond(502, ['ok' => false, 'error' => 'Claude output missing required sections. Raw text saved in api/logs/last-run-raw.txt.']);
         }
 
         /* Jaccard word overlap vs recent titles — ≥0.5 means "same topic" */

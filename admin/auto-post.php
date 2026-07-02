@@ -425,27 +425,27 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         runStatus.className = 'run-status';
-        runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
+        runStatus.innerHTML = loadingHtml('Checking connection');
 
-        /* Phase 1: Claude generates post */
-        fetchJSON('/api/auto-post.php?token=' + encodeURIComponent(TOKEN) + '&phase=1')
+        var base = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
+
+        /* Preflight (~30 tokens): verifies the deployed file + API key
+           BEFORE paying for a full generation. */
+        fetchJSON(base + '&phase=test')
+          .then(function(t){
+            if (!t.ok) throw new Error(t.error || 'Connection test failed');
+            if (!t.v)  throw new Error('Server is running an outdated api/auto-post.php — re-upload it, then retry.');
+            runStatus.innerHTML = loadingHtml('Phase 1 — Generating content with Claude');
+            return fetchJSON(base + '&phase=1');
+          })
           .then(function(d1){
-            if (!d1.ok) {
-              runStatus.className = 'run-status err';
-              runStatus.textContent = '✗ Phase 1 failed: ' + (d1.error || 'Unknown error');
-              runBtn.disabled = false;
-              return;
-            }
+            if (!d1.ok) throw new Error(d1.error || 'Phase 1 failed');
 
             runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image with gpt-image-2');
-
-            /* Phase 2: gpt-image-2 generates image */
-            var p2url = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN)
-              + '&phase=2'
-              + '&post_id=' + d1.post_id
+            var p2url = base + '&phase=2&post_id=' + d1.post_id
               + '&image_prompt=' + encodeURIComponent(d1.image_prompt || '');
 
-            fetchJSON(p2url)
+            return fetchJSON(p2url)
               .then(function(d2){
                 if (d2.image) {
                   runStatus.className = 'run-status ok';
@@ -458,18 +458,25 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
                 setTimeout(function(){ location.reload(); }, 6000);
               })
               .catch(function(err){
-                /* Phase 2 failed but post was already created in phase 1 */
+                /* Post exists; the image request dropped but may still finish server-side */
                 runStatus.className = 'run-status err';
-                runStatus.textContent = '⚠ Published: "' + d1.title + '" but image request errored.';
+                runStatus.textContent = '⚠ Published: "' + d1.title + '" — image request dropped; it may still finish in the background.';
                 console.error('Phase 2 error:', err.message);
-                setTimeout(function(){ location.reload(); }, 6000);
+                setTimeout(function(){ location.reload(); }, 8000);
               });
           })
           .catch(function(err){
+            var msg = (err && err.message) ? err.message : 'Request failed';
             runStatus.className = 'run-status err';
-            runStatus.textContent = '✗ ' + (err && err.message ? err.message : 'Request failed');
-            console.error('Phase 1 error:', err);
-            runBtn.disabled = false;
+            if (msg === 'Failed to fetch' || msg.indexOf('non-JSON') !== -1) {
+              /* Connection dropped mid-run. The server finishes and publishes
+                 anyway (ignore_user_abort) — reload to see the result. */
+              runStatus.textContent = '⚠ Connection dropped — the post is likely still publishing in the background. Reloading in 20s to check…';
+              setTimeout(function(){ location.reload(); }, 20000);
+            } else {
+              runStatus.textContent = '✗ ' + msg;
+              runBtn.disabled = false;
+            }
           });
       });
     }
