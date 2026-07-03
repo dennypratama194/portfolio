@@ -95,6 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://www.google.com/recaptcha/api.js?render=6LdhaJMsAAAAAAJb5MDygyGZks49IXEDUNvrUZgQ" defer></script>
   <style>
+    :root {
+      --font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      --red:  #CC2A08;
+      --bg:   #0D0C09;
+      --text: #ECEAE2;
+      --text-rgb: 236,234,226;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg); color: var(--text);
@@ -126,6 +133,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       transition: border-color 0.2s;
     }
     input:focus { border-color: var(--red); }
+    /* Chrome autofill paints a pale blue fill that breaks the dark theme */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+      -webkit-text-fill-color: var(--text);
+      -webkit-box-shadow: 0 0 0 1000px #1A1917 inset;
+      caret-color: var(--text);
+    }
     .error {
       font-size: 14px; color: var(--red);
       margin-bottom: 20px; letter-spacing: 0.02em;

@@ -41,7 +41,7 @@ $description = $project['excerpt'] ?: 'A UI/UX design case study by Denny Pratam
 $canonical   = 'https://dennypratama.com/case-studies/' . rawurlencode($project['slug']);
 $og_image    = $project['cover_image'] ?: 'https://dennypratama.com/assets/logo.png';
 $og_type     = 'article';
-$page_css    = '/css/case-study.css?v=2';
+$page_css    = '/css/case-study.css?v=3';
 $jsonld      = json_encode([
     '@context'    => 'https://schema.org',
     '@type'       => 'CreativeWork',
@@ -148,7 +148,7 @@ $jsonld      = json_encode([
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
-<script src="/script.js?v=24" defer></script>
+<script src="/script.js?v=25" defer></script>
 <script>var PAGE='case-study', SLUG='<?= addslashes($project['slug']) ?>';</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

@@ -84,7 +84,7 @@ $purchases = $list_stmt->fetchAll();
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=3"/>
+  <link rel="stylesheet" href="theme.css?v=4"/>
   <style>
     .top-bar { align-items: flex-start; margin-bottom: 32px; gap: 24px; }
     .top-bar-left { display: flex; flex-direction: column; gap: 6px; }
