@@ -36,7 +36,7 @@ $projects = $pdo->query(
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=4"/>
+  <link rel="stylesheet" href="theme.css?v=5"/>
   <style>
     td { padding: 16px 16px 16px 0; }
     .slug-cell { font-size: 12px; opacity: 0.4; font-family: var(--font-mono); margin-top: 4px; }

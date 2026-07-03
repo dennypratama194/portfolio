@@ -178,7 +178,7 @@ $section_labels = [
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css"/>
-  <link rel="stylesheet" href="theme.css?v=4"/>
+  <link rel="stylesheet" href="theme.css?v=5"/>
   <style>
     /* ── Project editor extras ── */
     .pe-section {

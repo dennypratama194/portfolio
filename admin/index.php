@@ -43,7 +43,7 @@ $posts = $pdo->query(
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=4"/>
+  <link rel="stylesheet" href="theme.css?v=5"/>
   <style>
     td { padding: 18px 16px 18px 0; }
     .empty { padding: 64px 0; }
