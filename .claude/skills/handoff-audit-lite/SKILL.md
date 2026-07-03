@@ -1,9 +1,14 @@
+---
+name: handoff-audit-lite
+description: Fast single-pass pre-delivery audit with no subagents — runs entirely in the main conversation. Checks code quality, SEO, performance, accessibility, security, deployment readiness, and AEO/GEO. Use for quick mid-project sanity checks; use /handoff-audit for the full cross-checked audit before actual handoff.
+---
+
 # Skill: handoff-audit-lite
 # Trigger: /handoff-audit-lite
 
-Fast single-pass pre-delivery audit — no subagents, runs entirely in the main conversation. Use this for quick mid-project sanity checks. For the full 14-agent cross-checked audit before actual handoff, use `/handoff-audit`.
+Fast single-pass pre-delivery audit — no subagents, runs entirely in the main conversation. Use this for quick mid-project sanity checks. For the full 20-agent cross-checked audit before actual handoff, use `/handoff-audit`.
 
-Checks code quality, SEO, performance, accessibility, security, and deployment readiness. Outputs a structured checklist with status per item.
+Checks code quality, SEO, performance, accessibility, security, deployment readiness, and AEO/GEO. Outputs a structured checklist with status per item.
 
 ## Status Icons
 - ✅ Pass
@@ -27,22 +32,23 @@ Work through each section below in order. For each item, check the actual files,
 - [ ] No `any` types in TypeScript files (or suppressed with justification)
 - [ ] No commented-out code blocks
 - [ ] Component and file names are semantic and descriptive (no `Section1`, `Card2`, `temp`, `test`)
-- [ ] Environment variables used for secrets — nothing secret hardcoded in source
-- [ ] `.env` is not committed; `.env.example` is committed with placeholder values
+- [ ] Environment variables / secrets config used for secrets — nothing secret hardcoded in source
+- [ ] The stack's secrets file (`.env`, `.secrets.php`, or equivalent) is not committed and is gitignored; an example file with placeholders is committed
 
 ## 2. SEO
 
-- [ ] Every page has a unique `<title>` tag
-- [ ] Every page has a `<meta name="description">` (120–160 chars)
+- [ ] Every page has a unique `<title>` tag, under 60 characters
+- [ ] Every page has a `<meta name="description">` (150–160 chars)
 - [ ] Open Graph tags present on every page: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`
 - [ ] `og:image` exists, is 1200×630px, and is an absolute URL
-- [ ] Canonical URL set on every page (`<link rel="canonical">`)
+- [ ] Canonical URL set on every page (`<link rel="canonical">`) — consistent host, no trailing slash
+- [ ] No stray `noindex` on public pages; admin/private pages DO have `noindex, nofollow`
 - [ ] `robots.txt` exists at root and is not blocking important pages
-- [ ] `sitemap.xml` exists and is referenced in `robots.txt`
+- [ ] Sitemap exists (static `sitemap.xml` or dynamic generator) and is referenced in `robots.txt`
 - [ ] Every image has a descriptive `alt` attribute (not empty, not the filename)
 - [ ] Heading hierarchy is correct: one `<h1>` per page, logical `h2` → `h3` nesting
 - [ ] No broken internal links
-- [ ] Structured data / JSON-LD present where applicable (Organisation, Article, Product, BreadcrumbList)
+- [ ] Structured data / JSON-LD present where applicable (Organization, Article/BlogPosting, Product, BreadcrumbList)
 
 ## 3. Performance
 
@@ -69,8 +75,11 @@ Work through each section below in order. For each item, check the actual files,
 ## 5. Security
 
 - [ ] No secrets, API keys, or tokens in committed source files or git history
-- [ ] `npm audit` shows zero high or critical vulnerabilities
-- [ ] Any use of `dangerouslySetInnerHTML` (React) or `innerHTML` is sanitized
+- [ ] `npm audit` shows zero high or critical vulnerabilities (skip if no package.json)
+- [ ] Any use of `dangerouslySetInnerHTML` (React) or `innerHTML` is sanitized; PHP output goes through `htmlspecialchars` or the project's escape helper
+- [ ] Database queries use prepared/parameterized statements — no user input concatenated into SQL
+- [ ] CSRF tokens on all state-changing forms; session cookies use `httpOnly` + `SameSite`
+- [ ] Public endpoints that send email or create payments are rate-limited; login has brute-force protection
 - [ ] User-supplied input is validated and sanitized before use
 - [ ] External links use `rel="noopener noreferrer"`
 - [ ] No mixed content (HTTP assets on an HTTPS page)
@@ -86,6 +95,15 @@ Work through each section below in order. For each item, check the actual files,
 - [ ] All placeholder content (`[Lorem ipsum]`, `[Client name]`, `[URL]`) replaced
 - [ ] Site tested on: Chrome, Safari, Firefox (latest); iOS Safari; Android Chrome
 - [ ] Site tested at 375px, 768px, 1024px, 1440px viewport widths
+
+## 7. AEO & GEO
+
+- [ ] `llms.txt` exists at root, links resolve, and reflects the current site structure
+- [ ] Primary content is server-rendered HTML — not injected by client-side JS (AI crawlers mostly don't execute JS)
+- [ ] `robots.txt` takes a deliberate stance on AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, CCBot)
+- [ ] JSON-LD entity data is complete: `Person`/`Organization` with `sameAs`; articles with `author`, `datePublished`, `dateModified`
+- [ ] Content pages show a visible author byline and publish date
+- [ ] Headings are answer-shaped — a question heading is answered directly in the first 1–2 sentences below it
 
 ---
 

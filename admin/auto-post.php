@@ -72,7 +72,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=5"/>
+  <link rel="stylesheet" href="theme.css?v=6"/>
   <style>
     .main { max-width: 1120px; }
     input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
@@ -155,6 +155,26 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     }
     .run-status.ok  { color: #4ade80; }
     .run-status.err { color: var(--red); }
+
+    /* ── Run progress stepper ── */
+    .run-progress { display: none; margin-top: 16px; }
+    .run-progress.is-active { display: block; }
+    .run-step {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 0; font-size: 14px; color: rgba(var(--text-rgb),0.3);
+    }
+    .run-step-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(var(--text-rgb),0.15); transition: background 0.2s;
+    }
+    .run-step.is-done { color: rgba(var(--text-rgb),0.55); }
+    .run-step.is-done .run-step-dot { background: #4ade80; }
+    .run-step.is-active { color: var(--text); }
+    .run-step.is-active .run-step-dot { background: var(--red); animation: run-pulse 1.2s ease-in-out infinite; }
+    .run-step.is-failed { color: var(--red); }
+    .run-step.is-failed .run-step-dot { background: var(--red); animation: none; }
+    @keyframes run-pulse { 50% { opacity: 0.25; } }
+    .run-elapsed { font-family: var(--font-mono); font-size: 12px; color: rgba(var(--text-rgb),0.3); margin-top: 8px; }
 
     .sidebar-rule { border: none; border-top: 1px solid rgba(var(--text-rgb),0.08); margin: 20px 0; }
 
@@ -354,6 +374,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           <div class="section-heading" style="margin-top:0;margin-bottom:16px">Test Run</div>
           <button class="run-btn" id="run-btn" <?= !$token ? 'disabled' : '' ?>>Run Now</button>
           <span class="run-status" id="run-status"></span>
+          <div class="run-progress" id="run-progress">
+            <div class="run-step" data-step="start"><span class="run-step-dot"></span>Start background worker</div>
+            <div class="run-step" data-step="write"><span class="run-step-dot"></span>Write post (Claude)</div>
+            <div class="run-step" data-step="publish"><span class="run-step-dot"></span>Publish post</div>
+            <div class="run-step" data-step="image"><span class="run-step-dot"></span>Featured image (gpt-image-2)</div>
+            <div class="run-elapsed" id="run-elapsed"></div>
+          </div>
+          <button class="btn-secondary" id="clear-run-btn" style="display:none;margin-top:12px;width:100%">Clear stuck run</button>
 
           <hr class="sidebar-rule"/>
 
@@ -439,19 +467,57 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
     /* ── Run Now: start a BACKGROUND run, then poll its status. No browser
        request ever waits on the minutes-long Claude call, so HTTP timeouts
-       can no longer kill a paid run or hide its outcome. ── */
+       can no longer kill a paid run or hide its outcome. The run state lives
+       server-side (api/logs/run-status.json), so navigating away and coming
+       back resumes the progress display instead of losing it. ── */
     if (runBtn) {
-      var base      = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
-      var pollTimer = null;
+      var base        = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
+      var pollTimer   = null, tickTimer = null, polls = 0, runStarted = 0;
+      var progressBox = document.getElementById('run-progress');
+      var elapsedEl   = document.getElementById('run-elapsed');
+      var clearBtn    = document.getElementById('clear-run-btn');
+      var STEPS       = ['start', 'write', 'publish', 'image'];
 
       function stopPoll() {
         if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+        if (tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+      }
+
+      function fmtElapsed(s) {
+        s = Math.max(0, Math.round(s));
+        return (s >= 60 ? Math.floor(s / 60) + 'm ' : '') + (s % 60) + 's';
+      }
+
+      function tick() {
+        if (runStarted) elapsedEl.textContent = 'Elapsed ' + fmtElapsed(Date.now() / 1000 - runStarted);
+      }
+
+      /* Paint the stepper: steps before `active` are done, `active` pulses,
+         `failIdx` (optional) marks one step failed instead. */
+      function setSteps(active, failIdx) {
+        STEPS.forEach(function (name, i) {
+          var el = progressBox.querySelector('[data-step="' + name + '"]');
+          el.className = 'run-step'
+            + (i < active   ? ' is-done'   : '')
+            + (i === active ? ' is-active' : '')
+            + (i === failIdx ? ' is-failed' : '');
+        });
+      }
+
+      function stepForState(state) {
+        var map = { starting: 0, claude: 1, post_created: 2, image: 3 };
+        return map[state] === undefined ? 3 : map[state];
       }
 
       function showRunState(run) {
         if (!run) return;
+        if (run.started) runStarted = run.started;
+        progressBox.classList.add('is-active');
+        tick();
+
         if (run.state === 'done') {
           stopPoll();
+          setSteps(4, run.image ? -1 : 3);
           if (run.image) {
             runStatus.className = 'run-status ok';
             runStatus.textContent = '✓ Published: "' + (run.title || '') + '" (with image)';
@@ -469,31 +535,59 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           if (run.post_id) {
             /* The post was created before the failure — this is a partial
                success, not a failed run. The image can be regenerated. */
+            setSteps(3, 3);
             runStatus.textContent = '⚠ Published: "' + (run.title || '') + '" — a later step failed: '
               + (run.error || 'unknown') + '. Use the Generate button next to the post to add an image.';
             setTimeout(function(){ location.reload(); }, 7000);
           } else {
+            setSteps(1, 1);
             runStatus.textContent = '✗ ' + (run.error || 'Run failed');
             runBtn.disabled = false;
           }
           return;
         }
         /* Still working — but if the status stopped updating, the host
-           likely killed the background process. */
+           likely killed the background process. Offer a manual reset so
+           Run Now isn't blocked by the stale lock forever. */
         if (run.age > 300) {
           stopPoll();
           runStatus.className = 'run-status err';
-          runStatus.textContent = '⚠ The run stopped reporting — check the posts list and api/logs/auto-post.log.';
-          runBtn.disabled = false;
+          runStatus.textContent = '⚠ The run stopped reporting — the host likely killed the background process. '
+            + 'Check the posts list (it may have published), then clear the stuck run to re-enable Run Now.';
+          clearBtn.style.display = 'block';
           return;
         }
-        if (run.state === 'starting')     runStatus.innerHTML = loadingHtml('Starting background run');
-        else if (run.state === 'claude')  runStatus.innerHTML = loadingHtml('Phase 1 — Claude is writing the post');
-        else                              runStatus.innerHTML = loadingHtml('Phase 2 — Generating featured image');
+        setSteps(stepForState(run.state));
+        runStatus.className = 'run-status';
+        var safeTitle = run.title ? String(run.title).replace(/[&<>"]/g, function(c){
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        }) : '';
+        runStatus.innerHTML = loadingHtml('Running in the background')
+          + '<br>Safe to leave this page — progress resumes when you return.'
+          + (safeTitle ? '<br>&ldquo;' + safeTitle + '&rdquo;' : '');
+      }
+
+      function startPolling() {
+        stopPoll();
+        polls = 0;
+        tickTimer = setInterval(tick, 1000);
+        pollTimer = setInterval(function(){
+          if (++polls > 160) { // ~8 minutes
+            stopPoll();
+            runStatus.className = 'run-status err';
+            runStatus.textContent = '⚠ Still running after 8 minutes — check the posts list and api/logs/auto-post.log.';
+            runBtn.disabled = false;
+            return;
+          }
+          fetchJSON(base + '&phase=status')
+            .then(function(d){ if (d.ok) showRunState(d.run); })
+            .catch(function(){ /* transient poll failure — keep polling */ });
+        }, 3000);
       }
 
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
+        clearBtn.style.display = 'none';
         runStatus.className = 'run-status';
         runStatus.innerHTML = loadingHtml('Checking connection');
 
@@ -508,19 +602,10 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           })
           .then(function(s){
             if (!s.ok) throw new Error(s.error || 'Could not start the run');
-            var polls = 0;
-            pollTimer = setInterval(function(){
-              if (++polls > 160) { // ~8 minutes
-                stopPoll();
-                runStatus.className = 'run-status err';
-                runStatus.textContent = '⚠ Still running after 8 minutes — check the posts list and api/logs/auto-post.log.';
-                runBtn.disabled = false;
-                return;
-              }
-              fetchJSON(base + '&phase=status')
-                .then(function(d){ if (d.ok) showRunState(d.run); })
-                .catch(function(){ /* transient poll failure — keep polling */ });
-            }, 3000);
+            runStarted = Date.now() / 1000;
+            progressBox.classList.add('is-active');
+            setSteps(0);
+            startPolling();
           })
           .catch(function(err){
             runStatus.className = 'run-status err';
@@ -528,6 +613,41 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             runBtn.disabled = false;
           });
       });
+
+      /* Clear a stuck run: releases the server-side lock + status so a new
+         run can start. The API refuses while the run is still reporting. */
+      clearBtn.addEventListener('click', function(){
+        clearBtn.disabled = true;
+        fetchJSON(base + '&phase=clear')
+          .then(function(d){
+            if (!d.ok) throw new Error(d.error || 'Could not clear the run');
+            clearBtn.style.display = 'none';
+            clearBtn.disabled = false;
+            progressBox.classList.remove('is-active');
+            runStatus.className = 'run-status';
+            runStatus.textContent = 'Cleared — you can start a new run.';
+            runBtn.disabled = false;
+            runStarted = 0;
+          })
+          .catch(function(err){
+            clearBtn.disabled = false;
+            runStatus.className = 'run-status err';
+            runStatus.textContent = '✗ ' + ((err && err.message) ? err.message : 'Clear failed');
+          });
+      });
+
+      /* ── Resume on page load: the run survives navigation server-side, so
+         if one is active (or stuck) show it immediately instead of a dead
+         button that rejects clicks with "a run is already in progress". ── */
+      fetchJSON(base + '&phase=status')
+        .then(function(d){
+          var run = d.ok ? d.run : null;
+          if (!run || run.done) return;
+          runBtn.disabled = true;
+          showRunState(run);
+          if (!(run.age > 300)) startPolling();
+        })
+        .catch(function(){ /* no status yet — nothing to resume */ });
     }
   </script>
   <script>

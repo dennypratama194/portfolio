@@ -36,10 +36,9 @@ $projects = $pdo->query(
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=5"/>
+  <link rel="stylesheet" href="theme.css?v=6"/>
   <style>
     td { padding: 16px 16px 16px 0; }
-    .slug-cell { font-size: 12px; opacity: 0.4; font-family: var(--font-mono); margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -70,8 +69,8 @@ $projects = $pdo->query(
       <?php foreach ($projects as $p): ?>
       <tr>
         <td>
-          <div><?= htmlspecialchars($p['title']) ?></div>
-          <div class="slug-cell">/case-studies/<?= htmlspecialchars($p['slug']) ?></div>
+          <div class="project-title"><?= htmlspecialchars($p['title']) ?></div>
+          <div class="project-slug">/case-studies/<?= htmlspecialchars($p['slug']) ?></div>
         </td>
         <td><?= htmlspecialchars($p['client'] ?: '—') ?></td>
         <td><?= htmlspecialchars($p['year'] ?: '—') ?></td>

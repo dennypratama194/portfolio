@@ -70,9 +70,9 @@ $openai_key    = $config['openai_api_key']    ?? '';
 $model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
 $phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
-/* regen/reformat/test/status are manual admin actions or read-only — they
+/* regen/reformat/test/status/clear are manual admin actions or read-only — they
    bypass the enable toggle (it gates publishing, not admin diagnostics). */
-if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status'], true)) {
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status', 'clear'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -105,6 +105,24 @@ if ($phase === 'status') {
         if ($run && isset($run['updated'])) $run['age'] = time() - (int)$run['updated'];
     }
     respond(200, ['ok' => true, 'phase' => 'status', 'run' => $run]);
+}
+
+/* ════════════════════════════════════════════════════
+   PHASE = CLEAR — manually release a stuck run (lock +
+   status). Only allowed once the run has stopped
+   reporting for 2+ minutes, so a healthy run can't be
+   cleared and double-started mid-generation.
+════════════════════════════════════════════════════ */
+if ($phase === 'clear') {
+    $sf  = __DIR__ . '/logs/run-status.json';
+    $cur = file_exists($sf) ? (json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: []) : [];
+    if ($cur && empty($cur['done']) && isset($cur['updated']) && time() - (int)$cur['updated'] < 120) {
+        respond(409, ['ok' => false, 'error' => 'The run is still reporting progress — wait for it to finish or stall before clearing.']);
+    }
+    @unlink(__DIR__ . '/logs/run.lock');
+    setRunStatus(['state' => 'error', 'error' => 'Run cleared manually from the admin panel.', 'done' => true]);
+    autoPostLog('Stuck run cleared manually.');
+    respond(200, ['ok' => true, 'phase' => 'clear']);
 }
 
 /* ════════════════════════════════════════════════════

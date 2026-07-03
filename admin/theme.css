@@ -125,8 +125,8 @@ tr:hover td { background: rgba(var(--text-rgb),0.02); }
 .badge-scheduled           { background: rgba(var(--warning-rgb),0.12); color: var(--warning); }
 
 /* ── List/table item cells ── */
-.post-title, .product-title { color: var(--text); font-weight: 500; }
-.post-slug, .product-slug { font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; }
+.post-title, .product-title, .project-title { color: var(--text); font-weight: 500; }
+.post-slug, .product-slug, .project-slug { font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; }
 
 /* ── Forms ── */
 .field { margin-bottom: 24px; }
@@ -425,8 +425,8 @@ tr.row-link:hover { background: rgba(var(--text-rgb),0.03); }
 [data-theme="light"] th             { color: rgba(var(--text-light-rgb),0.35); border-bottom-color: rgba(var(--text-light-rgb),0.08); }
 [data-theme="light"] td             { color: rgba(var(--text-light-rgb),0.75); border-bottom-color: rgba(var(--text-light-rgb),0.05); }
 [data-theme="light"] tr:hover td    { background: rgba(var(--text-light-rgb),0.02); }
-[data-theme="light"] .post-title    { color: var(--text-light); }
-[data-theme="light"] .post-slug     { color: rgba(var(--text-light-rgb),0.3); }
+[data-theme="light"] .post-title, [data-theme="light"] .project-title { color: var(--text-light); }
+[data-theme="light"] .post-slug, [data-theme="light"] .project-slug  { color: rgba(var(--text-light-rgb),0.3); }
 [data-theme="light"] .badge-draft   { background: rgba(var(--text-light-rgb),0.07); color: rgba(var(--text-light-rgb),0.45); }
 [data-theme="light"] .action-link   { color: rgba(var(--text-light-rgb),0.4); }
 [data-theme="light"] .action-link:hover { color: var(--text-light); }
