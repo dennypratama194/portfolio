@@ -183,7 +183,7 @@ $related = $related_stmt->fetchAll();
 
     <div class="post-cta">
       <p class="post-cta-label">Enjoyed this? Let's build something.</p>
-      <a class="post-cta-btn js-open-modal" href="#">Start a project →</a>
+      <a class="btn-cta-main js-open-modal" href="#">Start a project →</a>
     </div>
 
     <?php if ($related): ?>

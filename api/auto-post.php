@@ -4,6 +4,12 @@
 
    Entry modes (token-authed):
      ?token=X                     cron  → phase all (text + image)
+     ?token=X&phase=start         admin → spawn background phase-all run
+     ?token=X&phase=status        admin → poll background run progress
+     ?token=X&phase=clear         admin → release a stuck run
+     ?token=X&phase=salvage       admin → publish the saved output of a
+                                          killed run (no new Claude call)
+     ?token=X&phase=test          admin → ~30-token pipeline check
      ?token=X&phase=1             admin → generate + publish post
      ?token=X&phase=2&post_id&image_prompt   admin → featured image
      ?token=X&phase=regen&post_id admin → rebuild image for a post
@@ -24,7 +30,7 @@
      is detectable at a glance.
 ════════════════════════════════════════════════════════════════ */
 
-const AP_VERSION = '2.1';
+const AP_VERSION = '2.2';
 set_time_limit(300);
 
 /* If the browser or a proxy drops mid-run, FINISH ANYWAY — the tokens are
@@ -72,7 +78,7 @@ $phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
 
 /* regen/reformat/test/status/clear are manual admin actions or read-only — they
    bypass the enable toggle (it gates publishing, not admin diagnostics). */
-if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status', 'clear'], true)) {
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status', 'clear', 'salvage'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -126,6 +132,52 @@ if ($phase === 'clear') {
 }
 
 /* ════════════════════════════════════════════════════
+   PHASE = SALVAGE — publish the raw output of a killed
+   run from api/logs/last-run-raw.txt. The tokens were
+   already paid for; this recovers them with zero new
+   API spend. Refuses if the post already exists.
+════════════════════════════════════════════════════ */
+if ($phase === 'salvage') {
+    $raw_file = __DIR__ . '/logs/last-run-raw.txt';
+    if (!file_exists($raw_file)) {
+        respond(404, ['ok' => false, 'error' => 'No saved run output found (api/logs/last-run-raw.txt) — nothing to salvage.']);
+    }
+    $text = (string)file_get_contents($raw_file);
+    $sec  = parseSections($text);
+    if (empty($sec['TITLE']) || empty($sec['BODY'])) {
+        respond(422, ['ok' => false, 'error' => 'The saved output has no usable TITLE/BODY yet — the run died too early to salvage.']);
+    }
+
+    /* The killed run may in fact have completed its INSERT before dying —
+       don't publish the same post twice. */
+    $title = trim(strip_tags($sec['TITLE']));
+    foreach ($pdo->query('SELECT title FROM posts ORDER BY id DESC LIMIT 10')->fetchAll() as $r) {
+        if (titleSimilarity($title, $r['title']) >= 0.7) {
+            respond(409, ['ok' => false, 'error' => 'A matching post already exists ("' . $r['title'] . '") — the run did publish before dying. Nothing to salvage.']);
+        }
+    }
+
+    $meta = json_decode(ltrim((string)@file_get_contents(__DIR__ . '/logs/last-run-meta.json'), "\xEF\xBB\xBF"), true) ?: [];
+    [$post_id, $title, $slug, $image_prompt] = publishPost($sec, $meta['category'] ?? 'development');
+
+    @rename($raw_file, $raw_file . '.salvaged'); // one salvage per run
+    @unlink(__DIR__ . '/logs/run.lock');
+    $truncated = strpos($text, '===END===') === false;
+    autoPostLog('Salvaged post from last-run-raw.txt: id=' . $post_id . ' "' . $title . '"' . ($truncated ? ' (body may be truncated)' : ''));
+    setRunStatus(['state' => 'done', 'done' => true, 'error' => null, 'post_id' => $post_id, 'title' => $title]);
+
+    respond(200, [
+        'ok'           => true,
+        'phase'        => 'salvage',
+        'post_id'      => $post_id,
+        'title'        => $title,
+        'slug'         => $slug,
+        'truncated'    => $truncated,
+        'image_prompt' => $image_prompt,
+    ]);
+}
+
+/* ════════════════════════════════════════════════════
    PHASE = START — kick off the full generation as a
    BACKGROUND process and return immediately. The admin
    UI then polls phase=status. No browser connection is
@@ -139,8 +191,10 @@ if ($phase === 'start') {
     $sf        = __DIR__ . '/logs/run-status.json';
     $cur       = file_exists($sf) ? (json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: []) : [];
 
-    $lock_busy   = file_exists($lock_file) && time() - filemtime($lock_file) < 600;
-    $status_busy = $cur && empty($cur['done']) && isset($cur['updated']) && time() - (int)$cur['updated'] < 300;
+    /* A live run refreshes both files every ~15s (statusPulse), so anything
+       quieter than 3 minutes is dead weight, not an active run. */
+    $lock_busy   = file_exists($lock_file) && time() - filemtime($lock_file) < 180;
+    $status_busy = $cur && empty($cur['done']) && isset($cur['updated']) && time() - (int)$cur['updated'] < 180;
     if ($lock_busy || $status_busy) {
         respond(429, ['ok' => false, 'error' => 'A run is already in progress — wait for the status below to finish before starting another.']);
     }
@@ -175,10 +229,11 @@ if ($phase === 'test') {
 }
 
 /* Single-flight lock: a second click while a run is still generating would
-   pay for the same post twice. Stale locks (>10 min) are ignored. */
+   pay for the same post twice. A live run touches the lock every ~15s, so
+   a lock quiet for 3+ minutes is stale and ignored. */
 if ($phase === '1' || $phase === 'all') {
     $lock_file = __DIR__ . '/logs/run.lock';
-    if (file_exists($lock_file) && time() - filemtime($lock_file) < 600) {
+    if (file_exists($lock_file) && time() - filemtime($lock_file) < 180) {
         respond(429, ['ok' => false, 'error' =>
             'A run is already in progress (started ' . (time() - filemtime($lock_file)) . 's ago). '
             . 'It publishes even if this page showed a connection error — check the posts list before retrying.']);
@@ -370,6 +425,10 @@ if ($phase === '1' || $phase === 'all') {
     $extra_constraint = '';
     $sections = null;
 
+    /* Sidecar for phase=salvage: the raw dump alone doesn't record the category */
+    @file_put_contents(__DIR__ . '/logs/last-run-meta.json',
+        json_encode(['category' => $required_category, 'time' => time()]));
+
     for ($attempt = 1; $attempt <= 2; $attempt++) {
         $prompt = <<<PROMPT
 You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write with genuine first-hand expertise: real bugs, real tradeoffs, opinions formed from actual project work.
@@ -415,7 +474,10 @@ Full blog post in HTML. Use ONLY: <h2>, <h3>, <p>, <ul>, <ol>, <li>, <strong>, <
 ===END===
 PROMPT;
 
-        $text = claudeCall($prompt, 8192);
+        /* track=true → the stream pulses run-status.json AND dumps partial
+           text to last-run-raw.txt every ~15s, so a killed worker leaves
+           both a live-ness signal and salvageable paid output behind. */
+        $text = claudeCall($prompt, 8192, true);
 
         /* Paid output is never lost: keep the raw text so a failed parse can
            be recovered manually instead of paying for another generation. */
@@ -447,37 +509,7 @@ PROMPT;
     /* The Claude call took minutes — the DB connection may have timed out */
     ensureDbAlive();
 
-    /* Sanitize + build post fields */
-    $title   = trim(strip_tags($sections['TITLE']));
-    $excerpt = trim(strip_tags($sections['EXCERPT'] ?? ''));
-    $allowed = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>';
-
-    $faq      = parseFaq($sections['FAQ'] ?? '');
-    $faq_json = $faq ? "\n<!-- faq:" . json_encode($faq, JSON_UNESCAPED_UNICODE) . ' -->' : '';
-
-    /* sanitizeAutoPostCode must run BEFORE strip_tags so raw HTML examples
-       inside <pre>/<code> get entity-encoded instead of stripped. */
-    $body = strip_tags(sanitizeAutoPostCode($sections['BODY']), $allowed)
-          . "\n<!-- auto-generated -->" . $faq_json;
-
-    $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($sections['SLUG'] ?? $title)), '-');
-    $slug = $slug_base;
-    for ($n = 2; ; $n++) {
-        $chk = $pdo->prepare('SELECT id FROM posts WHERE slug = ?');
-        $chk->execute([$slug]);
-        if (!$chk->fetch()) break;
-        $slug = $slug_base . '-' . $n;
-    }
-
-    $pdo->prepare(
-        'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at)
-         VALUES (?, ?, ?, ?, ?, ?, 1, NOW())'
-    )->execute([$title, $slug, $excerpt, $body, '', $required_category]);
-
-    $post_id      = (int)$pdo->lastInsertId();
-    $image_prompt = !empty($sections['IMAGE_PROMPT'])
-        ? $sections['IMAGE_PROMPT']
-        : 'Clean, modern, minimal blog header image, abstract and conceptual, no text, no people. Topic: ' . $title;
+    [$post_id, $title, $slug, $image_prompt] = publishPost($sections, $required_category);
     autoPostLog('Post created: id=' . $post_id . ' "' . $title . '"');
     setRunStatus(['state' => 'post_created', 'post_id' => $post_id, 'title' => $title]);
 
@@ -534,7 +566,11 @@ if ($phase === '2' || $phase === 'all') {
             CURLOPT_CONNECTTIMEOUT   => 10,
             /* non-streaming call: heartbeat via progress callback */
             CURLOPT_NOPROGRESS       => false,
-            CURLOPT_PROGRESSFUNCTION => function () { heartbeat(); return 0; },
+            CURLOPT_PROGRESSFUNCTION => function () use ($is_regen) {
+                heartbeat();
+                if (!$is_regen) statusPulse(['state' => 'image']);
+                return 0;
+            },
             CURLOPT_HTTPHEADER       => [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $openai_key,
@@ -650,8 +686,10 @@ function heartbeat(): void {
 
 /* Streaming call to the Claude API. Returns the full completion text;
    responds with a clear error (and exits) on any failure, including
-   truncation at max_tokens. */
-function claudeCall(string $prompt, int $max_tokens): string {
+   truncation at max_tokens. With $track, every ~15s of streaming also
+   updates run-status.json (live-ness for the admin poller) and dumps the
+   partial text to last-run-raw.txt (salvageable if the host kills us). */
+function claudeCall(string $prompt, int $max_tokens, bool $track = false): string {
     global $anthropic_key, $model;
 
     $text = ''; $buf = ''; $stop = ''; $raw = ''; $api_err = '';
@@ -673,7 +711,7 @@ function claudeCall(string $prompt, int $max_tokens): string {
             'x-api-key: ' . $anthropic_key,
             'anthropic-version: 2023-06-01',
         ],
-        CURLOPT_WRITEFUNCTION  => function ($ch, $chunk) use (&$text, &$buf, &$stop, &$raw, &$api_err) {
+        CURLOPT_WRITEFUNCTION  => function ($ch, $chunk) use (&$text, &$buf, &$stop, &$raw, &$api_err, $track) {
             if (strlen($raw) < 2000) $raw .= $chunk; // keep head for error reporting
             $buf .= $chunk;
             while (($nl = strpos($buf, "\n")) !== false) {
@@ -695,6 +733,9 @@ function claudeCall(string $prompt, int $max_tokens): string {
                 }
             }
             heartbeat();
+            if ($track && statusPulse(['state' => 'claude', 'chars' => strlen($text)])) {
+                @file_put_contents(__DIR__ . '/logs/last-run-raw.txt', $text);
+            }
             return strlen($chunk);
         },
     ]);
@@ -810,6 +851,58 @@ function ensureDbAlive(): void {
     );
 }
 
+/* Throttled setRunStatus for hot callbacks (stream/progress): writes at most
+   once per 15s. Returns true when it actually wrote. Also refreshes the run
+   lock's mtime so a healthy long run is never mistaken for a stale one. */
+function statusPulse(array $patch): bool {
+    static $last = 0;
+    if (time() - $last < 15) return false;
+    $last = time();
+    setRunStatus($patch);
+    $lock = __DIR__ . '/logs/run.lock';
+    if (file_exists($lock)) @touch($lock); // refresh only — phase 2 standalone holds no lock
+    return true;
+}
+
+/* Sanitize marker-format sections and insert them as a published post.
+   Returns [post_id, title, slug, image_prompt]. Shared by phase 1 + salvage. */
+function publishPost(array $sec, string $category): array {
+    global $pdo;
+
+    $title   = trim(strip_tags($sec['TITLE']));
+    $excerpt = trim(strip_tags($sec['EXCERPT'] ?? ''));
+    $allowed = '<h2><h3><p><ul><ol><li><strong><em><blockquote><a><br><pre><code><hr>';
+
+    $faq      = parseFaq($sec['FAQ'] ?? '');
+    $faq_json = $faq ? "\n<!-- faq:" . json_encode($faq, JSON_UNESCAPED_UNICODE) . ' -->' : '';
+
+    /* sanitizeAutoPostCode must run BEFORE strip_tags so raw HTML examples
+       inside <pre>/<code> get entity-encoded instead of stripped. */
+    $body = strip_tags(sanitizeAutoPostCode($sec['BODY']), $allowed)
+          . "\n<!-- auto-generated -->" . $faq_json;
+
+    $slug_base = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($sec['SLUG'] ?? $title)), '-');
+    $slug = $slug_base;
+    for ($n = 2; ; $n++) {
+        $chk = $pdo->prepare('SELECT id FROM posts WHERE slug = ?');
+        $chk->execute([$slug]);
+        if (!$chk->fetch()) break;
+        $slug = $slug_base . '-' . $n;
+    }
+
+    $pdo->prepare(
+        'INSERT INTO posts (title, slug, excerpt, body, featured_image, category, is_published, published_at)
+         VALUES (?, ?, ?, ?, ?, ?, 1, NOW())'
+    )->execute([$title, $slug, $excerpt, $body, '', $category]);
+
+    $post_id      = (int)$pdo->lastInsertId();
+    $image_prompt = !empty($sec['IMAGE_PROMPT'])
+        ? $sec['IMAGE_PROMPT']
+        : 'Clean, modern, minimal blog header image, abstract and conceptual, no text, no people. Topic: ' . $title;
+
+    return [$post_id, $title, $slug, $image_prompt];
+}
+
 /* Merge (or reset) the background-run status file polled by the admin UI. */
 function setRunStatus(array $patch, bool $reset = false): void {
     $dir = __DIR__ . '/logs';
@@ -825,17 +918,28 @@ function setRunStatus(array $patch, bool $reset = false): void {
 
 /* Launch the full generation (phase all) detached from this request.
    Preferred: PHP CLI — immune to every HTTP/gateway/proxy timeout (same
-   mechanism as the recommended cron command). Fallback when exec() is
-   unavailable: fire-and-forget HTTP self-call; the worker survives the
-   1.5s client timeout thanks to ignore_user_abort. */
+   mechanism as the recommended cron command). The worker MUST leave the
+   parent's session/process group: LiteSpeed + CloudLinux (this host) reap
+   every process in the request's group when the request ends, which killed
+   runs mid-generation after the tokens were already paid for. setsid gives
+   the worker its own session; nohup shields it from SIGHUP. Fallback when
+   exec() is unavailable: fire-and-forget HTTP self-call; that worker
+   survives the 1.5s client timeout via ignore_user_abort + the `noabort`
+   env set in .htaccess (LiteSpeed kills aborted requests without it). */
 function spawnBackgroundRun(string $token): string {
     $disabled = array_map('trim', explode(',', (string)ini_get('disable_functions')));
     if (function_exists('exec') && !in_array('exec', $disabled, true) && stripos(PHP_OS, 'WIN') === false) {
         $php = PHP_BINDIR . '/php';
         if (!is_executable($php)) $php = 'php';
-        exec(escapeshellarg($php) . ' ' . escapeshellarg(__FILE__) . ' ' . escapeshellarg($token)
+
+        $setsid = '';
+        @exec('command -v setsid 2>/dev/null', $sout);
+        if (!empty($sout[0]) && is_executable(trim($sout[0]))) $setsid = trim($sout[0]);
+
+        exec(($setsid ? escapeshellarg($setsid) . ' ' : '') . 'nohup '
+            . escapeshellarg($php) . ' ' . escapeshellarg(__FILE__) . ' ' . escapeshellarg($token)
             . ' > /dev/null 2>&1 &');
-        return 'cli';
+        return $setsid ? 'cli+setsid' : 'cli+nohup';
     }
     $host = $_SERVER['HTTP_HOST'] ?? 'dennypratama.com';
     $ch = curl_init('https://' . $host . '/api/auto-post.php?token=' . rawurlencode($token) . '&phase=all');

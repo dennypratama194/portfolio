@@ -1947,15 +1947,6 @@
       font-size: 20px; font-weight: 500; color: var(--paper);
       letter-spacing: -0.01em; margin: 0;
     }
-    .post-cta-btn {
-      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--paper); background: var(--red);
-      padding: 14px 28px; text-decoration: none;
-      transition: opacity 0.2s; white-space: nowrap;
-    }
-    .post-cta-btn:hover,
-    .post-cta-btn:focus-visible { opacity: 0.85; }
-
     .post-footer {
       padding: 64px var(--pad-x);
       display: flex; align-items: center; justify-content: space-between; gap: 24px;
@@ -2423,7 +2414,6 @@ html.pt-leaving body { pointer-events: none; }
 .blog-filter-btn,
 .blog-card-cat,
 .post-hero-meta,
-.post-cta-btn,
 .post-footer-back,
 .cat-badge,
 .form-page-eyebrow,

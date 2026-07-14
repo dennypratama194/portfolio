@@ -382,6 +382,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             <div class="run-elapsed" id="run-elapsed"></div>
           </div>
           <button class="btn-secondary" id="clear-run-btn" style="display:none;margin-top:12px;width:100%">Clear stuck run</button>
+          <button class="btn-secondary" id="salvage-run-btn" style="display:none;margin-top:8px;width:100%">Salvage last run (publish paid output)</button>
 
           <hr class="sidebar-rule"/>
 
@@ -476,6 +477,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       var progressBox = document.getElementById('run-progress');
       var elapsedEl   = document.getElementById('run-elapsed');
       var clearBtn    = document.getElementById('clear-run-btn');
+      var salvageBtn  = document.getElementById('salvage-run-btn');
       var STEPS       = ['start', 'write', 'publish', 'image'];
 
       function stopPoll() {
@@ -542,18 +544,25 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           } else {
             setSteps(1, 1);
             runStatus.textContent = '✗ ' + (run.error || 'Run failed');
+            salvageBtn.style.display = 'block'; // paid output may still be recoverable
             runBtn.disabled = false;
           }
           return;
         }
-        /* Still working — but if the status stopped updating, the host
-           likely killed the background process. Offer a manual reset so
-           Run Now isn't blocked by the stale lock forever. */
-        if (run.age > 300) {
+        /* Still working — a live run updates its status every ~15s, so 2+
+           minutes of silence means the host killed the background worker. */
+        if (run.age > 120) {
           stopPoll();
           runStatus.className = 'run-status err';
-          runStatus.textContent = '⚠ The run stopped reporting — the host likely killed the background process. '
-            + 'Check the posts list (it may have published), then clear the stuck run to re-enable Run Now.';
+          if (run.post_id) {
+            runStatus.textContent = '⚠ The run died after publishing "' + (run.title || '')
+              + '" — only the featured image is missing. Clear the stuck run, then use the Generate button next to the post.';
+          } else {
+            runStatus.textContent = '⚠ The run stopped reporting — the host killed the background worker. '
+              + 'The text generated so far was saved server-side: use “Salvage last run” to publish it '
+              + 'without paying for another generation, or clear the stuck run to start over.';
+            salvageBtn.style.display = 'block';
+          }
           clearBtn.style.display = 'block';
           return;
         }
@@ -564,6 +573,8 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         }) : '';
         runStatus.innerHTML = loadingHtml('Running in the background')
           + '<br>Safe to leave this page — progress resumes when you return.'
+          + (run.state === 'claude' && run.chars
+              ? '<br>Claude has written ' + Number(run.chars).toLocaleString() + ' characters so far.' : '')
           + (safeTitle ? '<br>&ldquo;' + safeTitle + '&rdquo;' : '');
       }
 
@@ -588,6 +599,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       runBtn.addEventListener('click', function(){
         runBtn.disabled = true;
         clearBtn.style.display = 'none';
+        salvageBtn.style.display = 'none';
         runStatus.className = 'run-status';
         runStatus.innerHTML = loadingHtml('Checking connection');
 
@@ -636,6 +648,30 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           });
       });
 
+      /* Salvage: publish the saved raw output of a killed run — recovers the
+         tokens already paid for instead of generating (and paying) again. */
+      salvageBtn.addEventListener('click', function(){
+        salvageBtn.disabled = true;
+        runStatus.className = 'run-status';
+        runStatus.innerHTML = loadingHtml('Publishing saved output');
+        fetchJSON(base + '&phase=salvage')
+          .then(function(d){
+            if (!d.ok) throw new Error(d.error || 'Salvage failed');
+            salvageBtn.disabled = false;
+            salvageBtn.style.display = 'none';
+            runStatus.className = 'run-status ok';
+            runStatus.textContent = '✓ Salvaged and published: "' + (d.title || '') + '"'
+              + (d.truncated ? ' — the body may be cut off, review it in the editor.' : '')
+              + ' No image yet — use the Generate button next to the post. Reloading…';
+            setTimeout(function(){ location.reload(); }, 4000);
+          })
+          .catch(function(err){
+            salvageBtn.disabled = false;
+            runStatus.className = 'run-status err';
+            runStatus.textContent = '✗ ' + ((err && err.message) ? err.message : 'Salvage failed');
+          });
+      });
+
       /* ── Resume on page load: the run survives navigation server-side, so
          if one is active (or stuck) show it immediately instead of a dead
          button that rejects clicks with "a run is already in progress". ── */
@@ -645,7 +681,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           if (!run || run.done) return;
           runBtn.disabled = true;
           showRunState(run);
-          if (!(run.age > 300)) startPolling();
+          if (!(run.age > 120)) startPolling();
         })
         .catch(function(){ /* no status yet — nothing to resume */ });
     }
