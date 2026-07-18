@@ -606,6 +606,22 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    // FAQ — head + items
+    const faqHead  = document.querySelector('.home-faq-head');
+    const faqItems = document.querySelectorAll('.home-faq-item');
+    if (faqHead) {
+      gsap.from(Array.from(faqHead.children), {
+        y: 60, opacity: 0, stagger: 0.12, duration: D, ease: EASE,
+        scrollTrigger: st(faqHead),
+      });
+    }
+    if (faqItems.length) {
+      gsap.from(faqItems, {
+        y: 40, opacity: 0, stagger: 0.08, duration: D, ease: EASE,
+        scrollTrigger: st(faqItems[0]),
+      });
+    }
+
     // CTA — bg text parallax
     const ctaBgType = document.querySelector('.cta-bg-type');
     if (ctaBgType) {

@@ -1798,6 +1798,53 @@
     }
 
     /* ═══════════════════════════════════════
+       HOME — FAQ
+    ═══════════════════════════════════════ */
+    #faq {
+      padding: 120px var(--pad-x);
+      background: var(--paper);
+    }
+    .home-faq-eyebrow {
+      font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-3);
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px;
+    }
+    .home-faq-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--red); }
+    .home-faq-title {
+      font-family: var(--font-sans);
+      font-size: var(--text-h1); font-weight: 400;
+      letter-spacing: -0.04em; line-height: var(--leading-h1); color: var(--ink);
+      margin-bottom: 64px;
+    }
+    .home-faq-list { max-width: 800px; }
+    .home-faq-item { border-top: 1px solid var(--border); }
+    .home-faq-item:last-child { border-bottom: 1px solid var(--border); }
+    .home-faq-item summary {
+      list-style: none; padding: 24px 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      cursor: none; font-size: 18px; font-weight: 500; color: var(--ink);
+      transition: color 0.2s;
+    }
+    .home-faq-item summary::-webkit-details-marker { display: none; }
+    .home-faq-item summary:hover { color: var(--red); }
+    .home-faq-icon {
+      font-size: 18px; color: var(--ink-3); flex-shrink: 0;
+      transition: transform 0.25s cubic-bezier(0.23,1,0.32,1);
+    }
+    .home-faq-item[open] .home-faq-icon { transform: rotate(45deg); color: var(--red); }
+    .home-faq-body {
+      font-size: 16px; color: var(--ink-2); line-height: 1.6;
+      padding-bottom: 24px; max-width: 640px;
+    }
+
+    @media (max-width: 768px) {
+      #faq { padding: 80px 24px; }
+      .home-faq-title { margin-bottom: 40px; }
+      .home-faq-item summary { font-size: 16px; padding: 20px 0; }
+    }
+
+    /* ═══════════════════════════════════════
        BLOG — SHARED
     ═══════════════════════════════════════ */
     .blog-hero {

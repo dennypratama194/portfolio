@@ -20,35 +20,77 @@ $canonical     = 'https://dennypratama.com/';
 $og_image      = 'https://dennypratama.com/assets/logo.png';
 $needs_gsap    = true;
 $meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designer and developer, startup product design, web designer Indonesia, UI designer for hire';
-$jsonld        = json_encode([
-    '@context'      => 'https://schema.org',
-    '@type'         => 'Person',
-    'name'          => 'Denny Pratama',
-    'url'           => 'https://dennypratama.com',
-    'jobTitle'      => 'UI/UX Designer & Developer',
-    'description'   => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
-    'image'         => 'https://dennypratama.com/assets/logo.png',
-    'email'         => 'hello@dennypratama.com',
-    'nationality'   => ['@type' => 'Country', 'name' => 'Indonesia'],
-    'knowsAbout'    => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'PHP', 'JavaScript', 'CSS', 'GSAP', 'AI Integration'],
-    'knowsLanguage' => ['English', 'Indonesian'],
-    'areaServed'    => 'Worldwide',
-    'hasOccupation' => [
-        '@type'              => 'Occupation',
-        'name'               => 'UI/UX Designer & Developer',
-        'occupationLocation' => ['@type' => 'Country', 'name' => 'Indonesia'],
-        'skills'             => 'UI/UX Design, Product Design, Web Development, PHP, JavaScript, CSS, GSAP, Figma, Design Systems',
+
+/* One array drives BOTH the visible FAQ section and the FAQPage schema,
+   so the on-page answers always match the structured data (AEO). */
+$faqs = [
+    [
+        'q' => 'Who is Denny Pratama?',
+        'a' => 'A UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience, helping startups and founders ship products that look sharp, work flawlessly, and actually convert.',
     ],
-    'offers' => [
-        '@type'       => 'Offer',
-        'name'        => 'UI/UX Design & Web Development Services',
-        'description' => 'UI/UX design, web development, brand identity, and AI integration for startups and founders.',
-        'areaServed'  => 'Worldwide',
+    [
+        'q' => 'What services do you offer?',
+        'a' => 'UI/UX design, web development, brand identity, design systems, and AI integration — from the first wireframe to a live, production-ready product.',
     ],
-    'sameAs' => [
-        'https://dribbble.com/dennypratama',
-        'https://www.linkedin.com/in/denny-pratama-740a14151/',
-        'https://instagram.com/dennypratama',
+    [
+        'q' => 'Do you work with international clients?',
+        'a' => 'Yes. I work remotely with clients worldwide, in English or Indonesian, and structure the process around async communication so time zones are never a blocker.',
+    ],
+    [
+        'q' => 'What does your design process look like?',
+        'a' => 'Four phases: Discover (research into your users and goals), Define (strategy, IA, and wireframes), Design (high-fidelity UI with motion and systems), and Deliver (full build or clean handoff). No assumptions, no disappearing acts.',
+    ],
+    [
+        'q' => 'What tools and technologies do you use?',
+        'a' => 'Figma for design; PHP, MySQL, vanilla JavaScript, modern CSS, and GSAP for builds — lean, fast, and maintainable without framework overhead where it isn\'t needed.',
+    ],
+    [
+        'q' => 'How can I start a project with you?',
+        'a' => 'Reach out through the contact form on this site with a short brief. I take on 2–3 projects per quarter so each gets my full focus — the earlier you get in touch, the better.',
+    ],
+];
+
+$jsonld = json_encode([
+    '@context' => 'https://schema.org',
+    '@graph'   => [
+        [
+            '@type'         => 'Person',
+            'name'          => 'Denny Pratama',
+            'url'           => 'https://dennypratama.com',
+            'jobTitle'      => 'UI/UX Designer & Developer',
+            'description'   => 'UI/UX designer and developer based in Indonesia. I help startups and founders ship products that look sharp, work flawlessly, and actually convert.',
+            'image'         => 'https://dennypratama.com/assets/logo.png',
+            'email'         => 'hello@dennypratama.com',
+            'nationality'   => ['@type' => 'Country', 'name' => 'Indonesia'],
+            'knowsAbout'    => ['UI/UX Design', 'Web Development', 'Brand Identity', 'Design Systems', 'PHP', 'JavaScript', 'CSS', 'GSAP', 'AI Integration'],
+            'knowsLanguage' => ['English', 'Indonesian'],
+            'areaServed'    => 'Worldwide',
+            'hasOccupation' => [
+                '@type'              => 'Occupation',
+                'name'               => 'UI/UX Designer & Developer',
+                'occupationLocation' => ['@type' => 'Country', 'name' => 'Indonesia'],
+                'skills'             => 'UI/UX Design, Product Design, Web Development, PHP, JavaScript, CSS, GSAP, Figma, Design Systems',
+            ],
+            'offers' => [
+                '@type'       => 'Offer',
+                'name'        => 'UI/UX Design & Web Development Services',
+                'description' => 'UI/UX design, web development, brand identity, and AI integration for startups and founders.',
+                'areaServed'  => 'Worldwide',
+            ],
+            'sameAs' => [
+                'https://dribbble.com/dennypratama',
+                'https://www.linkedin.com/in/denny-pratama-740a14151/',
+                'https://instagram.com/dennypratama',
+            ],
+        ],
+        [
+            '@type'      => 'FAQPage',
+            'mainEntity' => array_map(fn($f) => [
+                '@type'          => 'Question',
+                'name'           => $f['q'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($f['a'])],
+            ], $faqs),
+        ],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 ?>
@@ -571,10 +613,28 @@ $jsonld        = json_encode([
     </div>
   </section>
 
+  <section id="faq">
+    <div class="home-faq-head">
+      <div class="home-faq-eyebrow">07 — FAQ</div>
+      <h2 class="home-faq-title">Questions, answered.</h2>
+    </div>
+    <div class="home-faq-list">
+      <?php foreach ($faqs as $f): ?>
+        <details class="home-faq-item">
+          <summary>
+            <?= escHtml($f['q']) ?>
+            <span class="home-faq-icon" aria-hidden="true">+</span>
+          </summary>
+          <p class="home-faq-body"><?= escHtml($f['a']) ?></p>
+        </details>
+      <?php endforeach; ?>
+    </div>
+  </section>
+
   <section id="cta">
     <div class="cta-bg-type">Let's go.</div>
     <div class="cta-inner">
-      <div class="cta-label">07 — Let's Work</div>
+      <div class="cta-label">08 — Let's Work</div>
       <h2 class="cta-title">
         Something<br/>
         worth<br/>
