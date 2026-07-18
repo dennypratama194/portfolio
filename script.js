@@ -90,7 +90,7 @@ if (hasFinePointer) {
   lerpCursor();
   /* Single delegated listener — avoids attaching handlers to 100+ elements */
   document.addEventListener('mouseover', e => {
-    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell'));
+    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell, .home-faq-item summary'));
   });
 }
 
