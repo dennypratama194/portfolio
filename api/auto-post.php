@@ -931,14 +931,13 @@ function spawnBackgroundRun(string $token): string {
     if (function_exists('exec') && !in_array('exec', $disabled, true) && stripos(PHP_OS, 'WIN') === false) {
         $php = PHP_BINDIR . '/php';
         if (!is_executable($php)) $php = 'php';
-
         $setsid = '';
         @exec('command -v setsid 2>/dev/null', $sout);
         if (!empty($sout[0]) && is_executable(trim($sout[0]))) $setsid = trim($sout[0]);
 
         exec(($setsid ? escapeshellarg($setsid) . ' ' : '') . 'nohup '
             . escapeshellarg($php) . ' ' . escapeshellarg(__FILE__) . ' ' . escapeshellarg($token)
-            . ' > /dev/null 2>&1 &');
+            . ' < /dev/null > /dev/null 2>&1 &');
         return $setsid ? 'cli+setsid' : 'cli+nohup';
     }
     $host = $_SERVER['HTTP_HOST'] ?? 'dennypratama.com';
