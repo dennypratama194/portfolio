@@ -26,7 +26,7 @@ $meta_keywords = 'UI/UX designer Indonesia, freelance UI/UX designer, UX designe
 $faqs = [
     [
         'q' => 'Who is Denny Pratama?',
-        'a' => 'A UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience, helping startups and founders ship products that look sharp, work flawlessly, and actually convert.',
+        'a' => 'A UI/UX designer and developer based in Indonesia with 7+ years of hands-on experience, helping startups and founders ship products that look sharp, work flawlessly, and actually convert.',
     ],
     [
         'q' => 'What services do you offer?',
@@ -614,20 +614,22 @@ $jsonld = json_encode([
   </section>
 
   <section id="faq">
-    <div class="home-faq-head">
-      <div class="home-faq-eyebrow">07 — FAQ</div>
-      <h2 class="home-faq-title">Questions, answered.</h2>
-    </div>
-    <div class="home-faq-list">
-      <?php foreach ($faqs as $f): ?>
-        <details class="home-faq-item">
-          <summary>
-            <?= escHtml($f['q']) ?>
-            <span class="home-faq-icon" aria-hidden="true">+</span>
-          </summary>
-          <p class="home-faq-body"><?= escHtml($f['a']) ?></p>
-        </details>
-      <?php endforeach; ?>
+    <div class="home-faq-grid">
+      <div class="home-faq-head">
+        <div class="home-faq-eyebrow">07 — FAQ</div>
+        <h2 class="home-faq-title">Questions, answered.</h2>
+      </div>
+      <div class="home-faq-list">
+        <?php foreach ($faqs as $f): ?>
+          <details class="home-faq-item">
+            <summary>
+              <?= escHtml($f['q']) ?>
+              <span class="home-faq-icon" aria-hidden="true">+</span>
+            </summary>
+            <p class="home-faq-body"><?= escHtml($f['a']) ?></p>
+          </details>
+        <?php endforeach; ?>
+      </div>
     </div>
   </section>
 
