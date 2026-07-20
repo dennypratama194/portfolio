@@ -148,7 +148,7 @@ $jsonld      = json_encode([
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
-<script src="/script.js?v=25" defer></script>
+<script src="/script.js?v=26" defer></script>
 <script>var PAGE='case-study', SLUG='<?= addslashes($project['slug']) ?>';</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

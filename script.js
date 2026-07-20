@@ -683,6 +683,74 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 }());
 
+/* ── HOME FAQ ACCORDION — smooth expand/collapse (native <details> snaps with no
+   transition support). Animates height via the Web Animations API; the actual
+   `open` attribute is only flipped once the collapse animation finishes, so the
+   content stays visible (not display:none) for the whole close transition. ── */
+(function () {
+  const items = document.querySelectorAll('.home-faq-item');
+  if (!items.length) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  items.forEach(function (details) {
+    const summary = details.querySelector('summary');
+    const body = details.querySelector('.home-faq-body');
+    if (!summary || !body) return;
+    let animation = null;
+    let isClosing = false;
+    let isExpanding = false;
+
+    summary.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (reduce) { details.classList.toggle('is-open', !details.open); details.open = !details.open; return; }
+      if (isClosing || !details.open) expand();
+      else if (isExpanding || details.open) collapse();
+    });
+
+    function expand() {
+      details.classList.add('is-open');
+      details.style.overflow = 'hidden';
+      details.style.height = details.offsetHeight + 'px';
+      details.open = true;
+      requestAnimationFrame(function () {
+        isExpanding = true;
+        const start = details.offsetHeight;
+        const end = summary.offsetHeight + body.offsetHeight;
+        if (animation) animation.cancel();
+        animation = details.animate(
+          { height: [start + 'px', end + 'px'] },
+          { duration: 300, easing: 'cubic-bezier(0.23,1,0.32,1)' }
+        );
+        animation.onfinish = function () { finish(true); };
+        animation.oncancel = function () { isExpanding = false; };
+      });
+    }
+
+    function collapse() {
+      details.classList.remove('is-open');
+      isClosing = true;
+      details.style.overflow = 'hidden';
+      const start = details.offsetHeight;
+      const end = summary.offsetHeight;
+      if (animation) animation.cancel();
+      animation = details.animate(
+        { height: [start + 'px', end + 'px'] },
+        { duration: 300, easing: 'cubic-bezier(0.23,1,0.32,1)' }
+      );
+      animation.onfinish = function () { finish(false); };
+      animation.oncancel = function () { isClosing = false; };
+    }
+
+    function finish(open) {
+      details.open = open;
+      animation = null;
+      isClosing = false;
+      isExpanding = false;
+      details.style.height = details.style.overflow = '';
+    }
+  });
+}());
+
 /* ── SMOOTH SCROLL for in-page anchor links (e.g. "See the work" → #work, post TOC) ──
    Done in JS rather than CSS scroll-behavior:smooth, which GSAP warns against when
    ScrollTrigger pins are present (the homepage work section pins). Per-target offset

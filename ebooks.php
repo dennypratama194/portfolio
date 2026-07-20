@@ -81,7 +81,7 @@ $page_css = '/css/ebooks.css?v=1';
 <?php include 'partials/footer.php'; ?>
 
 
-  <script src="/script.js?v=25" defer></script>
+  <script src="/script.js?v=26" defer></script>
   <script>var PAGE='ebooks',SLUG=null;</script>
   <script src="/api/tracker.js?v=1" defer></script>
 </body>

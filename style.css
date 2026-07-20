@@ -1396,8 +1396,6 @@
     @media (max-width: 1024px) {
       .about-grid { grid-template-columns: 1fr; gap: 56px; }
       .about-left-sticky { position: static; }
-      .home-faq-grid { grid-template-columns: 1fr; gap: 56px; }
-      .home-faq-head { position: static; }
       /* approach stays 2-col at tablet */
     }
 
@@ -1822,7 +1820,6 @@
     .home-faq-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--red); }
     .home-faq-title {
       font-family: var(--font-sans);
-      font-style: italic;
       font-size: var(--text-h1); font-weight: 400;
       letter-spacing: -0.04em; line-height: var(--leading-h1); color: var(--ink);
     }
@@ -1841,12 +1838,16 @@
       font-size: 18px; color: var(--ink-3); flex-shrink: 0;
       transition: transform 0.25s cubic-bezier(0.23,1,0.32,1);
     }
-    .home-faq-item[open] .home-faq-icon { transform: rotate(45deg); color: var(--red); }
+    .home-faq-item.is-open .home-faq-icon { transform: rotate(45deg); color: var(--red); }
     .home-faq-body {
       font-size: 16px; color: var(--ink-2); line-height: 1.6;
       padding-bottom: 24px; max-width: 640px;
     }
 
+    @media (max-width: 1024px) {
+      .home-faq-grid { grid-template-columns: 1fr; gap: 56px; }
+      .home-faq-head { position: static; }
+    }
     @media (max-width: 768px) {
       #faq { padding: 80px 24px; }
       .home-faq-grid { gap: 40px; }
