@@ -90,7 +90,7 @@ if (hasFinePointer) {
   lerpCursor();
   /* Single delegated listener — avoids attaching handlers to 100+ elements */
   document.addEventListener('mouseover', e => {
-    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell'));
+    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell, .home-faq-item summary'));
   });
 }
 
@@ -606,6 +606,22 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    // FAQ — head + items
+    const faqHead  = document.querySelector('.home-faq-head');
+    const faqItems = document.querySelectorAll('.home-faq-item');
+    if (faqHead) {
+      gsap.from(Array.from(faqHead.children), {
+        y: 60, opacity: 0, stagger: 0.12, duration: D, ease: EASE,
+        scrollTrigger: st(faqHead),
+      });
+    }
+    if (faqItems.length) {
+      gsap.from(faqItems, {
+        y: 40, opacity: 0, stagger: 0.08, duration: D, ease: EASE,
+        scrollTrigger: st(faqItems[0]),
+      });
+    }
+
     // CTA — bg text parallax
     const ctaBgType = document.querySelector('.cta-bg-type');
     if (ctaBgType) {
@@ -664,6 +680,74 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!inView) return;
     if (e.key === 'ArrowLeft')  go(idx - 1);
     if (e.key === 'ArrowRight') go(idx + 1);
+  });
+}());
+
+/* ── HOME FAQ ACCORDION — smooth expand/collapse (native <details> snaps with no
+   transition support). Animates height via the Web Animations API; the actual
+   `open` attribute is only flipped once the collapse animation finishes, so the
+   content stays visible (not display:none) for the whole close transition. ── */
+(function () {
+  const items = document.querySelectorAll('.home-faq-item');
+  if (!items.length) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  items.forEach(function (details) {
+    const summary = details.querySelector('summary');
+    const body = details.querySelector('.home-faq-body');
+    if (!summary || !body) return;
+    let animation = null;
+    let isClosing = false;
+    let isExpanding = false;
+
+    summary.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (reduce) { details.classList.toggle('is-open', !details.open); details.open = !details.open; return; }
+      if (isClosing || !details.open) expand();
+      else if (isExpanding || details.open) collapse();
+    });
+
+    function expand() {
+      details.classList.add('is-open');
+      details.style.overflow = 'hidden';
+      details.style.height = details.offsetHeight + 'px';
+      details.open = true;
+      requestAnimationFrame(function () {
+        isExpanding = true;
+        const start = details.offsetHeight;
+        const end = summary.offsetHeight + body.offsetHeight;
+        if (animation) animation.cancel();
+        animation = details.animate(
+          { height: [start + 'px', end + 'px'] },
+          { duration: 300, easing: 'cubic-bezier(0.23,1,0.32,1)' }
+        );
+        animation.onfinish = function () { finish(true); };
+        animation.oncancel = function () { isExpanding = false; };
+      });
+    }
+
+    function collapse() {
+      details.classList.remove('is-open');
+      isClosing = true;
+      details.style.overflow = 'hidden';
+      const start = details.offsetHeight;
+      const end = summary.offsetHeight;
+      if (animation) animation.cancel();
+      animation = details.animate(
+        { height: [start + 'px', end + 'px'] },
+        { duration: 300, easing: 'cubic-bezier(0.23,1,0.32,1)' }
+      );
+      animation.onfinish = function () { finish(false); };
+      animation.oncancel = function () { isClosing = false; };
+    }
+
+    function finish(open) {
+      details.open = open;
+      animation = null;
+      isClosing = false;
+      isExpanding = false;
+      details.style.height = details.style.overflow = '';
+    }
   });
 }());
 
