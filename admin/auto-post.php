@@ -7,13 +7,12 @@ if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-$config_file = __DIR__ . '/../api/.auto_post_config.json';
-$config_raw  = file_exists($config_file) ? file_get_contents($config_file) : '';
-/* BOM-strip: a UTF-8 BOM breaks json_decode, which would empty the token
-   and silently disable the Run Now button with no visible error. */
-$config = json_decode(ltrim($config_raw, "\xEF\xBB\xBF"), true);
-$config_broken = $config_raw !== '' && !is_array($config);
-if (!is_array($config)) $config = [];
+require __DIR__ . '/../api/helpers.php';
+
+$config_file   = __DIR__ . '/../api/.auto_post_config.json';
+$config        = readJsonFile($config_file, null);
+$config_broken = file_exists($config_file) && $config === null;
+$config        = $config ?? [];
 
 $saved = false;
 
@@ -73,155 +72,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="theme.css?v=6"/>
-  <style>
-    .main { max-width: 1120px; }
-    input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
-
-    /* ── Two-column layout ── */
-    .auto-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; align-items: start; }
-    .auto-main { min-width: 0; }
-    .auto-sidebar { position: sticky; top: 24px; }
-    .auto-sidebar-card {
-      background: rgba(var(--text-rgb),0.03);
-      border: 1px solid rgba(var(--text-rgb),0.08);
-      padding: 24px;
-    }
-    @media (max-width: 960px) {
-      .auto-layout { grid-template-columns: 1fr; }
-      .auto-sidebar { position: static; }
-    }
-
-    .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px; border: 1px solid rgba(var(--text-rgb),0.08);
-      background: rgba(var(--text-rgb),0.03); margin-bottom: 28px;
-    }
-    .toggle-label-text { font-size: 14px; color: rgba(var(--text-rgb),0.8); }
-    .toggle-sub { font-size: 14px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; }
-    .toggle-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; inset: 0;
-      background: rgba(var(--text-rgb),0.1); transition: background 0.2s;
-      border-radius: 24px;
-    }
-    .toggle-track::after {
-      content: ''; position: absolute; top: 3px; left: 3px;
-      width: 18px; height: 18px; background: rgba(var(--text-rgb),0.4);
-      border-radius: 50%; transition: transform 0.2s, background 0.2s;
-    }
-    .toggle-switch input:checked + .toggle-track { background: rgba(var(--red-rgb),0.3); }
-    .toggle-switch input:checked + .toggle-track::after {
-      transform: translateX(20px); background: var(--red);
-    }
-
-    .key-set { font-size: 14px; color: var(--red); margin-top: 8px; }
-
-    .cron-box {
-      background: rgba(var(--text-rgb),0.03); border: 1px solid rgba(var(--text-rgb),0.08);
-      padding: 24px; margin-bottom: 40px;
-    }
-    .cron-url {
-      font-family: monospace; font-size: 12px; color: rgba(var(--text-rgb),0.7);
-      background: rgba(var(--text-rgb),0.05); padding: 10px 14px;
-      word-break: break-all; margin-bottom: 16px;
-      border: 1px solid rgba(var(--text-rgb),0.08);
-    }
-    .cron-copy {
-      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(var(--text-rgb),0.4); background: none;
-      border: 1px solid rgba(var(--text-rgb),0.1);
-      padding: 6px 14px; cursor: pointer; font-family: inherit;
-      transition: color 0.2s, border-color 0.2s; margin-bottom: 20px;
-    }
-    .cron-copy:hover { color: var(--text); border-color: rgba(var(--text-rgb),0.3); }
-    .cron-schedules { display: flex; flex-direction: column; gap: 8px; }
-    .cron-row { display: flex; align-items: center; gap: 16px; }
-    .cron-expr { font-family: monospace; font-size: 12px; color: var(--red); min-width: 100px; }
-    .cron-desc { font-size: 12px; color: rgba(var(--text-rgb),0.4); }
-
-    .run-btn {
-      background: var(--red); color: var(--text); border: none;
-      font-family: var(--font-sans); font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      padding: 13px 28px; cursor: pointer; transition: opacity 0.2s;
-      display: block; width: 100%;
-    }
-    .run-btn:hover { opacity: 0.85; }
-    .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .run-status {
-      font-size: 14px; color: rgba(var(--text-rgb),0.5);
-      display: block; margin-top: 10px; line-height: 1.5;
-    }
-    .run-status.ok  { color: #4ade80; }
-    .run-status.err { color: var(--red); }
-
-    /* ── Run progress stepper ── */
-    .run-progress { display: none; margin-top: 16px; }
-    .run-progress.is-active { display: block; }
-    .run-step {
-      display: flex; align-items: center; gap: 12px;
-      padding: 6px 0; font-size: 14px; color: rgba(var(--text-rgb),0.3);
-    }
-    .run-step-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(var(--text-rgb),0.15); transition: background 0.2s;
-    }
-    .run-step.is-done { color: rgba(var(--text-rgb),0.55); }
-    .run-step.is-done .run-step-dot { background: #4ade80; }
-    .run-step.is-active { color: var(--text); }
-    .run-step.is-active .run-step-dot { background: var(--red); animation: run-pulse 1.2s ease-in-out infinite; }
-    .run-step.is-failed { color: var(--red); }
-    .run-step.is-failed .run-step-dot { background: var(--red); animation: none; }
-    @keyframes run-pulse { 50% { opacity: 0.25; } }
-    .run-elapsed { font-family: var(--font-mono); font-size: 12px; color: rgba(var(--text-rgb),0.3); margin-top: 8px; }
-
-    .sidebar-rule { border: none; border-top: 1px solid rgba(var(--text-rgb),0.08); margin: 20px 0; }
-
-    .btn-secondary {
-      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      color: rgba(var(--text-rgb),0.35); background: none;
-      border: 1px solid rgba(var(--text-rgb),0.1);
-      padding: 8px 16px; cursor: pointer; font-family: inherit;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .btn-secondary:hover { color: var(--text); border-color: rgba(var(--text-rgb),0.25); }
-    .btn-row { gap: 12px; margin-top: 32px; }
-
-    .saved-banner {
-      background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
-      padding: 12px 20px; font-size: 14px; color: #4ade80; margin-bottom: 28px;
-    }
-
-    /* Sidebar table — compact */
-    .sidebar-table { width: 100%; border-collapse: collapse; }
-    .sidebar-table th {
-      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(var(--text-rgb),0.3); padding: 0 0 10px; text-align: left; font-weight: 500;
-    }
-    .sidebar-table td { padding: 12px 8px 12px 0; font-size: 14px; color: rgba(var(--text-rgb),0.7); border-top: 1px solid rgba(var(--text-rgb),0.06); vertical-align: middle; }
-    .sidebar-table td:last-child { white-space: nowrap; }
-    .post-title-link { color: var(--text); text-decoration: none; font-weight: 500; font-size: 14px; line-height: 1.4; display: block; }
-    .post-title-link:hover { color: var(--red); }
-    .pub-date { font-size: 12px; color: rgba(var(--text-rgb),0.4); white-space: nowrap; }
-    .empty-sidebar { font-size: 14px; color: rgba(var(--text-rgb),0.3); padding: 16px 0 4px; }
-    .last-run { font-size: 12px; color: rgba(var(--text-rgb),0.3); margin-top: 4px; display: block; }
-
-    .img-ok      { color: #4ade80; margin-right: 6px; }
-    .img-missing { color: rgba(var(--text-rgb),0.3); margin-right: 6px; }
-    .regen-btn {
-      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
-      color: rgba(var(--text-rgb),0.5); background: none;
-      border: 1px solid rgba(var(--text-rgb),0.12);
-      padding: 3px 10px; cursor: pointer; font-family: inherit;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .regen-btn:hover:not(:disabled) { color: var(--text); border-color: rgba(var(--text-rgb),0.3); }
-    .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .regen-status { font-size: 14px; color: rgba(var(--text-rgb),0.5); display: block; margin-top: 4px; }
-    .regen-status.ok  { color: #4ade80; }
-    .regen-status.err { color: var(--red); }
-  </style>
+  <link rel="stylesheet" href="css/auto-post.css?v=1"/>
 </head>
 <body>
 
@@ -583,10 +434,15 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         polls = 0;
         tickTimer = setInterval(tick, 1000);
         pollTimer = setInterval(function(){
-          if (++polls > 160) { // ~8 minutes
+          /* This is a secondary backstop, not the stuck-run detector — that's
+             showRunState()'s `run.age > 120` check, which fires first for any
+             actually-dead run. This only catches a run that keeps reporting
+             fresh progress but never finishes (e.g. two slow Claude retries
+             plus a slow image call can legitimately approach ~10 minutes). */
+          if (++polls > 240) { // ~12 minutes
             stopPoll();
             runStatus.className = 'run-status err';
-            runStatus.textContent = '⚠ Still running after 8 minutes — check the posts list and api/logs/auto-post.log.';
+            runStatus.textContent = '⚠ Still running after 12 minutes — check the posts list and api/logs/auto-post.log.';
             runBtn.disabled = false;
             return;
           }

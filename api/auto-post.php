@@ -30,14 +30,24 @@
      is detectable at a glance.
 ════════════════════════════════════════════════════════════════ */
 
-const AP_VERSION = '2.2';
-set_time_limit(300);
+const AP_VERSION = '2.3';
+
+$is_cli = php_sapi_name() === 'cli';
+
+/* The CLI worker (spawned detached via setsid/nohup, or run straight from
+   cron) has nothing to protect — it isn't holding open a web server slot.
+   Capping it at 300s risks PHP self-killing a legitimately slow run (two
+   Claude retries near their 240s timeout + a 120s image call can exceed
+   5 minutes) — the same failure mode as a host-killed process, just
+   self-inflicted. Only the HTTP-served request (a real web worker slot)
+   gets the cap. */
+set_time_limit($is_cli ? 0 : 300);
 
 /* If the browser or a proxy drops mid-run, FINISH ANYWAY — the tokens are
    already paid for. The post publishes server-side and appears on reload. */
 ignore_user_abort(true);
 
-$is_cli = php_sapi_name() === 'cli';
+require __DIR__ . '/helpers.php'; // needed below for readJsonFile()
 
 if (!$is_cli) {
     /* Commit status + headers now, before the long API calls start.
@@ -59,9 +69,7 @@ $config_file = __DIR__ . '/.auto_post_config.json';
 if (!file_exists($config_file)) {
     respond(503, ['ok' => false, 'error' => 'Auto-post not configured yet.']);
 }
-/* BOM-strip before decoding: a UTF-8 BOM (added by many Windows editors)
-   makes json_decode fail, silently turning every request into "Forbidden". */
-$config = json_decode(ltrim(file_get_contents($config_file), "\xEF\xBB\xBF"), true);
+$config = readJsonFile($config_file, null);
 if (!is_array($config)) {
     respond(500, ['ok' => false, 'error' => 'Config file exists but is not valid JSON — open the admin panel and click Save Settings to rewrite it.']);
 }
@@ -83,7 +91,6 @@ if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test',
 }
 
 require __DIR__ . '/db.php';
-require __DIR__ . '/helpers.php';
 
 /* A "Run start" line with no follow-up = the host killed the process. */
 register_shutdown_function(function () use ($phase) {
@@ -104,12 +111,8 @@ if ($phase !== 'status') { // status is polled every few seconds — don't spam 
    last background run. Polled by the admin UI.
 ════════════════════════════════════════════════════ */
 if ($phase === 'status') {
-    $run = null;
-    $sf  = __DIR__ . '/logs/run-status.json';
-    if (file_exists($sf)) {
-        $run = json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: null;
-        if ($run && isset($run['updated'])) $run['age'] = time() - (int)$run['updated'];
-    }
+    $run = readJsonFile(__DIR__ . '/logs/run-status.json', null);
+    if ($run && isset($run['updated'])) $run['age'] = time() - (int)$run['updated'];
     respond(200, ['ok' => true, 'phase' => 'status', 'run' => $run]);
 }
 
@@ -120,8 +123,7 @@ if ($phase === 'status') {
    cleared and double-started mid-generation.
 ════════════════════════════════════════════════════ */
 if ($phase === 'clear') {
-    $sf  = __DIR__ . '/logs/run-status.json';
-    $cur = file_exists($sf) ? (json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: []) : [];
+    $cur = readJsonFile(__DIR__ . '/logs/run-status.json');
     if ($cur && empty($cur['done']) && isset($cur['updated']) && time() - (int)$cur['updated'] < 120) {
         respond(409, ['ok' => false, 'error' => 'The run is still reporting progress — wait for it to finish or stall before clearing.']);
     }
@@ -157,7 +159,7 @@ if ($phase === 'salvage') {
         }
     }
 
-    $meta = json_decode(ltrim((string)@file_get_contents(__DIR__ . '/logs/last-run-meta.json'), "\xEF\xBB\xBF"), true) ?: [];
+    $meta = readJsonFile(__DIR__ . '/logs/last-run-meta.json');
     [$post_id, $title, $slug, $image_prompt] = publishPost($sec, $meta['category'] ?? 'development');
 
     @rename($raw_file, $raw_file . '.salvaged'); // one salvage per run
@@ -188,8 +190,7 @@ if ($phase === 'start') {
     if (!$anthropic_key) respond(503, ['ok' => false, 'error' => 'Anthropic API key not set.']);
 
     $lock_file = __DIR__ . '/logs/run.lock';
-    $sf        = __DIR__ . '/logs/run-status.json';
-    $cur       = file_exists($sf) ? (json_decode(ltrim((string)@file_get_contents($sf), "\xEF\xBB\xBF"), true) ?: []) : [];
+    $cur       = readJsonFile(__DIR__ . '/logs/run-status.json');
 
     /* A live run refreshes both files every ~15s (statusPulse), so anything
        quieter than 3 minutes is dead weight, not an active run. */
@@ -908,10 +909,7 @@ function setRunStatus(array $patch, bool $reset = false): void {
     $dir = __DIR__ . '/logs';
     if (!is_dir($dir)) @mkdir($dir, 0755, true);
     $f   = $dir . '/run-status.json';
-    $cur = [];
-    if (!$reset && file_exists($f)) {
-        $cur = json_decode(ltrim((string)@file_get_contents($f), "\xEF\xBB\xBF"), true) ?: [];
-    }
+    $cur = $reset ? [] : readJsonFile($f);
     $patch['updated'] = time();
     @file_put_contents($f, json_encode(array_merge($cur, $patch)), LOCK_EX);
 }

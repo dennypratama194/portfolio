@@ -17,6 +17,8 @@
   --warning-rgb: 255,180,0;
   --select-bg:   #1a1917;
   --error-text:  #f87171;  /* lighter red for readability on dark error banners */
+  --green:       #4ade80;
+  --green-rgb:   74,222,128;
 
   /* Light-mode surface/text (redeclared below inside [data-theme="light"]) */
   --text-light:     #1C1B18;

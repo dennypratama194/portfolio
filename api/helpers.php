@@ -70,6 +70,17 @@ function convertToWebp(string $image_data, string $dir, string $basename, int $q
 }
 
 /**
+ * Read + json_decode a file, tolerating a leading UTF-8 BOM (added by many
+ * Windows editors, which otherwise makes json_decode fail silently).
+ * Returns $default if the file is missing, unreadable, or not valid JSON.
+ */
+function readJsonFile(string $path, $default = []) {
+    if (!file_exists($path)) return $default;
+    $decoded = json_decode(ltrim((string)@file_get_contents($path), "\xEF\xBB\xBF"), true);
+    return is_array($decoded) ? $decoded : $default;
+}
+
+/**
  * Slugify a heading into a URL-safe anchor id (e.g. "Why Empty States" → "why-empty-states").
  */
 function slugify(string $text): string {
