@@ -102,7 +102,10 @@ $jsonld = json_encode([
 <body>
 
 <div class="preloader" id="preloader" aria-hidden="true">
-  <div class="preloader-window"></div>
+  <div class="preloader-panel"></div>
+  <div class="preloader-panel"></div>
+  <div class="preloader-panel"></div>
+  <div class="preloader-panel"></div>
   <div class="preloader-label">UIUX Designer</div>
   <div class="preloader-count" id="preloader-count">0</div>
   <div class="preloader-year"><?= date('Y') ?></div>
@@ -152,7 +155,7 @@ $jsonld = json_encode([
     setTimeout(function () {
       pre.classList.add('is-done');
       document.documentElement.classList.remove('preload-lock');
-    }, 1750);
+    }, 1300);
   }
 
   requestAnimationFrame(tick);
