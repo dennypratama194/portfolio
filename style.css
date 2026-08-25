@@ -1646,6 +1646,9 @@
     }
     .bt-prev { left: 0; cursor: w-resize; }
     .bt-next { right: 0; cursor: e-resize; }
+    /* Inset focus ring — default outline-offset makes adjacent buttons' rings overlap into a stray center line */
+    .bt-prev:focus-visible,
+    .bt-next:focus-visible { outline-offset: -4px; }
 
     /* Image cell */
     .bc-clients {
@@ -1808,7 +1811,7 @@
       display: grid;
       grid-template-columns: 1fr 1.6fr;
       gap: 64px;
-      align-items: center;
+      align-items: start;
     }
     .home-faq-head { position: sticky; top: 100px; }
     .home-faq-eyebrow {
