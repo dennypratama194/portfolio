@@ -97,9 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <style>
     :root {
       --font-sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      --red:  #CC2A08;
-      --bg:   #0D0C09;
-      --text: #ECEAE2;
+      --red:      #CC2A08;
+      --red-rgb:  204,42,8;
+      --bg:       #0D0C09;
+      --text:     #ECEAE2;
       --text-rgb: 236,234,226;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -107,16 +108,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       background: var(--bg); color: var(--text);
       font-family: var(--font-sans);
       min-height: 100vh;
+    }
+    .login-page { display: flex; min-height: 100vh; }
+
+    /* ── Left: branded visual panel ── */
+    .login-visual {
+      position: relative;
+      flex: 1 1 50%;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 64px;
+      overflow: hidden;
+      border-right: 1px solid rgba(var(--text-rgb),0.08);
+    }
+    .login-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(var(--text-rgb),0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+      -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 70%);
+              mask-image: linear-gradient(180deg, rgba(0,0,0,0.9), transparent 70%);
+    }
+    .login-visual::after {
+      content: ''; position: absolute;
+      width: 480px; height: 480px; left: -160px; bottom: -160px;
+      background: radial-gradient(circle, rgba(var(--red-rgb),0.35), transparent 70%);
+      filter: blur(40px);
+    }
+    .login-visual-logo { position: relative; z-index: 1; height: 28px; width: auto; opacity: 0.85; }
+    .login-visual-content { position: relative; z-index: 1; max-width: 420px; }
+    .login-visual-heading {
+      font-size: 48px; font-weight: 600; letter-spacing: -0.03em;
+      line-height: 1.1; margin-bottom: 16px;
+    }
+    .login-visual-sub { font-size: 16px; line-height: 1.5; color: rgba(var(--text-rgb),0.5); }
+
+    /* ── Right: login form panel ── */
+    .login-form-panel {
+      flex: 1 1 50%;
       display: flex; align-items: center; justify-content: center;
+      padding: 48px;
     }
-    .login-box {
-      width: 100%; max-width: 400px;
-      padding: 48px 40px;
-      border: 1px solid rgba(var(--text-rgb),0.08);
-    }
-    .login-logo {
+    .login-box { width: 100%; max-width: 400px; }
+    .login-eyebrow {
       font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(var(--text-rgb),0.4); margin-bottom: 40px;
+      color: rgba(var(--text-rgb),0.4); margin-bottom: 16px;
     }
     h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 32px; }
     label {
@@ -153,23 +187,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       cursor: pointer; transition: opacity 0.2s;
     }
     button:hover { opacity: 0.85; }
+
+    @media (max-width: 768px) {
+      .login-page { flex-direction: column; }
+      .login-visual {
+        flex: none; padding: 32px 24px;
+        border-right: none; border-bottom: 1px solid rgba(var(--text-rgb),0.08);
+      }
+      .login-visual::before, .login-visual::after { display: none; }
+      .login-visual-content { display: none; }
+      .login-form-panel { padding: 32px 24px; }
+    }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <div class="login-logo">DP — Admin</div>
-    <h1>Sign in</h1>
-    <?php if ($error): ?>
-      <div class="error"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-    <form method="POST" action="" id="login-form">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" autocomplete="username" required/>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" autocomplete="current-password" required/>
-      <input type="hidden" name="recaptcha_token" id="recaptcha_token"/>
-      <button type="submit">Sign in →</button>
-    </form>
+  <div class="login-page">
+    <div class="login-visual">
+      <img class="login-visual-logo" src="/assets/logo.png" alt="Denny Pratama"/>
+      <div class="login-visual-content">
+        <h2 class="login-visual-heading">Ship the site.<br/>Trust the process.</h2>
+        <p class="login-visual-sub">Analytics, posts, and ebooks — everything lives here.</p>
+      </div>
+    </div>
+    <div class="login-form-panel">
+      <div class="login-box">
+        <div class="login-eyebrow">DP — Admin</div>
+        <h1>Sign in</h1>
+        <?php if ($error): ?>
+          <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+        <form method="POST" action="" id="login-form">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" autocomplete="username" required/>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required/>
+          <input type="hidden" name="recaptcha_token" id="recaptcha_token"/>
+          <button type="submit">Sign in →</button>
+        </form>
+      </div>
+    </div>
   </div>
   <script>
     (function () {

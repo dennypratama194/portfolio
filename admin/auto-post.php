@@ -173,14 +173,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
         <div class="cron-box">
           <?php if ($token): ?>
-            <label style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(var(--text-rgb),0.3);margin-bottom:8px;display:block">Your cron URL</label>
+            <label class="cron-label">Your cron URL</label>
             <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
             <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
           <?php else: ?>
             <div class="hint">Save your settings first to generate the cron URL.</div>
           <?php endif; ?>
 
-          <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(var(--text-rgb),0.3);margin-bottom:10px">Suggested schedules</div>
+          <div class="cron-label" style="margin-bottom:10px">Suggested schedules</div>
           <div class="cron-schedules">
             <div class="cron-row">
               <span class="cron-expr">0 8 * * 1</span>
@@ -198,9 +198,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
           <div class="hint" style="margin-top:16px">
             In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
-            <code style="color:rgba(var(--text-rgb),0.6)">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
+            <code class="cron-code">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
             Or via wget (two requests, each under 30s):<br>
-            <code style="color:rgba(var(--text-rgb),0.6)">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
+            <code class="cron-code">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
           </div>
 
           <?php if ($last_run): ?>

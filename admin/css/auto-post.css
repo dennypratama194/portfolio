@@ -63,6 +63,8 @@ input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
 .cron-row { display: flex; align-items: center; gap: 16px; }
 .cron-expr { font-family: monospace; font-size: 14px; color: var(--red); min-width: 100px; }
 .cron-desc { font-size: 14px; color: rgba(var(--text-rgb),0.4); }
+.cron-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(var(--text-rgb),0.3); margin-bottom: 8px; display: block; }
+.cron-code  { color: rgba(var(--text-rgb),0.6); }
 
 .run-btn {
   background: var(--red); color: var(--text); border: none;
@@ -145,3 +147,46 @@ input[type=text], input[type=password] { font-size: 14px; padding: 11px 14px; }
 .regen-status { font-size: 14px; color: rgba(var(--text-rgb),0.5); display: block; margin-top: 4px; }
 .regen-status.ok  { color: var(--green); }
 .regen-status.err { color: var(--red); }
+
+/* ── Light mode ──────────────────────────────────────
+   The rules above use --text-rgb (a fixed near-white value) for every
+   secondary/tertiary text color, which reads fine on the dark background
+   but is nearly invisible on the light one. Mirror each with the light
+   equivalent, same pattern theme.css uses for every other admin page. */
+[data-theme="light"] .auto-sidebar-card { background: rgba(var(--text-light-rgb),0.04); border-color: rgba(var(--text-light-rgb),0.08); }
+[data-theme="light"] .toggle-row        { background: rgba(var(--text-light-rgb),0.04); border-color: rgba(var(--text-light-rgb),0.08); }
+[data-theme="light"] .toggle-label-text { color: rgba(var(--text-light-rgb),0.75); }
+[data-theme="light"] .toggle-sub        { color: rgba(var(--text-light-rgb),0.4); }
+[data-theme="light"] .toggle-track      { background: rgba(var(--text-light-rgb),0.12); }
+[data-theme="light"] .toggle-track::after { background: rgba(var(--text-light-rgb),0.45); }
+
+[data-theme="light"] .cron-box   { background: rgba(var(--text-light-rgb),0.04); border-color: rgba(var(--text-light-rgb),0.08); }
+[data-theme="light"] .cron-url   { color: rgba(var(--text-light-rgb),0.65); background: rgba(var(--text-light-rgb),0.05); border-color: rgba(var(--text-light-rgb),0.08); }
+[data-theme="light"] .cron-copy  { color: rgba(var(--text-light-rgb),0.45); border-color: rgba(var(--text-light-rgb),0.12); }
+[data-theme="light"] .cron-copy:hover { color: var(--text-light); border-color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .cron-desc  { color: rgba(var(--text-light-rgb),0.45); }
+[data-theme="light"] .cron-label { color: rgba(var(--text-light-rgb),0.4); }
+[data-theme="light"] .cron-code  { color: rgba(var(--text-light-rgb),0.65); }
+
+[data-theme="light"] .run-status         { color: rgba(var(--text-light-rgb),0.55); }
+[data-theme="light"] .run-step           { color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .run-step-dot       { background: rgba(var(--text-light-rgb),0.15); }
+[data-theme="light"] .run-step.is-done   { color: rgba(var(--text-light-rgb),0.6); }
+[data-theme="light"] .run-step.is-active { color: var(--text-light); }
+[data-theme="light"] .run-elapsed        { color: rgba(var(--text-light-rgb),0.4); }
+
+[data-theme="light"] .sidebar-rule { border-top-color: rgba(var(--text-light-rgb),0.08); }
+[data-theme="light"] .btn-secondary        { color: rgba(var(--text-light-rgb),0.45); border-color: rgba(var(--text-light-rgb),0.12); }
+[data-theme="light"] .btn-secondary:hover  { color: var(--text-light); border-color: rgba(var(--text-light-rgb),0.3); }
+
+[data-theme="light"] .sidebar-table th  { color: rgba(var(--text-light-rgb),0.4); }
+[data-theme="light"] .sidebar-table td  { color: rgba(var(--text-light-rgb),0.75); border-top-color: rgba(var(--text-light-rgb),0.06); }
+[data-theme="light"] .post-title-link   { color: var(--text-light); }
+[data-theme="light"] .pub-date          { color: rgba(var(--text-light-rgb),0.45); }
+[data-theme="light"] .empty-sidebar     { color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .last-run          { color: rgba(var(--text-light-rgb),0.35); }
+
+[data-theme="light"] .img-missing { color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .regen-btn   { color: rgba(var(--text-light-rgb),0.55); border-color: rgba(var(--text-light-rgb),0.14); }
+[data-theme="light"] .regen-btn:hover:not(:disabled) { color: var(--text-light); border-color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .regen-status { color: rgba(var(--text-light-rgb),0.55); }
