@@ -340,7 +340,11 @@
     #hero {
       min-height: 100vh;
       display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 0 var(--pad-x) 64px;
+      /* The top padding is a reserved band for .hero-overline + .hero-year,
+         which are absolutely positioned at top:120px. Without it the flow
+         content (the h1) starts at the hero's top edge and the overline lands
+         on top of it the moment the hero has to grow past 100vh. */
+      padding: 176px var(--pad-x) 64px;
       position: relative;
       background: var(--paper);
       overflow: hidden;
@@ -554,6 +558,19 @@
                   opacity 0.4s ease, visibility 0.4s ease;
     }
     body.video-showcase-active .video-showcase-cta { opacity: 1; visibility: visible; }
+
+    /* Short viewports — laptops, and 1080p screens at 125% OS scaling (~736px
+       of CSS height). The hero's natural height is ~816px (176 reserve + four
+       display lines + the 228px video clip + 64 bottom), so below that it grows
+       past the fold and pushes the video clip under it. Tighten the reserve and
+       shrink the clip instead of letting the section overflow. */
+    @media (min-width: 769px) and (max-height: 840px) {
+      #hero { padding-top: 136px; padding-bottom: 48px; }
+      .hero-overline,
+      .hero-year { top: 96px; }
+      .hero-video-frame,
+      .hero-video-slot-ghost { width: 248px; height: 176px; }
+    }
 
     /* ═══════════════════════════════════════
        TICKER
@@ -1437,7 +1454,7 @@
       body { cursor: auto; }
 
       header nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
-      #hero { padding: 0 24px 48px; min-height: 100svh; }
+      #hero { padding: 144px 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
