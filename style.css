@@ -8,7 +8,6 @@
       --ink-2:   #3A3830;
       --ink-3:   #6B6960;
       --red:     #CC2A08;
-      --red-deep: #A32206;   /* primary button hover — same hue, one step down */
       --border:  rgba(var(--ink-rgb),0.1);
       --white:        #FFFFFF;       /* pure white — for button text, inputs, cursor dot */
       --ink-surface:  #1a1916;       /* dark lifted surface (clients section cells) */
@@ -138,6 +137,17 @@
     body.cursor-hover #cursor-dot {
       background: var(--white);
     }
+    /* … but not over a .btn. The filled ring is 64px; a button is ~53px, so
+       it dropped a solid red disc on top of the label — and on the red
+       primary the disc is the same color as the button, so the white text
+       simply disappeared. Buttons carry their own hover state (glow, outline
+       step-up, magnetic pull), so the ring falls back to its outlined form
+       and stays out of the way. */
+    body.cursor-hover.cursor-on-btn #cursor-ring {
+      width: 40px; height: 40px;
+      background: transparent;
+      border-color: var(--red);
+    }
 
     /* ═══════════════════════════════════════
        BUTTON SYSTEM
@@ -154,9 +164,12 @@
        Both variants carry the same 1.5px border (transparent on the primary)
        so they measure the same height and share a baseline side by side.
 
-       Hover is one language everywhere: the fill arrives or deepens, and a
-       soft shadow tinted to that fill appears. Nothing else moves — the
-       magnetic translate on .btn-primary belongs to script.js.
+       Hover is one language everywhere: the button steps forward. The
+       primary lifts on a red glow; the secondary's outline and label come
+       up to full contrast. Deliberately no fill swap — a filled hover on a
+       red button leaves nothing for the white label to sit on. This is the
+       behaviour the #cta section always had; it is now the rule everywhere.
+       The magnetic translate on .btn-primary belongs to script.js.
 
        font-family is declared HERE, not via the opt-in mono list at the end
        of this file. .btn-cta-main was never added to that list, so the CTA
@@ -188,37 +201,31 @@
     }
     .btn-primary:hover,
     .btn-primary:focus-visible {
-      background: var(--red-deep);
-      border-color: var(--red-deep);
       box-shadow: 0 8px 24px rgba(var(--red-rgb),0.28);
     }
 
-    /* ── Secondary — outlined, fills in on hover ── */
+    /* ── Secondary — outlined; outline and label step up to full contrast ── */
     .btn-secondary {
       background: transparent;
       border-color: rgba(var(--ink-rgb),0.2);
-      color: var(--ink);
+      color: var(--ink-2);
     }
     .btn-secondary:hover,
     .btn-secondary:focus-visible {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: var(--paper);
-      box-shadow: 0 8px 24px rgba(var(--ink-rgb),0.18);
+      border-color: rgba(var(--ink-rgb),0.5);
+      color: var(--ink);
     }
 
-    /* ── Dark surfaces. The primary is already red on both, so only the
-         secondary's ink/paper pair inverts. ── */
+    /* ── Dark surfaces. The primary is red on both, so only the secondary's
+         ink pair inverts to paper — this is the #cta pair, unchanged. ── */
     .btn-on-dark.btn-secondary {
-      border-color: rgba(var(--light-text-rgb),0.25);
-      color: rgba(var(--light-text-rgb),0.75);
+      border-color: rgba(var(--light-text-rgb),0.2);
+      color: rgba(var(--light-text-rgb),0.6);
     }
     .btn-on-dark.btn-secondary:hover,
     .btn-on-dark.btn-secondary:focus-visible {
-      background: var(--paper);
-      border-color: var(--paper);
-      color: var(--ink);
-      box-shadow: 0 8px 24px rgba(var(--ink-rgb),0.4);
+      border-color: rgba(var(--light-text-rgb),0.5);
+      color: var(--paper);
     }
 
     /* The global :focus-visible ring is red — a red halo 2px off a red fill
@@ -1495,15 +1502,14 @@
       #hero { padding: 144px 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
-      .hero-bottom { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 24px; }
-      .hero-bottom-right { align-items: flex-start; }
-      /* Smaller than the desktop clip, with tighter gaps above it: .hero-bottom
-         stacks to a column here, so the clip adds its full height to the hero
-         rather than sitting beside the text — and .hero-ctas has to stay near
-         the fold. The scroll-grow effect is desktop-only (see script.js); on
-         mobile this is just a static looping clip. */
-      .hero-video-frame,
-      .hero-video-slot-ghost { width: 160px; height: 112px; }
+      .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
+      /* No clip on mobile. The scroll-grow effect can't come with it: the source
+         is landscape (1440×1024), so "full-bleed" on a portrait phone is a band
+         over ~40% of the viewport, not a takeover — and scrubbing a fixed
+         element jitters against iOS Safari's collapsing URL bar. Without the
+         effect it's a static thumbnail that pushes .hero-ctas past the fold, so
+         it earns its place on desktop only. script.js skips the download too. */
+      .hero-bottom-right { display: none; }
       /* scroll-grow effect is desktop-only (see script.js) — never leave an empty full-height gap */
       #video-showcase { display: none !important; }
       .hero-desc { font-size: 16px; max-width: 100%; }

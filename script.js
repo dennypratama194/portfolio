@@ -90,7 +90,11 @@ if (hasFinePointer) {
   lerpCursor();
   /* Single delegated listener — avoids attaching handlers to 100+ elements */
   document.addEventListener('mouseover', e => {
-    document.body.classList.toggle('cursor-hover', !!e.target.closest('a, button, .wc, .cap-item, .stat-cell, .home-faq-item summary'));
+    const hit = e.target.closest('a, button, .wc, .cap-item, .stat-cell, .home-faq-item summary');
+    document.body.classList.toggle('cursor-hover', !!hit);
+    /* A .btn has its own hover state and is shorter than the filled ring —
+       let CSS shrink the ring instead of covering the label. */
+    document.body.classList.toggle('cursor-on-btn', !!(hit && hit.closest('.btn')));
   });
 }
 
@@ -741,16 +745,18 @@ document.addEventListener('DOMContentLoaded', function () {
    `preload` is ignored on an autoplaying video — the browser fetches the whole
    file regardless — so the only way to keep the clip off the critical path is
    to withhold the src and attach it deliberately, on window.load, once CSS,
-   fonts and GSAP have stopped competing for bandwidth. Every viewport gets it:
-   the clip renders on mobile too, just smaller and without the scroll-grow. */
+   fonts and GSAP have stopped competing for bandwidth. Desktop only: the clip
+   is hidden below 769px (see style.css), and assigning a src downloads the file
+   even for a display:none element — so the gate has to live here, not in CSS. */
 (function () {
   const video = document.querySelector('.hero-video-media');
   if (!video) return;
   const src = video.getAttribute('data-src');
   if (!src) return;
+  const desktop = window.matchMedia('(min-width: 769px)');
 
   function attach() {
-    if (video.src) return;
+    if (!desktop.matches || video.src) return;
     video.src = src;
     // autoplay fires on its own once the source resolves; this only covers
     // browsers that decline to restart the attempt after a late src swap.
@@ -760,6 +766,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (document.readyState === 'complete') attach();
   else window.addEventListener('load', attach);
+  // Resizing up from mobile (or rotating a tablet) should still get it.
+  desktop.addEventListener('change', attach);
 }());
 
 /* ── TESTIMONIAL SLIDER ── */
