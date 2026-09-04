@@ -197,7 +197,7 @@ $jsonld = json_encode([
       <div class="hero-bottom-right">
         <div class="hero-video-slot" id="hero-video-slot">
           <div class="hero-video-frame" id="hero-video-frame">
-            <video class="hero-video-media" src="/assets/video/portfolio-showcase.webm" autoplay muted loop playsinline></video>
+            <video class="hero-video-media" data-src="/assets/video/portfolio-showcase.webm?v=2" preload="none" autoplay muted loop playsinline></video>
           </div>
         </div>
       </div>
@@ -672,7 +672,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=26" defer></script>
+  <script src="/script.js?v=28" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js?v=1" defer></script>
 </body>

@@ -309,6 +309,31 @@ document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
 document.addEventListener('DOMContentLoaded', function () {
   if (typeof gsap === 'undefined') return;
   if (typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+
+  // ScrollTrigger measures every start/end against the document's height at
+  // setup time. Two things change that height after DOMContentLoaded:
+  //   1. the preloader holds html+body at `height:100%; overflow:hidden` for
+  //      ~3.8s, so the page measures exactly one viewport tall and cannot
+  //      scroll — every trigger collapses to a start/end of ~0;
+  //   2. Geist loads non-blocking (print-media swap in head.php) and reflows
+  //      the four-line hero h1 when it swaps in.
+  // GSAP's own window.load refresh usually lands inside the preloader window,
+  // so without this the hero video's grow range stays pinned to stale numbers.
+  if (typeof ScrollTrigger !== 'undefined') {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+    }
+    var docEl = document.documentElement;
+    if (docEl.classList.contains('preload-lock')) {
+      var lockWatch = new MutationObserver(function () {
+        if (!docEl.classList.contains('preload-lock')) {
+          lockWatch.disconnect();
+          ScrollTrigger.refresh();
+        }
+      });
+      lockWatch.observe(docEl, { attributes: true, attributeFilter: ['class'] });
+    }
+  }
   const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ── 1. HERO TEXT REVEAL ──────────────────────────────────────────────────────
@@ -711,6 +736,36 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }());
 });
+
+/* ── HERO VIDEO LOADING ──────────────────────────────────────────────────────
+   The showcase clip is ~4.3MB. `preload` is ignored on an autoplaying video —
+   the browser fetches the whole file regardless — so the only way to keep it
+   off the critical path is to withhold the src and attach it on purpose.
+   Mobile never gets it: the scroll-grow effect is desktop-only and the clip is
+   hidden below 769px, so it would be megabytes of cellular data for nothing.
+   Desktop attaches on window.load, after CSS, fonts and GSAP have stopped
+   competing for bandwidth. */
+(function () {
+  const video = document.querySelector('.hero-video-media');
+  if (!video) return;
+  const src = video.getAttribute('data-src');
+  if (!src) return;
+  const desktop = window.matchMedia('(min-width: 769px)');
+
+  function attach() {
+    if (!desktop.matches || video.src) return;
+    video.src = src;
+    // autoplay fires on its own once the source resolves; this only covers
+    // browsers that decline to restart the attempt after a late src swap.
+    const p = video.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  if (document.readyState === 'complete') attach();
+  else window.addEventListener('load', attach);
+  // Resizing up from mobile (or rotating a tablet) should still get it.
+  desktop.addEventListener('change', attach);
+}());
 
 /* ── TESTIMONIAL SLIDER ── */
 (function () {

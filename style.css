@@ -1458,9 +1458,10 @@
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
-      .hero-bottom-right { align-items: flex-start; }
-      .hero-video-frame,
-      .hero-video-slot-ghost { width: 192px; height: 136px; }
+      /* No clip on mobile: the scroll-grow effect is desktop-only, and at the
+         192px it used to render it cost ~4.3MB of cellular data for a
+         thumbnail. Dropping it also takes ~168px off the mobile hero. */
+      .hero-bottom-right { display: none; }
       /* scroll-grow effect is desktop-only (see script.js) — never leave an empty full-height gap */
       #video-showcase { display: none !important; }
       .hero-desc { font-size: 16px; max-width: 100%; }
