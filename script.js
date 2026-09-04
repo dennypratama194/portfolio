@@ -161,34 +161,6 @@ function updateNavDark() {
 window.addEventListener('scroll', updateNavDark, { passive: true });
 updateNavDark();
 
-/* ── SCROLL FADE BOTTOM THEME ── */
-const fadEl = document.querySelector('.scroll-fade-bottom');
-if (fadEl) {
-  let fadeSectionCache = [];
-  function cacheFadeSections() {
-    fadeSectionCache = Array.from(document.querySelectorAll('#cta, footer')).map(el => ({
-      top: el.offsetTop,
-      bottom: el.offsetTop + el.offsetHeight,
-    }));
-  }
-  cacheFadeSections();
-  window.addEventListener('resize', cacheFadeSections, { passive: true });
-
-  function updateFade() {
-    const scrollY = window.scrollY;
-    const vh = window.innerHeight;
-    const atBottom = scrollY + vh >= document.body.scrollHeight - 40;
-    fadEl.style.opacity = atBottom ? '0' : '1';
-    const isDark = fadeSectionCache.some(({ top, bottom }) => {
-      const rTop = top - scrollY;
-      return rTop < vh && (bottom - scrollY) > vh * 0.5;
-    });
-    fadEl.classList.toggle('is-dark', isDark);
-  }
-  window.addEventListener('scroll', updateFade, { passive: true });
-  updateFade();
-}
-
 document.querySelectorAll('#cta, footer').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('on-dark'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('on-dark'));
@@ -641,6 +613,102 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+  }());
+
+  // ── 6. HERO VIDEO — grows from a small corner clip into #video-showcase ────
+  // Desktop only. The frame lives in #hero-video-slot at rest (small, in normal
+  // flow, bottom-right of hero — works with no JS at all). Once this effect
+  // wires up, a JS-added invisible ghost stays parked in that slot permanently,
+  // giving a stable "home rect" to measure against even while the real frame
+  // has been pulled out to `position: fixed`. Scrubbing the trigger range
+  // interpolates the frame's box from that home rect to the full viewport; the
+  // instant the scroll finishes, the frame is reparented into #video-showcase
+  // and dropped back into normal flow — its rect at that instant equals the
+  // section's own box (both are 100vw × 100vh with top 0), so nothing jumps.
+  // Scrolling back up reverses the same steps via onEnterBack/onLeaveBack.
+  (function () {
+    if (reducedMotion) return;
+    if (typeof ScrollTrigger === 'undefined') return;
+    const frame    = document.getElementById('hero-video-frame');
+    const slot     = document.getElementById('hero-video-slot'); // permanent home container
+    const showcase = document.getElementById('video-showcase');
+    if (!frame || !slot || !showcase) return;
+
+    gsap.matchMedia().add('(min-width: 769px)', function () {
+      showcase.style.display = 'block'; // only reveal the landing section once the effect is live
+
+      const ghost = document.createElement('div');
+      ghost.className = 'hero-video-slot-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      slot.appendChild(ghost);
+
+      // Hide the fixed nav + bottom fade for as long as #video-showcase is
+      // anywhere in the viewport — covers both the grow and the "settled,
+      // filling the section" phases, not just the scrub itself.
+      ScrollTrigger.create({
+        trigger: showcase,
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: function (self) {
+          document.body.classList.toggle('video-showcase-active', self.isActive);
+        },
+      });
+
+      function apply(rect) {
+        frame.style.top    = rect.top + 'px';
+        frame.style.left   = rect.left + 'px';
+        frame.style.width  = rect.width + 'px';
+        frame.style.height = rect.height + 'px';
+      }
+
+      // Source video is 1440×1024 (~1.41:1) — noticeably narrower than most
+      // viewports. Filling 100vw × 100vh with object-fit:cover would crop the
+      // top/bottom (cutting off the recorded site's own header); fitting it
+      // inside a height-capped box left awkward blank margins on the sides.
+      // Instead: full viewport width, edge to edge, with height derived from
+      // the video's own aspect ratio — matches #video-showcase's own
+      // `aspect-ratio` (see style.css), so no crop and no dead space either.
+      const VIDEO_AR = 1440 / 1024;
+      function fullRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerWidth / VIDEO_AR };
+      }
+
+      ScrollTrigger.create({
+        trigger: showcase,
+        start: 'top bottom',
+        end: 'top top',
+        scrub: true,
+        onEnter: function () {
+          frame.style.position = 'fixed';
+          apply(ghost.getBoundingClientRect()); // fixed at its current on-screen spot — no jump
+        },
+        onEnterBack: function () {
+          // coming back up from the "settled, full-size in #video-showcase" state
+          slot.appendChild(frame);
+          frame.style.position = 'fixed';
+          apply(fullRect());
+        },
+        onUpdate: function (self) {
+          const home = ghost.getBoundingClientRect(); // measured live — self-corrects on resize
+          const full = fullRect();
+          const p = self.progress;
+          apply({
+            top:    home.top    + (full.top    - home.top)    * p,
+            left:   home.left   + (full.left   - home.left)   * p,
+            width:  home.width  + (full.width  - home.width)  * p,
+            height: home.height + (full.height - home.height) * p,
+          });
+        },
+        onLeave: function () {
+          frame.removeAttribute('style');
+          showcase.appendChild(frame); // now fills #video-showcase via normal flow CSS
+        },
+        onLeaveBack: function () {
+          frame.removeAttribute('style');
+          slot.appendChild(frame); // back to its small, in-flow hero spot
+        },
+      });
+    });
   }());
 });
 

@@ -194,11 +194,20 @@ $jsonld = json_encode([
           </a>
         </div>
       </div>
-      <div class="scroll-cue">
-        <span class="scroll-cue-label">Scroll</span>
-        <div class="scroll-cue-track"></div>
+      <div class="hero-bottom-right">
+        <div class="hero-video-slot" id="hero-video-slot">
+          <div class="hero-video-frame" id="hero-video-frame">
+            <video class="hero-video-media" src="/assets/video/portfolio-showcase.webm" autoplay muted loop playsinline></video>
+          </div>
+        </div>
       </div>
     </div>
+  </section>
+
+  <section id="video-showcase" class="video-showcase">
+    <a class="btn-hero-primary video-showcase-cta" href="https://www.figma.com/proto/KLFkGefqM44vJ8qiRx9lDZ/Design-Portfolio?timeline=keyframe&node-id=327-3866&viewport=1288%2C521%2C0.11&t=emOuAJx62vXU0QCx-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" rel="noopener noreferrer">
+      View Figma ↗
+    </a>
   </section>
 
   <div class="ticker-wrap">

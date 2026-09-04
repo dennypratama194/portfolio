@@ -146,9 +146,15 @@
       padding: 28px var(--pad-x);
       display: flex; align-items: center; justify-content: space-between;
       mix-blend-mode: multiply;
+      opacity: 1;
       transition: padding 0.4s cubic-bezier(0.23,1,0.32,1),
-                  background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+                  background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s,
+                  opacity 0.4s ease;
     }
+    /* Hide the persistent nav while the hero video is doing its full-bleed
+       showcase (see script.js section 6) — floating site chrome over what's
+       meant to feel immersive undercuts the effect. */
+    body.video-showcase-active header nav { opacity: 0; pointer-events: none; }
     header nav.scrolled {
       mix-blend-mode: normal;
       padding: 16px var(--pad-x);
@@ -436,6 +442,40 @@
     }
     .hero-bottom-left { display: flex; flex-direction: column; gap: 20px; }
 
+    /* video showcase — small clip anchored bottom-right of the hero.
+       Grows to fill #video-showcase on scroll; see script.js section 6. */
+    .hero-bottom-right {
+      display: flex; flex-direction: column; align-items: flex-end;
+      gap: 24px; flex-shrink: 0;
+    }
+    /* Grid-stack so a JS-added ghost placeholder (see script.js section 6) can
+       reserve this exact box even while the real frame has been pulled out to
+       `position: fixed` — gives the reverse (scroll-up) animation a stable
+       "home rect" to measure against at any time. */
+    .hero-video-slot {
+      display: grid;
+      grid-template-areas: "slot";
+      flex-shrink: 0;
+    }
+    .hero-video-slot > * { grid-area: slot; }
+    /* 320×228 ≈ the source video's own 1440×1024 (~1.41:1) aspect ratio, so
+       even the small corner clip doesn't crop the recorded site's header. */
+    .hero-video-frame,
+    .hero-video-slot-ghost {
+      width: 320px; height: 228px;
+      overflow: hidden;
+    }
+    /* Grid-item z-index applies even while position is static, so this only
+       takes visual effect once script.js switches the frame to `fixed` above
+       the nav (z-index 100) while it's mid-grow. */
+    .hero-video-frame { z-index: 110; }
+    .hero-video-slot-ghost { visibility: hidden; pointer-events: none; }
+    .hero-video-media {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
     .hero-desc {
       font-size: 16px; font-weight: 300; line-height: 1.7;
       color: var(--ink-2); max-width: 520px;
@@ -454,7 +494,6 @@
     }
     .btn-hero-primary:hover,
     .btn-hero-primary:focus-visible {
-      background: var(--red);
       box-shadow: 0 8px 24px rgba(var(--red-rgb),0.2);
     }
     .btn-hero-ghost {
@@ -477,34 +516,44 @@
     }
     .btn-hero-ghost:hover .arrow { transform: rotate(45deg); }
 
-
-    /* scroll line */
-    .scroll-cue {
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      flex-shrink: 0;
+    /* Landing slot for the hero video once it's done growing. Hidden by default —
+       script.js only reveals it after it successfully wires up the scroll effect,
+       so users without JS / with reduced motion never see an empty full-height gap. */
+    #video-showcase {
+      display: none; /* JS flips to 'block' once the effect is wired up */
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1440 / 1024; /* matches the video exactly — full width, zero crop, zero letterboxing */
+      background: var(--paper);
+      overflow: hidden;
     }
-    .scroll-cue-label {
-      font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--ink-3);
-      writing-mode: vertical-rl;
-    }
-    .scroll-cue-track {
-      width: 1px; height: 60px;
-      background: var(--border);
-      position: relative; overflow: hidden;
-    }
-    .scroll-cue-track::after {
-      content: '';
-      position: absolute;
-      top: -100%; left: 0;
+    /* Once script.js reparents .hero-video-frame in here at full scroll, it
+       fills the section — which is itself already sized to the video's own
+       aspect ratio, so nothing crops and nothing jumps at the handoff. */
+    #video-showcase .hero-video-frame {
       width: 100%; height: 100%;
-      background: var(--red);
-      animation: scrollTrack 2s cubic-bezier(0.76,0,0.24,1) infinite;
     }
-    @keyframes scrollTrack {
-      0% { top: -100%; }
-      100% { top: 100%; }
+
+    /* Positions the existing .btn-hero-primary component over the video
+       instead of inventing new button visuals — fixed to the viewport (not
+       the section) so it stays put through both the grow and settled phase.
+       Faded in/out by the same .video-showcase-active toggle that hides the
+       nav (see script.js section 6); visibility (not just opacity) keeps it
+       out of the tab/focus order while hidden.
+       transition is re-declared (not just extended) because the CSS cascade
+       doesn't merge the property across rules — this list includes
+       .btn-hero-primary's own background/box-shadow entries so its hover
+       animation isn't silently dropped. */
+    .video-showcase-cta {
+      position: fixed;
+      right: var(--pad-x); bottom: 48px;
+      z-index: 120;
+      opacity: 0; visibility: hidden;
+      transition: background 0.3s cubic-bezier(0.23,1,0.32,1),
+                  box-shadow 0.3s cubic-bezier(0.23,1,0.32,1), color 0.3s,
+                  opacity 0.4s ease, visibility 0.4s ease;
     }
+    body.video-showcase-active .video-showcase-cta { opacity: 1; visibility: visible; }
 
     /* ═══════════════════════════════════════
        TICKER
@@ -1300,25 +1349,6 @@
     .pm-success-back:focus-visible { color: var(--red); gap: 16px; }
     /* reCAPTCHA badge — visible (Google requires either badge OR inline notice; we use the badge) */
 
-    /* ── SCROLL FADE BOTTOM — progressive blur ── */
-    .scroll-fade-bottom {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 200px;
-      pointer-events: none;
-      z-index: 90;
-      transition: opacity 0.4s ease;
-    }
-    .sfb-l {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
-      mask-image: linear-gradient(to top, black 0%, transparent 100%);
-    }
-    .sfb-l1 { height: 50px;  backdrop-filter: blur(1px);  -webkit-backdrop-filter: blur(1px); }
-    .sfb-l2 { height: 90px;  backdrop-filter: blur(3px);  -webkit-backdrop-filter: blur(3px); }
-    .sfb-l3 { height: 140px; backdrop-filter: blur(6px);  -webkit-backdrop-filter: blur(6px); }
-    .sfb-l4 { height: 200px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
     /* cursor on dark sections (CTA, footer, about dark state) and modal */
     /* cursor on dark sections */
     body.on-dark #cursor-ring,
@@ -1411,7 +1441,11 @@
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
-      .scroll-cue { display: none; }
+      .hero-bottom-right { align-items: flex-start; }
+      .hero-video-frame,
+      .hero-video-slot-ghost { width: 192px; height: 136px; }
+      /* scroll-grow effect is desktop-only (see script.js) — never leave an empty full-height gap */
+      #video-showcase { display: none !important; }
       .hero-desc { font-size: 16px; max-width: 100%; }
       .hero-ctas { flex-direction: column; align-items: flex-start; gap: 14px; }
       .btn-hero-primary { padding: 16px 28px; font-size: 14px; }
@@ -2373,8 +2407,6 @@ html.pt-leaving body { pointer-events: none; }
   .hero-overline-dot,
   .blog-loading-dot { animation: none !important; }
 
-  .scroll-cue-track::after { animation: none !important; }
-
   /* Ticker: freeze in place (WCAG 2.2.2 — auto-moving content >5s must be stoppable) */
   .ticker-track { animation: none !important; }
 
@@ -2447,7 +2479,6 @@ html.pt-leaving body { pointer-events: none; }
 .hero-overline-text,
 .hero-year,
 .nav-overlay-footer-label,
-.scroll-cue-label,
 .ticker-item,
 .section-num,
 .section-title-sm,
