@@ -180,7 +180,7 @@ const io = new IntersectionObserver(entries => {
 document.querySelectorAll('section').forEach(s => io.observe(s));
 
 /* ── MAGNETIC BUTTONS ── */
-document.querySelectorAll('.btn-hero-primary, .btn-cta-main').forEach(btn => {
+document.querySelectorAll('.btn-primary').forEach(btn => {
   let r = { left: 0, top: 0, width: 0, height: 0 };
   /* Cache rect on hover start — not on every mousemove */
   btn.addEventListener('mouseenter', () => { r = btn.getBoundingClientRect(); });
@@ -738,22 +738,19 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ── HERO VIDEO LOADING ──────────────────────────────────────────────────────
-   The showcase clip is ~4.3MB. `preload` is ignored on an autoplaying video —
-   the browser fetches the whole file regardless — so the only way to keep it
-   off the critical path is to withhold the src and attach it on purpose.
-   Mobile never gets it: the scroll-grow effect is desktop-only and the clip is
-   hidden below 769px, so it would be megabytes of cellular data for nothing.
-   Desktop attaches on window.load, after CSS, fonts and GSAP have stopped
-   competing for bandwidth. */
+   `preload` is ignored on an autoplaying video — the browser fetches the whole
+   file regardless — so the only way to keep the clip off the critical path is
+   to withhold the src and attach it deliberately, on window.load, once CSS,
+   fonts and GSAP have stopped competing for bandwidth. Every viewport gets it:
+   the clip renders on mobile too, just smaller and without the scroll-grow. */
 (function () {
   const video = document.querySelector('.hero-video-media');
   if (!video) return;
   const src = video.getAttribute('data-src');
   if (!src) return;
-  const desktop = window.matchMedia('(min-width: 769px)');
 
   function attach() {
-    if (!desktop.matches || video.src) return;
+    if (video.src) return;
     video.src = src;
     // autoplay fires on its own once the source resolves; this only covers
     // browsers that decline to restart the attempt after a late src swap.
@@ -763,8 +760,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (document.readyState === 'complete') attach();
   else window.addEventListener('load', attach);
-  // Resizing up from mobile (or rotating a tablet) should still get it.
-  desktop.addEventListener('change', attach);
 }());
 
 /* ── TESTIMONIAL SLIDER ── */

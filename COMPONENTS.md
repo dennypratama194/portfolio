@@ -58,15 +58,20 @@ Admin pages share a **sidebar + mobile topbar** block (currently copy-pasted per
 
 | Class | Where | Look |
 |---|---|---|
-| `.btn-hero-primary` | hero, homepage | solid ink pill, magnetic hover |
-| `.btn-hero-ghost` | hero, modal triggers | outlined pill |
-| `.btn-cta-main` / `.btn-cta-outline` | CTA section | solid / outlined on dark |
+| `.btn` | base — never used alone | geometry + mono type; always pair with a variant |
+| `.btn` + `.btn-primary` | hero, CTA, 404, post footer | filled red pill, magnetic hover |
+| `.btn` + `.btn-secondary` | alongside any primary | outlined pill — same box, same baseline |
+| `+ .btn-on-dark` | `#cta`, `.post-cta` | surface modifier for ink backgrounds |
 | `.form-btn` | public forms (recover, library) | full-width red, has `.form-btn-spinner` loading state |
 | `.pm-btn-send` | contact modal | red pill submit; shares spinner/label pattern via `.loading` class |
 | `.eb-btn-buy` | ebook pages (hero + CTA) | red pill checkout; same visual as `.pm-btn-send`, shares spinner/label pattern |
-| `.btn-save` / `.btn-new` / `.btn-cancel` / `.btn-secondary` | admin | standard admin actions |
+| `.btn-save` / `.btn-new` / `.btn-cancel` / `.btn-outline` | admin (`admin/theme.css`) | standard admin actions — separate from the public `.btn` system |
 
-All button text is mono + uppercase via the typography system. Magnetic hover (`.btn-hero-primary`, `.btn-cta-main`) is wired in `script.js`.
+**The `.btn` system is the only button pattern for public pages.** One primary per view, secondary beside it, `.btn-on-dark` when the section background is `--ink`. Both variants share padding, radius, border width and type size, so they always line up; hover is one language everywhere — the fill arrives or deepens, plus a soft shadow tinted to that fill. Never restyle a button inline or re-declare its padding per section — that is how the old four-class set drifted into two different components.
+
+`.btn` sets its own `font-family` instead of opting into the mono list at the end of `style.css`. `.btn-cta-main` was never added to that list and rendered in Geist while the hero buttons rendered in Geist Mono. Magnetic hover binds to `.btn-primary` in `script.js`.
+
+Form and modal submits (`.form-btn`, `.pm-btn-send`, `.eb-btn-buy`) stay separate — they carry loading/spinner state that `.btn` does not.
 
 ---
 

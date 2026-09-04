@@ -8,6 +8,7 @@
       --ink-2:   #3A3830;
       --ink-3:   #6B6960;
       --red:     #CC2A08;
+      --red-deep: #A32206;   /* primary button hover — same hue, one step down */
       --border:  rgba(var(--ink-rgb),0.1);
       --white:        #FFFFFF;       /* pure white — for button text, inputs, cursor dot */
       --ink-surface:  #1a1916;       /* dark lifted surface (clients section cells) */
@@ -137,6 +138,93 @@
     body.cursor-hover #cursor-dot {
       background: var(--white);
     }
+
+    /* ═══════════════════════════════════════
+       BUTTON SYSTEM
+       One component, two variants, two surfaces — replaces the old
+       .btn-hero-primary / .btn-hero-ghost / .btn-cta-main / .btn-cta-outline
+       set, which had drifted into two unrelated components.
+
+         .btn             base geometry + type — never used alone
+         .btn-primary     filled red — one per view, the real action
+         .btn-secondary   outlined — identical box, identical baseline
+         .btn-on-dark     surface modifier for ink-background sections
+                          (#cta, .post-cta)
+
+       Both variants carry the same 1.5px border (transparent on the primary)
+       so they measure the same height and share a baseline side by side.
+
+       Hover is one language everywhere: the fill arrives or deepens, and a
+       soft shadow tinted to that fill appears. Nothing else moves — the
+       magnetic translate on .btn-primary belongs to script.js.
+
+       font-family is declared HERE, not via the opt-in mono list at the end
+       of this file. .btn-cta-main was never added to that list, so the CTA
+       buttons silently rendered in Geist while the hero buttons rendered in
+       Geist Mono. Self-contained beats opt-in for a component this shared.
+    ═══════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 16px 32px;
+      border: 1.5px solid transparent;
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 14px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.3s cubic-bezier(0.23,1,0.32,1),
+                  border-color 0.3s cubic-bezier(0.23,1,0.32,1),
+                  color 0.3s cubic-bezier(0.23,1,0.32,1),
+                  box-shadow 0.3s cubic-bezier(0.23,1,0.32,1);
+    }
+
+    /* ── Primary — red on every surface, light or dark ── */
+    .btn-primary {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+    }
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background: var(--red-deep);
+      border-color: var(--red-deep);
+      box-shadow: 0 8px 24px rgba(var(--red-rgb),0.28);
+    }
+
+    /* ── Secondary — outlined, fills in on hover ── */
+    .btn-secondary {
+      background: transparent;
+      border-color: rgba(var(--ink-rgb),0.2);
+      color: var(--ink);
+    }
+    .btn-secondary:hover,
+    .btn-secondary:focus-visible {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+      box-shadow: 0 8px 24px rgba(var(--ink-rgb),0.18);
+    }
+
+    /* ── Dark surfaces. The primary is already red on both, so only the
+         secondary's ink/paper pair inverts. ── */
+    .btn-on-dark.btn-secondary {
+      border-color: rgba(var(--light-text-rgb),0.25);
+      color: rgba(var(--light-text-rgb),0.75);
+    }
+    .btn-on-dark.btn-secondary:hover,
+    .btn-on-dark.btn-secondary:focus-visible {
+      background: var(--paper);
+      border-color: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 8px 24px rgba(var(--ink-rgb),0.4);
+    }
+
+    /* The global :focus-visible ring is red — a red halo 2px off a red fill
+       is not a focus indicator. Swap it for the surface's contrast color. */
+    .btn-primary:focus-visible { outline-color: var(--ink); }
+    .btn-on-dark.btn-primary:focus-visible { outline-color: var(--paper); }
 
     /* ═══════════════════════════════════════
        NAV
@@ -484,41 +572,9 @@
       font-size: 16px; font-weight: 300; line-height: 1.7;
       color: var(--ink-2); max-width: 520px;
     }
-    .hero-ctas { display: flex; gap: 12px; align-items: center; }
-    .btn-hero-primary {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 16px 32px;
-      background: var(--ink);
-      color: var(--paper);
-      font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
-      text-transform: uppercase;
-      border-radius: 100px;
-      text-decoration: none;
-      transition: background 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s cubic-bezier(0.23,1,0.32,1), color 0.3s;
-    }
-    .btn-hero-primary:hover,
-    .btn-hero-primary:focus-visible {
-      box-shadow: 0 8px 24px rgba(var(--red-rgb),0.2);
-    }
-    .btn-hero-ghost {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .btn-hero-ghost:hover,
-    .btn-hero-ghost:focus-visible { color: var(--ink); }
-    .btn-hero-ghost .arrow {
-      width: 24px; height: 24px;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px;
-      transition: transform 0.3s cubic-bezier(0.23,1,0.32,1);
-    }
-    .btn-hero-ghost:hover .arrow { transform: rotate(45deg); }
+    /* Layout only — the buttons inside are .btn .btn-primary / .btn-secondary
+       from the BUTTON SYSTEM section near the top of this file. */
+    .hero-ctas { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
     /* Landing slot for the hero video once it's done growing. Hidden by default —
        script.js only reveals it after it successfully wires up the scroll effect,
@@ -538,7 +594,7 @@
       width: 100%; height: 100%;
     }
 
-    /* Positions the existing .btn-hero-primary component over the video
+    /* Positions the existing .btn-primary component over the video
        instead of inventing new button visuals — fixed to the viewport (not
        the section) so it stays put through both the grow and settled phase.
        Faded in/out by the same .video-showcase-active toggle that hides the
@@ -546,15 +602,17 @@
        out of the tab/focus order while hidden.
        transition is re-declared (not just extended) because the CSS cascade
        doesn't merge the property across rules — this list includes
-       .btn-hero-primary's own background/box-shadow entries so its hover
-       animation isn't silently dropped. */
+       .btn-primary's own background/border/color/box-shadow entries so
+       its hover animation isn't silently dropped. */
     .video-showcase-cta {
       position: fixed;
       right: var(--pad-x); bottom: 48px;
       z-index: 120;
       opacity: 0; visibility: hidden;
       transition: background 0.3s cubic-bezier(0.23,1,0.32,1),
-                  box-shadow 0.3s cubic-bezier(0.23,1,0.32,1), color 0.3s,
+                  border-color 0.3s cubic-bezier(0.23,1,0.32,1),
+                  color 0.3s cubic-bezier(0.23,1,0.32,1),
+                  box-shadow 0.3s cubic-bezier(0.23,1,0.32,1),
                   opacity 0.4s ease, visibility 0.4s ease;
     }
     body.video-showcase-active .video-showcase-cta { opacity: 1; visibility: visible; }
@@ -1181,29 +1239,9 @@
 
     .cta-row { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
     .cta-desc { font-size: 16px; font-weight: 300; color: rgba(var(--light-text-rgb),0.75); line-height: 1.7; max-width: 380px; }
-    .cta-btns { display: flex; gap: 14px; flex-wrap: wrap; }
-    .btn-cta-main {
-      display: inline-flex; align-items: center; gap: 12px;
-      padding: 18px 40px;
-      background: var(--red);
-      color: var(--white);
-      font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      border-radius: 100px; text-decoration: none;
-      transition: background 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s cubic-bezier(0.23,1,0.32,1), color 0.3s;
-    }
-    .btn-cta-main:hover,
-    .btn-cta-main:focus-visible { box-shadow: 0 8px 24px rgba(var(--red-rgb),0.2); }
-    .btn-cta-outline {
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 18px 36px;
-      border: 1.5px solid rgba(var(--light-text-rgb),0.2);
-      color: rgba(var(--light-text-rgb),0.6);
-      font-size: 14px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
-      border-radius: 100px; text-decoration: none;
-      transition: all 0.3s;
-    }
-    .btn-cta-outline:hover,
-    .btn-cta-outline:focus-visible { border-color: rgba(var(--light-text-rgb),0.5); color: var(--paper); }
+    /* Layout only — the buttons inside are .btn .btn-primary .btn-on-dark /
+       .btn .btn-secondary .btn-on-dark (see BUTTON SYSTEM). */
+    .cta-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
     .cta-links {
       margin-top: 72px;
@@ -1457,16 +1495,19 @@
       #hero { padding: 144px 24px 48px; min-height: 100svh; }
       .hero-overline { top: 90px; left: 24px; right: 24px; }
 .hero-year { display: none; }
-      .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
-      /* No clip on mobile: the scroll-grow effect is desktop-only, and at the
-         192px it used to render it cost ~4.3MB of cellular data for a
-         thumbnail. Dropping it also takes ~168px off the mobile hero. */
-      .hero-bottom-right { display: none; }
+      .hero-bottom { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 24px; }
+      .hero-bottom-right { align-items: flex-start; }
+      /* Smaller than the desktop clip, with tighter gaps above it: .hero-bottom
+         stacks to a column here, so the clip adds its full height to the hero
+         rather than sitting beside the text — and .hero-ctas has to stay near
+         the fold. The scroll-grow effect is desktop-only (see script.js); on
+         mobile this is just a static looping clip. */
+      .hero-video-frame,
+      .hero-video-slot-ghost { width: 160px; height: 112px; }
       /* scroll-grow effect is desktop-only (see script.js) — never leave an empty full-height gap */
       #video-showcase { display: none !important; }
       .hero-desc { font-size: 16px; max-width: 100%; }
-      .hero-ctas { flex-direction: column; align-items: flex-start; gap: 14px; }
-      .btn-hero-primary { padding: 16px 28px; font-size: 14px; }
+      .hero-ctas { flex-direction: column; align-items: stretch; gap: 12px; }
 
       .ticker-item { font-size: 12px; padding: 0 24px; }
 
@@ -1502,8 +1543,7 @@
       .cta-title { margin-bottom: 40px; }
       .cta-row { flex-direction: column; align-items: flex-start; gap: 28px; }
       .cta-desc { max-width: 100%; font-size: 16px; }
-      .cta-btns { flex-direction: column; width: 100%; }
-      .btn-cta-main, .btn-cta-outline { width: 100%; justify-content: center; padding: 16px 28px; }
+      .cta-btns { flex-direction: column; align-items: stretch; width: 100%; gap: 12px; }
       .cta-links { gap: 16px; margin-top: 48px; flex-wrap: wrap; }
       .cta-link-divider { display: none; }
 
@@ -2526,8 +2566,6 @@ html.pt-leaving body { pointer-events: none; }
 .post-footer-back,
 .cat-badge,
 .form-page-eyebrow,
-.btn-hero-primary,
-.btn-hero-ghost,
 .preloader-label {
   font-family: var(--font-mono);
   font-weight: 500;

@@ -15,16 +15,6 @@ $og_image    = 'https://dennypratama.com/assets/logo.png';
   body { min-height: 100dvh; display: flex; flex-direction: column; }
   main { flex: 1; display: flex; }
   .error-page { flex: 1; min-height: unset; }
-  .error-actions .btn-hero-ghost {
-    font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
-    color: var(--ink); padding: 16px 32px;
-    border: 1.5px solid var(--ink); border-radius: 100px;
-    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
-  }
-  .error-actions .btn-hero-ghost:hover {
-    background: var(--ink); color: var(--paper);
-    transform: translateY(-3px);
-  }
 </style>
 </head>
 <body>
@@ -38,8 +28,8 @@ $og_image    = 'https://dennypratama.com/assets/logo.png';
       <h1 class="error-title">Page not found.</h1>
       <p class="error-desc">The page you're looking for has moved, been deleted, or never existed.</p>
       <div class="error-actions">
-        <a class="btn-hero-primary" href="/">Go home</a>
-        <a class="btn-hero-ghost" href="/blog">Read the blog</a>
+        <a class="btn btn-primary" href="/">Go home</a>
+        <a class="btn btn-secondary" href="/blog">Read the blog</a>
       </div>
     </div>
   </section>
@@ -47,7 +37,7 @@ $og_image    = 'https://dennypratama.com/assets/logo.png';
 
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=26" defer></script>
+<script src="/script.js?v=30" defer></script>
 <script>var PAGE='404',SLUG=null;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

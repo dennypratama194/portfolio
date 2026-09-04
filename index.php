@@ -187,11 +187,8 @@ $jsonld = json_encode([
           I design and build — so there are no handoff gaps, no agency overhead, and no lost context between Figma and the browser. One person. Full stack. Shipped.
         </p>
         <div class="hero-ctas">
-          <a class="btn-hero-primary" href="#work">See the work</a>
-          <a class="btn-hero-ghost js-open-modal" href="#">
-            <span class="arrow">↗</span>
-            Book a 15-min call →
-          </a>
+          <a class="btn btn-primary" href="#work">See the work</a>
+          <a class="btn btn-secondary js-open-modal" href="#">Book a 15-min call</a>
         </div>
       </div>
       <div class="hero-bottom-right">
@@ -205,7 +202,7 @@ $jsonld = json_encode([
   </section>
 
   <section id="video-showcase" class="video-showcase">
-    <a class="btn-hero-primary video-showcase-cta" href="https://www.figma.com/proto/KLFkGefqM44vJ8qiRx9lDZ/Design-Portfolio?timeline=keyframe&node-id=327-3866&viewport=1288%2C521%2C0.11&t=emOuAJx62vXU0QCx-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" rel="noopener noreferrer">
+    <a class="btn btn-primary video-showcase-cta" href="https://www.figma.com/proto/KLFkGefqM44vJ8qiRx9lDZ/Design-Portfolio?timeline=keyframe&node-id=327-3866&viewport=1288%2C521%2C0.11&t=emOuAJx62vXU0QCx-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1" target="_blank" rel="noopener noreferrer">
       View Figma ↗
     </a>
   </section>
@@ -660,8 +657,8 @@ $jsonld = json_encode([
           I take on 2–3 projects per quarter so each gets my full focus. If you're building something worth shipping, let's talk before the next slot fills.
         </p>
         <div class="cta-btns">
-          <a class="btn-cta-main js-open-modal" href="#">Start the conversation →</a>
-          <a class="btn-cta-outline" href="https://dribbble.com/dennypratama">See the portfolio</a>
+          <a class="btn btn-primary btn-on-dark js-open-modal" href="#">Start the conversation</a>
+          <a class="btn btn-secondary btn-on-dark" href="https://dribbble.com/dennypratama">See the portfolio</a>
         </div>
       </div>
     </div>
@@ -672,7 +669,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=28" defer></script>
+  <script src="/script.js?v=30" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js?v=1" defer></script>
 </body>

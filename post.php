@@ -183,7 +183,7 @@ $related = $related_stmt->fetchAll();
 
     <div class="post-cta">
       <p class="post-cta-label">Enjoyed this? Let's build something.</p>
-      <a class="btn-cta-main js-open-modal" href="#">Start a project →</a>
+      <a class="btn btn-primary btn-on-dark js-open-modal" href="#">Start a project</a>
     </div>
 
     <?php if ($related): ?>
@@ -230,7 +230,7 @@ $related = $related_stmt->fetchAll();
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=26" defer></script>
+<script src="/script.js?v=30" defer></script>
 <script>var PAGE='post', SLUG=<?= json_encode($post['slug']) ?>;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>
