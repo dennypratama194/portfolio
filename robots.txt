@@ -3,7 +3,13 @@ Allow: /
 
 Disallow: /admin/
 Disallow: /api/
-Disallow: /admin/uploads/
+
+# Blog featured images and case-study covers are served from /admin/uploads/ and
+# are referenced by every post's og:image and BlogPosting schema. Blocking them
+# kept those images out of Google Images and out of image-bearing rich results
+# even though the pages themselves are indexable. The Allow is more specific
+# than the Disallow above, so the rest of /admin/ stays blocked.
+Allow: /admin/uploads/
 Disallow: /read/
 Disallow: /ebook/
 

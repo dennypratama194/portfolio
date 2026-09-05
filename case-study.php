@@ -36,12 +36,22 @@ $sections = [
     ['num' => '05', 'label' => 'Final Design',         'body' => $project['s5_body'], 'images' => json_decode($project['s5_images'] ?? '[]', true) ?: []],
 ];
 
-$title       = escHtml($project['title']) . ' Case Study — Denny Pratama';
+/* Raw values only — partials/head.php escapes every one of these at output.
+   Escaping here as well produced doubly-encoded entities in <title> and the
+   Open Graph tags (e.g. "Ben &amp;amp; Co"). */
+$title       = $project['title'] . ' Case Study — Denny Pratama';
 $description = $project['excerpt'] ?: 'A UI/UX design case study by Denny Pratama — from brief and AI-assisted analysis to final Figma delivery.';
 $canonical   = 'https://dennypratama.com/case-studies/' . rawurlencode($project['slug']);
-$og_image    = $project['cover_image'] ?: 'https://dennypratama.com/assets/logo.png';
+/* cover_image is stored root-relative ("/admin/uploads/x.webp", see
+   admin/project-edit.php). Open Graph and schema.org both require an absolute
+   URL — a relative one is silently dropped by every social crawler. */
+$og_image    = $project['cover_image']
+    ? (str_starts_with($project['cover_image'], 'http')
+        ? $project['cover_image']
+        : 'https://dennypratama.com' . $project['cover_image'])
+    : 'https://dennypratama.com/assets/logo.png';
 $og_type     = 'article';
-$page_css    = '/css/case-study.css?v=3';
+$page_css    = '/css/case-study.css?v=4';
 $jsonld      = json_encode([
     '@context'    => 'https://schema.org',
     '@type'       => 'CreativeWork',
@@ -68,8 +78,9 @@ $jsonld      = json_encode([
   <div class="csp-cover-wrap">
     <img class="csp-cover"
          src="<?= escHtml($project['cover_image']) ?>"
-         alt="<?= escHtml($project['title']) ?>"
-         fetchpriority="high"/>
+         alt="<?= escHtml($project['title']) ?> — case study cover"
+         fetchpriority="high"
+         decoding="async"/>
   </div>
   <?php endif; ?>
 
@@ -118,11 +129,12 @@ $jsonld      = json_encode([
 
     <?php if (!empty($sec['images'])): ?>
     <div class="csp-screenshots<?= count($sec['images']) === 1 ? ' csp-screenshots--single' : '' ?>">
-      <?php foreach ($sec['images'] as $img): ?>
+      <?php foreach ($sec['images'] as $img_i => $img): ?>
         <img class="csp-img"
              src="<?= escHtml($img) ?>"
-             alt="<?= escHtml($sec['label']) ?>"
-             loading="lazy"/>
+             alt="<?= escHtml($project['title'] . ' — ' . $sec['label']) ?><?= count($sec['images']) > 1 ? ', image ' . ($img_i + 1) : '' ?>"
+             loading="lazy"
+             decoding="async"/>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
@@ -148,8 +160,8 @@ $jsonld      = json_encode([
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
-<script src="/script.js?v=26" defer></script>
-<script>var PAGE='case-study', SLUG='<?= addslashes($project['slug']) ?>';</script>
+<script src="/script.js?v=32" defer></script>
+<script>var PAGE='case-study', SLUG=<?= json_encode($project['slug']) ?>;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>
 </html>

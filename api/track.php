@@ -1,6 +1,8 @@
 <?php
 header('Content-Type: application/json');
 
+require_once __DIR__ . '/helpers.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['ok' => false]);
@@ -53,13 +55,13 @@ foreach ($bots as $b) {
     }
 }
 
-/* ── IP hash ── */
-$ip = $_SERVER['HTTP_X_FORWARDED_FOR']
-    ?? $_SERVER['HTTP_CF_CONNECTING_IP']
-    ?? $_SERVER['REMOTE_ADDR']
-    ?? '';
-$ip      = trim(explode(',', $ip)[0]);
-$ip_hash = hash('sha256', $ip . 'dp-portfolio-pepper-2026');
+/* ── IP hash ──
+   client_ip() (api/helpers.php) is the single Cloudflare-aware implementation:
+   CF-Connecting-IP first, then the left-most X-Forwarded-For entry, then
+   REMOTE_ADDR — and every candidate is validated with FILTER_VALIDATE_IP so a
+   junk header can't poison the hash. Same pepper, same hash algorithm, so the
+   dedupe window keeps working across the deploy. */
+$ip_hash = hash('sha256', client_ip() . 'dp-portfolio-pepper-2026');
 
 require __DIR__ . '/db.php';
 

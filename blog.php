@@ -36,9 +36,48 @@ $posts = $stmt->fetchAll();
 
 $cat_labels = ['uiux' => 'UI/UX', 'development' => 'Development', 'ai' => 'AI'];
 
-$title     = $page > 1 ? "Blog — Page $page · Denny Pratama" : 'Blog — Denny Pratama';
-$description = 'UI/UX design insights, development tips, and AI perspectives from Denny Pratama — practical articles for designers building better digital products.';
-$canonical = 'https://dennypratama.com/blog' . ($page > 1 ? '?page=' . $page : '');
+/* ── Metadata ──
+   The category filter is a real, linkable server-rendered view, so it gets its
+   own title, description and canonical. Previously every ?cat= view inherited
+   the unfiltered /blog metadata and canonicalised to /blog, which told Google
+   the three category listings were duplicates of page 1.
+   Pagination stays self-canonical (rel=prev/next below signal the sequence);
+   canonicalising page 2+ back to page 1 would hide those posts from crawlers. */
+$cat_descriptions = [
+    'uiux'        => 'UI/UX design articles by Denny Pratama — interface craft, usability, and product design decisions explained with real, practical examples.',
+    'development' => 'Web development articles by Denny Pratama — practical PHP, JavaScript, and CSS techniques for building fast, maintainable production websites.',
+    'ai'          => 'AI articles by Denny Pratama — how designers and developers can use AI as a genuine collaborator without handing over their craft or judgement.',
+];
+
+$cat_name = $cat_filter ? ($cat_labels[$cat_filter] ?? $cat_filter) : '';
+
+if ($cat_filter) {
+    $title = $page > 1
+        ? "$cat_name Articles — Page $page · Denny Pratama"
+        : "$cat_name Articles — Denny Pratama";
+} else {
+    $title = $page > 1 ? "Blog — Page $page · Denny Pratama" : 'Blog — Denny Pratama';
+}
+
+$description = $cat_filter
+    ? ($cat_descriptions[$cat_filter] ?? 'Articles by Denny Pratama on design, development, and AI.')
+    : 'UI/UX design insights, development tips, and AI perspectives from Denny Pratama — practical articles for designers building better digital products.';
+
+/* Build the canonical from the same params that produced this listing. */
+$canonical_params = [];
+if ($cat_filter) $canonical_params['cat']  = $cat_filter;
+if ($page > 1)   $canonical_params['page'] = $page;
+$canonical = 'https://dennypratama.com/blog'
+    . ($canonical_params ? '?' . http_build_query($canonical_params) : '');
+
+/* Reused by the rel=prev/next links below so they keep the active filter. */
+$pag_url = function (int $p) use ($cat_filter) {
+    $params = [];
+    if ($cat_filter) $params['cat'] = $cat_filter;
+    if ($p > 1)      $params['page'] = $p;
+    return 'https://dennypratama.com/blog' . ($params ? '?' . http_build_query($params) : '');
+};
+
 $og_image  = 'https://dennypratama.com/assets/logo.png';
 $jsonld    = json_encode([
     '@context'    => 'https://schema.org',
@@ -63,10 +102,10 @@ $jsonld    = json_encode([
 <head>
 <?php include 'partials/head.php'; ?>
 <?php if ($page > 1): ?>
-  <link rel="prev" href="https://dennypratama.com/blog<?= $page === 2 ? '' : '?page=' . ($page - 1) ?>"/>
+  <link rel="prev" href="<?= escHtml($pag_url($page - 1)) ?>"/>
 <?php endif; ?>
 <?php if ($page < $total_pages): ?>
-  <link rel="next" href="https://dennypratama.com/blog?page=<?= $page + 1 ?>"/>
+  <link rel="next" href="<?= escHtml($pag_url($page + 1)) ?>"/>
 <?php endif; ?>
 </head>
 <body>
@@ -89,11 +128,15 @@ $jsonld    = json_encode([
   <div class="blog-grid" id="blog-grid">
     <?php if (!$posts): ?>
       <div class="blog-empty">No posts yet.</div>
-    <?php else: foreach ($posts as $post):
+    <?php else: foreach ($posts as $i => $post):
       $img_url = $post['featured_image']
           ? '/admin/uploads/' . $post['featured_image']
           : null;
       $cat_label = $post['category'] ? ($cat_labels[$post['category']] ?? $post['category']) : null;
+      /* The first card sits above the fold on every breakpoint and is the LCP
+         candidate — lazy-loading it delays the largest paint by a round trip.
+         Everything after it stays lazy. */
+      $is_lcp = ($i === 0);
     ?>
       <a class="blog-card"
          href="/blog/<?= rawurlencode($post['slug']) ?>"
@@ -102,7 +145,8 @@ $jsonld    = json_encode([
           <img class="blog-card-img"
                src="<?= escHtml($img_url) ?>"
                alt="<?= escHtml($post['title']) ?>"
-               loading="lazy"/>
+               <?= $is_lcp ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>
+               decoding="async"/>
         <?php else: ?>
           <div class="blog-card-img"></div>
         <?php endif; ?>
@@ -160,7 +204,7 @@ $jsonld    = json_encode([
   })();
 </script>
 
-<script src="/script.js?v=26" defer></script>
+<script src="/script.js?v=32" defer></script>
 <script>var PAGE='blog', SLUG=null;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

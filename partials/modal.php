@@ -1,4 +1,5 @@
-  <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true" inert>
+  <div id="project-modal" class="pmodal" aria-hidden="true" role="dialog" aria-modal="true"
+       aria-labelledby="pm-title" inert>
     <div class="pmodal-inner">
       <div class="pmodal-header">
         <img class="pmodal-logo" src="/assets/logo.png" alt="Denny Pratama" width="32" height="32"/>
@@ -8,7 +9,7 @@
 
         <div class="pm-form" id="pm-form">
           <div class="pm-eyebrow">Let's work together</div>
-          <h2 class="pm-title">Start a project.</h2>
+          <h2 class="pm-title" id="pm-title">Start a project.</h2>
           <div class="pm-fields">
             <div class="pm-field">
               <label class="pm-label" for="pm-name">Name</label>

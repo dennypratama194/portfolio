@@ -25,7 +25,10 @@
   <meta property="og:title" content="<?= htmlspecialchars($title ?? 'Denny Pratama — Design is Conviction') ?>"/>
   <meta property="og:description" content="<?= htmlspecialchars($description ?? 'UI/UX Designer & Developer building digital products where aesthetics and function refuse to compromise.') ?>"/>
   <meta property="og:image" content="<?= htmlspecialchars($og_image ?? 'https://dennypratama.com/assets/logo.png') ?>"/>
-  <meta property="og:url" content="https://dennypratama.com<?= htmlspecialchars(strtok($_SERVER['REQUEST_URI'] ?? '/', '?')) ?>"/>
+  <!-- og:url mirrors the canonical when the page sets one, so social crawlers
+       and search engines are told about the same URL. Falls back to the current
+       path (query stripped) for pages that don't declare a canonical. -->
+  <meta property="og:url" content="<?= htmlspecialchars($canonical ?? ('https://dennypratama.com' . strtok($_SERVER['REQUEST_URI'] ?? '/', '?'))) ?>"/>
   <meta property="og:type" content="<?= htmlspecialchars($og_type ?? 'website') ?>"/>
   <meta property="og:site_name" content="Denny Pratama"/>
   <meta name="twitter:card" content="summary_large_image"/>
@@ -74,7 +77,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"/>
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png"/>
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png"/>
-  <link rel="stylesheet" href="/style.css?v=112"/>
+  <link rel="stylesheet" href="/style.css?v=113"/>
   <?php if (!empty($page_css)): /* page-specific stylesheet, loaded after the global one */ ?>
   <link rel="stylesheet" href="<?= htmlspecialchars($page_css) ?>"/>
   <?php endif; ?>

@@ -35,9 +35,12 @@ $og_image    = 'https://dennypratama.com/assets/logo.png';
   </section>
 </main>
 
+<?php include 'partials/modal.php'; /* nav.php renders .js-open-modal links, so
+   the dialog they open has to exist here too — without it those controls were
+   dead on the 404 page and jumped to the top of the document instead. */ ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=31" defer></script>
+<script src="/script.js?v=32" defer></script>
 <script>var PAGE='404',SLUG=null;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

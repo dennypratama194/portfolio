@@ -20,9 +20,13 @@ $stmt = $pdo->prepare(
 $stmt->execute([$slug]);
 $post = $stmt->fetch();
 
+/* Serve the real 404 page instead of redirecting. PHP downgrades an already-set
+   404 to a 302 as soon as a Location header is sent, so the old branch answered
+   "moved" for every dead slug — a soft 404 that keeps stale URLs in the index
+   and hands crawlers a redirect chain. case-study.php already does it this way. */
 if (!$post) {
     http_response_code(404);
-    header('Location: /blog');
+    include __DIR__ . '/404.php';
     exit;
 }
 
@@ -230,7 +234,7 @@ $related = $related_stmt->fetchAll();
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-<script src="/script.js?v=31" defer></script>
+<script src="/script.js?v=32" defer></script>
 <script>var PAGE='post', SLUG=<?= json_encode($post['slug']) ?>;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

@@ -43,15 +43,18 @@ $jsonld      = json_encode([
   <div class="cs-grid">
     <?php if (empty($projects)): ?>
       <div class="cs-empty">No case studies published yet — check back soon.</div>
-    <?php else: foreach ($projects as $p):
+    <?php else: foreach ($projects as $i => $p):
       $tools = array_filter(array_map('trim', explode(',', $p['tools'] ?? '')));
+      /* First cover is above the fold / the LCP candidate — don't defer it. */
+      $is_lcp = ($i === 0);
     ?>
       <a class="cs-card" href="/case-studies/<?= rawurlencode($p['slug']) ?>">
         <?php if ($p['cover_image']): ?>
           <img class="cs-card-cover"
                src="<?= escHtml($p['cover_image']) ?>"
                alt="<?= escHtml($p['title']) ?>"
-               loading="lazy"/>
+               <?= $is_lcp ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"' ?>
+               decoding="async"/>
         <?php else: ?>
           <div class="cs-card-cover cs-card-cover--empty"></div>
         <?php endif; ?>
@@ -81,7 +84,7 @@ $jsonld      = json_encode([
 
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
-<script src="/script.js?v=26" defer></script>
+<script src="/script.js?v=32" defer></script>
 <script>var PAGE='case-studies', SLUG=null;</script>
 <script src="/api/tracker.js?v=1" defer></script>
 </body>

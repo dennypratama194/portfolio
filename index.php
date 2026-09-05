@@ -194,7 +194,12 @@ $jsonld = json_encode([
       <div class="hero-bottom-right">
         <div class="hero-video-slot" id="hero-video-slot">
           <div class="hero-video-frame" id="hero-video-frame">
-            <video class="hero-video-media" data-src="/assets/video/portfolio-showcase.webm?v=2" preload="none" autoplay muted loop playsinline></video>
+            <!-- Silent, controls-free showreel of work shown elsewhere on this
+                 page as text and links. It carries no information of its own,
+                 so it's hidden from assistive tech rather than exposed as an
+                 unlabelled media element. -->
+            <video class="hero-video-media" data-src="/assets/video/portfolio-showcase.webm?v=2"
+                   preload="none" autoplay muted loop playsinline aria-hidden="true"></video>
           </div>
         </div>
       </div>
@@ -430,7 +435,8 @@ $jsonld = json_encode([
     </div>
   </section><!-- /#about -->
 
-  <section id="testimonials">
+  <section id="testimonials" aria-labelledby="testimonials-heading">
+    <h2 class="sr-only" id="testimonials-heading">What clients say</h2>
     <div class="approach-eyebrow testi-eyebrow">03 — What Clients Say</div>
     <div class="bento-grid">
 
@@ -669,7 +675,7 @@ $jsonld = json_encode([
 <?php include 'partials/modal.php'; ?>
 <?php include 'partials/footer.php'; ?>
 
-  <script src="/script.js?v=31" defer></script>
+  <script src="/script.js?v=32" defer></script>
   <script>var PAGE='home',SLUG=null;</script>
   <script src="/api/tracker.js?v=1" defer></script>
 </body>

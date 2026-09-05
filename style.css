@@ -971,6 +971,15 @@
       letter-spacing: -0.04em;
       color: rgba(255,255,255,0.07);
       animation: capg-scroll 12s linear infinite;
+      /* The marquee is opacity:0 until its card is hovered, but the animation
+         used to run non-stop — three large promoted text layers repainting
+         forever, even while #about was off-screen. Park it until it can
+         actually be seen; the reduced-motion rule at the bottom of this file
+         still forces it paused with !important. */
+      animation-play-state: paused;
+    }
+    .capg-card:hover .capg-marquee-track {
+      animation-play-state: running;
       will-change: transform;
     }
     .capg-card--large .capg-marquee-track {
@@ -2466,6 +2475,14 @@ html.pt-leaving body { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   html::before { display: none; }
   .preloader { display: none !important; }
+
+  /* Hero showreel: an autoplaying, looping, pause-less clip is precisely the
+     motion this preference asks us to drop (WCAG 2.2.2). script.js skips the
+     download to match, so without this rule the slot would hold an empty
+     320×228 box. Mobile already hides the same element for its own reasons —
+     the hero reads fine without it. */
+  .hero-bottom-right { display: none; }
+  #video-showcase { display: none !important; }
 
   /* Stop all decorative auto-playing animations */
   .hero-overline-dot,

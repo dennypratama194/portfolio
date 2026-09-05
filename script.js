@@ -68,26 +68,36 @@
 /* ── CURSOR ── */
 /* Skip entirely on touch devices — no pointer means nothing to track */
 const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-if (hasFinePointer) {
-  const ring = document.getElementById('cursor-ring');
-  const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+const dot  = document.getElementById('cursor-dot');
+/* ring/dot come from partials/nav.php; guarding here means a page that ever
+   renders without it can't throw and take the rest of this file down with it. */
+if (hasFinePointer && ring && dot) {
   let rX = 0, rY = 0, dX = 0, dY = 0;
+  /* The lerp loop used to run forever, repainting the ring on every frame even
+     while the pointer sat still — a rAF callback per frame for the whole visit.
+     It now parks itself once the ring has caught up and a mousemove restarts
+     it, so an idle tab does no work. Identical easing while moving. */
+  let cursorRunning = false;
   document.addEventListener('mousemove', e => {
     dX = e.clientX; dY = e.clientY;
     dot.style.left = dX + 'px'; dot.style.top = dY + 'px';
-  });
+    if (!cursorRunning) { cursorRunning = true; requestAnimationFrame(lerpCursor); }
+  }, { passive: true });
   function lerpCursor() {
     const nx = rX + (dX - rX) * 0.12;
     const ny = rY + (dY - rY) * 0.12;
     if (Math.abs(nx - rX) > 0.1 || Math.abs(ny - rY) > 0.1) {
       rX = nx; rY = ny;
       ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+      requestAnimationFrame(lerpCursor);
     } else {
-      rX = nx; rY = ny;
+      /* Settled — snap onto the target and stop until the pointer moves again. */
+      rX = dX; rY = dY;
+      ring.style.left = rX + 'px'; ring.style.top = rY + 'px';
+      cursorRunning = false;
     }
-    requestAnimationFrame(lerpCursor);
   }
-  lerpCursor();
   /* Single delegated listener — avoids attaching handlers to 100+ elements */
   document.addEventListener('mouseover', e => {
     const hit = e.target.closest('a, button, .wc, .cap-item, .stat-cell, .home-faq-item summary');
@@ -95,7 +105,33 @@ if (hasFinePointer) {
     /* A .btn has its own hover state and is shorter than the filled ring —
        let CSS shrink the ring instead of covering the label. */
     document.body.classList.toggle('cursor-on-btn', !!(hit && hit.closest('.btn')));
+  }, { passive: true });
+}
+
+/* ── FOCUS TRAP ──
+   Shared by the nav overlay and the contact modal: both cover the whole screen
+   and both are marked aria-modal, but the page behind them stays in the tab
+   order, so a keyboard user could tab straight out of the dialog and onto links
+   they can't see. Call this from the container's keydown handler while it's
+   open; it only ever acts on Tab. */
+function trapTabKey(container, e) {
+  if (e.key !== 'Tab') return;
+  const candidates = container.querySelectorAll(
+    'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  );
+  const items = Array.prototype.filter.call(candidates, function (el) {
+    return el.offsetWidth || el.offsetHeight || el.getClientRects().length;
   });
+  if (!items.length) return;
+  const first = items[0];
+  const last  = items[items.length - 1];
+  if (!container.contains(document.activeElement)) {
+    e.preventDefault(); first.focus();
+  } else if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault(); first.focus();
+  }
 }
 
 /* ── NAV BURGER / OVERLAY ── */
@@ -112,8 +148,15 @@ if (burger && navOverlay) {
     document.documentElement.classList.add('nav-open');
     document.body.style.top = -scrollLockY + 'px';
     burger.setAttribute('aria-expanded', 'true');
+    /* The label has to track the state: a screen reader reading "Open menu" on
+       an already-open menu gives the user no way to know Enter will close it. */
+    burger.setAttribute('aria-label', 'Close menu');
     navOverlay.setAttribute('aria-hidden', 'false');
     navOverlay.removeAttribute('inert');
+    /* Move focus into the overlay so keyboard users land inside what just
+       opened instead of continuing from the burger into the page behind it. */
+    const firstLink = navOverlay.querySelector('.nav-overlay-link');
+    if (firstLink) setTimeout(function () { firstLink.focus(); }, 120);
   }
   function closeNav() {
     document.body.classList.remove('nav-open');
@@ -121,6 +164,7 @@ if (burger && navOverlay) {
     document.body.style.top = '';
     window.scrollTo(0, scrollLockY);
     burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Open menu');
     navOverlay.setAttribute('aria-hidden', 'true');
     navOverlay.setAttribute('inert', '');
   }
@@ -131,7 +175,13 @@ if (burger && navOverlay) {
   overlayLinks.forEach(function(link) { link.addEventListener('click', closeNav); });
   overlayCtas.forEach(function(cta) { cta.addEventListener('click', closeNav); });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.body.classList.contains('nav-open')) closeNav();
+    if (!document.body.classList.contains('nav-open')) return;
+    if (e.key === 'Escape') {
+      closeNav();
+      burger.focus(); // Escape must hand focus back to the control that opened it
+      return;
+    }
+    trapTabKey(navOverlay, e);
   });
 }
 
@@ -226,7 +276,13 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     if (sendBtnLabel) sendBtnLabel.textContent = 'Send it →';
   }
 
+  /* Remembered so closing the dialog can put focus back where it started —
+     without this a keyboard or screen-reader user is dropped at the top of the
+     document every time they dismiss the form. */
+  let lastFocusedBeforeModal = null;
+
   function openModal() {
+    lastFocusedBeforeModal = document.activeElement;
     loadRecaptcha();
     modal.removeAttribute('inert');
     modal.classList.add('open');
@@ -243,6 +299,10 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
     modal.setAttribute('aria-hidden', 'true');
     modal.setAttribute('inert', '');
     document.body.classList.remove('modal-open');
+    if (lastFocusedBeforeModal && document.contains(lastFocusedBeforeModal)) {
+      lastFocusedBeforeModal.focus();
+    }
+    lastFocusedBeforeModal = null;
   }
   function shake(el) {
     el.classList.remove('shake'); void el.offsetWidth;
@@ -301,7 +361,9 @@ document.querySelectorAll('.btn-primary').forEach(btn => {
   successBack.addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') { closeModal(); return; }
+    trapTabKey(modal, e);
   });
   modal.querySelectorAll('button, input, textarea').forEach(el => {
     el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
@@ -754,9 +816,16 @@ document.addEventListener('DOMContentLoaded', function () {
   const src = video.getAttribute('data-src');
   if (!src) return;
   const desktop = window.matchMedia('(min-width: 769px)');
+  /* A muted clip that autoplays and loops forever is exactly the "moving
+     content that starts automatically and lasts more than five seconds" WCAG
+     2.2.2 asks you not to force on anyone, and there is no pause control. For
+     prefers-reduced-motion users the clip is dropped entirely — style.css hides
+     the frame so no empty box is left behind, the same treatment mobile already
+     gets — and the 1.1 MB download is skipped with it. */
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   function attach() {
-    if (!desktop.matches || video.src) return;
+    if (reducedMotion.matches || !desktop.matches || video.src) return;
     video.src = src;
     // autoplay fires on its own once the source resolves; this only covers
     // browsers that decline to restart the attempt after a late src swap.

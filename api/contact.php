@@ -3,6 +3,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: https://dennypratama.com');
 
 require_once __DIR__ . '/.secrets.php';
+require_once __DIR__ . '/helpers.php';
 define('RECAPTCHA_THRESHOLD', 0.5);
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,29 +12,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-/* ── Rate limiting: max 50 submissions per IP per hour (TEMP — drop back to 5 after debugging) ── */
-$rate_dir = __DIR__ . '/logs/ratelimit';
-if (!is_dir($rate_dir)) {
-    mkdir($rate_dir, 0755, true);
-}
-$ip_key    = hash('sha256', $_SERVER['REMOTE_ADDR'] ?? 'unknown');
-$rate_file = $rate_dir . '/contact_' . $ip_key . '.json';
-$one_hour_ago = time() - 3600;
-$timestamps   = [];
-
-if (file_exists($rate_file)) {
-    $stored = json_decode(file_get_contents($rate_file), true);
-    if (is_array($stored)) {
-        $timestamps = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
-    }
-}
-if (count($timestamps) >= 50) {
+/* ── Rate limiting: max 5 submissions per IP per hour ──
+   Uses the shared rateLimit() helper so the bucket is keyed on client_ip()
+   (Cloudflare-aware). REMOTE_ADDR is Cloudflare's edge IP here, so the old
+   local implementation shared one bucket across every visitor behind the same
+   edge node. Same bucket name, same directory, same 1-hour window. */
+if (!rateLimit('contact', 5)) {
     http_response_code(429);
     echo json_encode(['success' => false, 'message' => 'Too many requests, please try again later']);
     exit;
 }
-$timestamps[] = time();
-file_put_contents($rate_file, json_encode($timestamps), LOCK_EX);
 
 $data  = json_decode(file_get_contents('php://input'), true);
 $token = trim($data['recaptcha_token'] ?? '');

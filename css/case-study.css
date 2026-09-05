@@ -6,6 +6,13 @@
 /* ── Cover image ── */
 .csp-cover-wrap {
   width: 100%;
+  /* The cover is the LCP element and its intrinsic size isn't known server-side
+     (cover_image is an arbitrary admin upload), so the box reserves its own
+     height from an aspect ratio instead of collapsing to 0 until the image
+     decodes. 16/9 matches every other image box in this file (.csp-img,
+     .cs-card-cover); max-height still caps it on wide viewports, exactly as
+     before — .csp-cover's object-fit:cover keeps the framing identical. */
+  aspect-ratio: 16 / 9;
   max-height: 560px;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
