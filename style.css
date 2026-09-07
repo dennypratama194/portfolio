@@ -1507,9 +1507,16 @@
       #cursor-ring, #cursor-dot { display: none; }
       body { cursor: auto; }
 
-      header nav { padding: 20px 24px; background: rgba(249,249,249,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); mix-blend-mode: normal; }
-      #hero { padding: 144px 24px 48px; min-height: 100svh; }
-      .hero-overline { top: 90px; left: 24px; right: 24px; }
+      /* At rest the bar is bare — no panel, no hairline. A frosted strip with a
+         border sitting 18px above the hero overline read as two stacked bands.
+         The panel + hairline come back on .scrolled, same as desktop. */
+      header nav { padding: 20px 24px; }
+      header nav.scrolled {
+        padding: 16px 24px;
+        background: rgba(249,249,249,0.92);
+      }
+      #hero { padding: 168px 24px 48px; min-height: 100svh; }
+      .hero-overline { top: 112px; left: 24px; right: 24px; }
 .hero-year { display: none; }
       .hero-bottom { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 32px; }
       /* No clip on mobile. The scroll-grow effect can't come with it: the source
