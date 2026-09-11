@@ -6,4 +6,4 @@
   <link rel="icon" href="/assets/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/admin/theme.css?v=6">
-  <link rel="stylesheet" href="/admin/css/showcase.css?v=1">
+  <link rel="stylesheet" href="/admin/css/showcase.css?v=2">

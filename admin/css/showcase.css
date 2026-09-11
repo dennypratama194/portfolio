@@ -22,9 +22,43 @@
 .sc-admin-category .field { flex: 1 1 160px; margin: 0; }
 .sc-admin :is(input,textarea,select,button,a):focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
 .sc-admin .sc-missing { padding: 16px; font-size: 14px; border: 1px solid rgba(var(--text-rgb),0.2); }
+
+.sc-quickstart { max-width: 640px; margin: 64px auto; text-align: center; }
+.sc-quickstart h1 { font-size: 32px; line-height: 1.15; font-weight: 500; margin-bottom: 12px; }
+.sc-quickstart .sc-admin-intro { margin: 0 auto 32px; }
+.sc-quickstart .errors { text-align: left; }
+.sc-dropzone {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 64px 24px; border: 1px dashed rgba(var(--text-rgb),0.3); border-radius: 4px;
+  cursor: pointer; transition: border-color .15s, background-color .15s;
+}
+.sc-dropzone:hover { border-color: rgba(var(--text-rgb),0.5); }
+.sc-dropzone.is-dragover { border-color: var(--red); background: rgba(var(--red-rgb),0.05); }
+.sc-dropzone.is-loading { opacity: .6; pointer-events: none; }
+.sc-dropzone-icon { width: 40px; height: 40px; color: rgba(var(--text-rgb),0.35); }
+.sc-dropzone-label { font-size: 16px; }
+.sc-dropzone-browse { color: var(--red); text-decoration: underline; text-underline-offset: 4px; }
+.sc-dropzone-status { font-size: 14px; min-height: 20px; color: rgba(var(--text-rgb),0.6); }
+.sc-dropzone-status[data-error="true"] { color: var(--red); }
+.sc-dropzone-input {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.sc-dropzone:has(.sc-dropzone-input:focus-visible) { outline: 2px solid var(--red); outline-offset: 4px; }
+
+.sc-admin-more { margin: 24px 0; border-top: 1px solid rgba(var(--text-rgb),0.2); padding-top: 16px; }
+.sc-admin-more summary { cursor: pointer; font-size: 16px; padding: 8px 0; min-height: 44px; display: flex; align-items: center; }
+.sc-admin-more summary:focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+.sc-admin-more[open] summary { margin-bottom: 8px; }
+.sc-admin-discard { margin-left: auto; }
+
 @media (max-width: 768px) {
   .sc-admin-fields, .sc-admin-gallery-row { grid-template-columns: 1fr; }
   .sc-admin-section { padding: 16px; }
   .sc-admin .top-bar { align-items: start; gap: 16px; flex-direction: column; }
   .sc-admin .btn-row { flex-wrap: wrap; }
+  .sc-quickstart { margin: 32px auto; }
+  .sc-quickstart h1 { font-size: 24px; }
+  .sc-dropzone { padding: 40px 16px; }
+  .sc-admin-discard { margin-left: 0; }
 }

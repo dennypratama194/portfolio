@@ -26,3 +26,11 @@ function showcaseInt(array $values, string $key, int $min = 0, int $max = 214748
 function showcaseSlug(string $slug, int $max = 180): bool {
     return strlen($slug) <= $max && (bool)preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', $slug);
 }
+function showcaseUniqueSlug(PDO $pdo, string $base): string {
+    $slug = $base;
+    for ($suffix = 2; showcaseQuery($pdo, 'SELECT id FROM showcase_projects WHERE slug=?', [$slug])->fetch(); $suffix++) {
+        if ($suffix > 500) throw new RuntimeException('Could not generate a unique slug. Please try again.');
+        $slug = $base . '-' . $suffix;
+    }
+    return $slug;
+}
