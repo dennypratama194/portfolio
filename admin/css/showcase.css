@@ -88,7 +88,11 @@
 }
 .drag-handle:hover, .drag-handle:focus-visible { color: var(--text); }
 .sc-gallery-thumb { position: relative; width: 96px; flex: 0 0 96px; }
-.sc-gallery-thumb img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+/* height:auto is load-bearing — showcaseImage() emits width/height attributes,
+   which are presentational hints that set CSS height. Without this the height
+   stays definite, aspect-ratio is ignored, and a portrait upload renders 96px
+   wide by its full natural height. */
+.sc-gallery-thumb img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
 .sc-gallery-remove {
   position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%;
   background: rgba(0,0,0,.65); color: #fff; display: flex; align-items: center; justify-content: center;
@@ -107,6 +111,27 @@
 .sc-gallery-pending img { display: block; width: 80px; height: 60px; object-fit: cover; }
 .sc-gallery-pending span { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: rgba(var(--text-rgb),0.6); }
 
+/* ── Title: the design's own name, not a labelled field ── */
+.sc-admin-title { margin-bottom: 24px; }
+.sc-admin-title input {
+  width: 100%; padding: 4px 0; background: none;
+  border: none; border-bottom: 1px solid transparent;
+  font-size: 40px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em;
+  transition: border-color .15s;
+}
+.sc-admin-title input:hover { border-bottom-color: rgba(var(--text-rgb),0.15); }
+.sc-admin-title input:focus { border-bottom-color: var(--red); }
+.sc-admin-title input::placeholder { color: rgba(var(--text-rgb),0.25); }
+
+/* ── Action bar: follows you down the form instead of hiding at the bottom ── */
+.sc-admin-bar {
+  position: sticky; bottom: 0; z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 16px; margin-top: 32px; padding: 16px 0;
+  background: var(--bg); border-top: 1px solid rgba(var(--text-rgb),0.15);
+}
+.sc-admin-bar .sc-admin-actions { margin: 0; }
+
 @media (max-width: 768px) {
   .sc-admin-fields { grid-template-columns: 1fr; }
   .sc-admin-section { padding: 16px; }
@@ -117,4 +142,14 @@
   .sc-dropzone { padding: 40px 16px; }
   .sc-admin-discard { margin-left: 0; }
   .sc-gallery-row { flex-wrap: wrap; }
+  .sc-admin-title input { font-size: 28px; }
+  .sc-admin-bar { gap: 12px; padding: 12px 0; }
 }
+
+/* ── Light mode ── */
+[data-theme="light"] .sc-admin-bar {
+  background: var(--bg-light);
+  border-top-color: rgba(var(--text-light-rgb),0.15);
+}
+[data-theme="light"] .sc-admin-title input:hover { border-bottom-color: rgba(var(--text-light-rgb),0.15); }
+[data-theme="light"] .sc-admin-title input::placeholder { color: rgba(var(--text-light-rgb),0.35); }

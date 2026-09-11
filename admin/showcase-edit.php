@@ -169,7 +169,7 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <?php if (isset($_GET['draft'])): ?><p role="status">Image uploaded. Add a title and a few details, then publish when ready.</p>
 <?php elseif (isset($_GET['saved'])): ?><p role="status"><?= isset($_GET['images']) ? 'Images uploaded. Add their alt text below, then publish when ready.' : 'Design saved.' ?></p><?php endif; ?>
 <form method="post" enctype="multipart/form-data" class="sc-admin-form"><input type="hidden" name="csrf" value="<?= escHtml($_SESSION['csrf_token']) ?>">
-<div class="field"><label for="title">Title</label><input type="text" id="title" name="title" maxlength="255" value="<?= escHtml($item['title']) ?>" required autofocus></div>
+<div class="sc-admin-title"><label for="title" class="sr-only">Title</label><input type="text" id="title" name="title" maxlength="255" value="<?= escHtml($item['title']) ?>" placeholder="Untitled design" required autofocus></div>
 <div class="field"><label for="short_description">Short description</label><textarea id="short_description" name="short_description" maxlength="2000"><?= escHtml($item['short_description'] ?? '') ?></textarea></div>
 <fieldset class="sc-admin-section"><legend>Cover image</legend>
 <div class="sc-cover">
@@ -194,7 +194,7 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 })();
 </script>
 
-<details class="sc-admin-more" <?= $gallery ? 'open' : '' ?>><summary>Gallery<?= $gallery ? ' (' . count($gallery) . ')' : '' ?></summary>
+<details class="sc-admin-more" open><summary>Gallery<?= $gallery ? ' (' . count($gallery) . ')' : '' ?></summary>
 <fieldset class="sc-admin-section"><legend class="sr-only">Gallery</legend>
 <p class="sc-admin-hint">Drag ⋮⋮ to reorder. Add alt text for each image before publishing.</p>
 <p id="gallery-order-status" class="sr-only" role="status"></p>
@@ -318,11 +318,19 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 })();
 </script>
 
+<div class="sc-admin-bar">
 <div class="sc-admin-actions"><label class="sc-admin-check"><input type="checkbox" name="is_featured" value="1" <?= $item['is_featured'] ? 'checked' : '' ?>>Featured on homepage</label><label class="sc-admin-check"><input type="checkbox" name="is_published" value="1" <?= $item['is_published'] ? 'checked' : '' ?>>Published</label></div>
 <div class="btn-row"><button type="submit" class="btn-save"><?= $item['is_published'] ? 'Save design' : 'Save & publish when ready' ?></button><a class="btn-cancel" href="/admin/showcase">Back to archive</a>
-<?php if (!$item['is_published']): ?><form method="post" action="/admin/showcase" onsubmit="return confirm('Discard this draft? Its image will be deleted.')" class="sc-admin-discard"><input type="hidden" name="csrf" value="<?= escHtml($_SESSION['csrf_token']) ?>"><input type="hidden" name="id" value="<?= $id ?>"><button class="btn-outline" name="action" value="delete">Discard draft</button></form><?php endif; ?>
+<?php if (!$item['is_published']): ?><button class="btn-outline sc-admin-discard" type="submit" form="discard-form" name="action" value="delete">Discard draft</button><?php endif; ?>
+</div>
 </div>
 </form>
+<?php if (!$item['is_published']): ?>
+<!-- Lives outside .sc-admin-form on purpose: a <form> nested in a <form> is invalid
+     HTML, so the parser dropped this one and the button silently submitted the save
+     form instead of deleting. form="discard-form" wires it up from where it renders. -->
+<form method="post" action="/admin/showcase" id="discard-form" onsubmit="return confirm('Discard this draft? Its image will be deleted.')"><input type="hidden" name="csrf" value="<?= escHtml($_SESSION['csrf_token']) ?>"><input type="hidden" name="id" value="<?= $id ?>"></form>
+<?php endif; ?>
 
 <?php endif; ?>
 
