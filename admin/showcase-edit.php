@@ -194,28 +194,129 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 })();
 </script>
 
-<details class="sc-admin-more"><summary>More details</summary>
-<div class="sc-admin-fields">
-<div class="field"><label for="category_id">Category (optional)</label><select id="category_id" name="category_id"><option value="0">Uncategorized</option><?php foreach ($categories as $category): ?><option value="<?= (int)$category['id'] ?>" <?= (int)$item['category_id'] === (int)$category['id'] ? 'selected' : '' ?>><?= escHtml($category['name']) ?></option><?php endforeach; ?></select><a href="/admin/showcase-categories" target="_blank" rel="noopener">Manage categories</a></div>
-<div class="field"><label for="year">Year (optional)</label><input type="number" id="year" name="year" min="1900" max="2155" value="<?= escHtml((string)$item['year']) ?>"></div>
-<div class="field"><label for="tools">Tools (optional)</label><input type="text" id="tools" name="tools" maxlength="255" value="<?= escHtml($item['tools']) ?>"></div>
-<div class="field"><label for="client">Client (optional)</label><input type="text" id="client" name="client" maxlength="100" value="<?= escHtml($item['client']) ?>"></div>
-<div class="field"><label for="related_case_study_id">Related case study (optional)</label><select id="related_case_study_id" name="related_case_study_id"><option value="0">None</option><?php foreach ($cases as $case): ?><option value="<?= (int)$case['id'] ?>" <?= (int)$item['related_case_study_id'] === (int)$case['id'] ? 'selected' : '' ?>><?= escHtml($case['title'] . ($case['is_published'] ? '' : ' (draft)')) ?></option><?php endforeach; ?></select></div>
-<div class="field"><label for="sort_order">Display order (optional)</label><input type="number" id="sort_order" name="sort_order" min="0" max="2147483647" value="<?= (int)$item['sort_order'] ?>"><p class="sc-admin-hint">Lower numbers appear first.</p></div>
-</div>
-</details>
-
 <details class="sc-admin-more" <?= $gallery ? 'open' : '' ?>><summary>Gallery<?= $gallery ? ' (' . count($gallery) . ')' : '' ?></summary>
-<fieldset class="sc-admin-section"><legend class="sr-only">Gallery</legend><p class="sc-admin-hint">Set image order, descriptions and captions. Check Remove and save to delete an image.</p>
+<fieldset class="sc-admin-section"><legend class="sr-only">Gallery</legend>
+<p class="sc-admin-hint">Drag ⋮⋮ to reorder. Add alt text for each image before publishing.</p>
+<p id="gallery-order-status" class="sr-only" role="status"></p>
+<ul class="sc-gallery-list" id="gallery-list">
 <?php foreach ($gallery as $image): $iid = (int)$image['id']; ?>
-<div class="sc-admin-gallery-row"><div class="sc-admin-preview"><?= showcaseImage($image['media'], $image['alt_text']) ?></div><div>
-<div class="field"><label for="alt-<?= $iid ?>">Alt text</label><input type="text" id="alt-<?= $iid ?>" name="gallery[<?= $iid ?>][alt_text]" maxlength="500" value="<?= escHtml($image['alt_text']) ?>"></div>
-<div class="field"><label for="caption-<?= $iid ?>">Caption (optional)</label><textarea id="caption-<?= $iid ?>" name="gallery[<?= $iid ?>][caption]" maxlength="1000"><?= escHtml($image['caption']) ?></textarea></div>
-<div class="field"><label for="order-<?= $iid ?>">Image order</label><input type="number" id="order-<?= $iid ?>" name="gallery[<?= $iid ?>][sort_order]" min="0" max="2147483647" value="<?= (int)$image['sort_order'] ?>"></div>
-<label class="sc-admin-check"><input type="checkbox" name="gallery[<?= $iid ?>][remove]" value="1" <?= !empty($image['remove']) ? 'checked' : '' ?>>Remove image</label>
-</div></div><?php endforeach; ?>
-<div class="field"><label for="images">Add gallery images</label><input type="file" id="images" name="images[]" accept="image/jpeg,image/png,image/webp" multiple><p class="sc-admin-hint">Up to 12 images per upload, 5 MB each. Adding images saves the design as a draft so you can describe them before publishing.</p></div></fieldset>
+<li class="sc-gallery-row" data-id="<?= $iid ?>">
+  <button type="button" class="drag-handle" aria-label="Reorder image" title="Drag to reorder. Keyboard: Space to pick up, arrow keys to move, Space to drop, Escape to cancel.">&#8942;&#8942;</button>
+  <div class="sc-gallery-thumb">
+    <?= showcaseImage($image['media'], $image['alt_text']) ?>
+    <input class="sc-dropzone-input" type="checkbox" id="remove-<?= $iid ?>" name="gallery[<?= $iid ?>][remove]" value="1" <?= !empty($image['remove']) ? 'checked' : '' ?>>
+    <label class="sc-gallery-remove" for="remove-<?= $iid ?>" aria-label="Mark image for removal">✕</label>
+  </div>
+  <div class="sc-gallery-alt">
+    <label for="alt-<?= $iid ?>" class="sr-only">Alt text</label>
+    <input type="text" id="alt-<?= $iid ?>" name="gallery[<?= $iid ?>][alt_text]" maxlength="500" value="<?= escHtml($image['alt_text']) ?>" placeholder="Describe this image">
+  </div>
+  <input type="hidden" class="sc-gallery-order" name="gallery[<?= $iid ?>][sort_order]" value="<?= (int)$image['sort_order'] ?>">
+  <input type="hidden" name="gallery[<?= $iid ?>][caption]" value="<?= escHtml($image['caption']) ?>">
+</li>
+<?php endforeach; ?>
+</ul>
+<div class="sc-gallery-upload">
+  <label class="sc-dropzone sc-dropzone-compact" for="images">
+    <svg class="sc-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.5"/><path d="m3 16 5-5 4 4 4-6 5 7"/></svg>
+    <span class="sc-dropzone-label">Drag and drop images, or <span class="sc-dropzone-browse">browse</span></span>
+    <span class="sc-admin-hint">JPG, PNG or WebP, up to 5 MB each, 12 at a time. Saves as a draft until every image has alt text.</span>
+  </label>
+  <input class="sc-dropzone-input" type="file" id="images" name="images[]" accept="image/jpeg,image/png,image/webp" multiple>
+  <ul class="sc-gallery-pending" id="gallery-pending" aria-live="polite"></ul>
+</div>
+</fieldset>
 </details>
+<script>
+(function () {
+  var list = document.getElementById('gallery-list');
+  if (list) {
+    var status = document.getElementById('gallery-order-status'), drag = null;
+    function rows() { return Array.from(list.querySelectorAll('.sc-gallery-row')); }
+    function renumber() {
+      rows().forEach(function (row, index) {
+        var order = row.querySelector('.sc-gallery-order');
+        if (order) order.value = index + 1;
+      });
+    }
+    function restore(previous) { previous.forEach(function (row) { list.appendChild(row); }); renumber(); }
+    function begin(handle, pointerId) {
+      if (drag) return false;
+      drag = { row: handle.closest('.sc-gallery-row'), previous: rows(), pointerId: pointerId };
+      drag.row.classList.add('dragging');
+      status.textContent = 'Move image, then release to place it';
+      return true;
+    }
+    function finish(cancel) {
+      if (!drag) return;
+      var previous = drag.previous;
+      drag.row.classList.remove('dragging');
+      if (drag.pointerId !== undefined && list.hasPointerCapture(drag.pointerId)) list.releasePointerCapture(drag.pointerId);
+      drag = null;
+      if (cancel) { restore(previous); status.textContent = 'Reorder cancelled'; }
+      else { renumber(); status.textContent = 'Image order updated'; }
+    }
+    function moveAt(y) {
+      var others = rows().filter(function (row) { return row !== drag.row; });
+      var before = others.find(function (row) {
+        var rect = row.getBoundingClientRect();
+        return y < rect.top + rect.height / 2;
+      });
+      list.insertBefore(drag.row, before || null);
+    }
+    list.addEventListener('pointerdown', function (event) {
+      var handle = event.target.closest('.drag-handle');
+      if (!handle || event.button !== 0 || !begin(handle, event.pointerId)) return;
+      event.preventDefault();
+      handle.focus();
+      list.setPointerCapture(event.pointerId);
+    });
+    list.addEventListener('pointermove', function (event) {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      moveAt(event.clientY);
+    });
+    list.addEventListener('pointerup', function (event) { if (drag && drag.pointerId === event.pointerId) finish(false); });
+    list.addEventListener('pointercancel', function () { finish(true); });
+    list.addEventListener('lostpointercapture', function () { if (drag) finish(true); });
+    list.addEventListener('keydown', function (event) {
+      var handle = event.target.closest('.drag-handle');
+      if (!handle) return;
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        if (drag) finish(false); else begin(handle);
+      } else if (drag && event.key === 'Escape') {
+        event.preventDefault(); finish(true);
+      } else if (drag && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
+        event.preventDefault();
+        var sibling = event.key === 'ArrowUp' ? drag.row.previousElementSibling : drag.row.nextElementSibling;
+        if (sibling) list.insertBefore(drag.row, event.key === 'ArrowUp' ? sibling : sibling.nextElementSibling);
+        handle.focus(); drag.row.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  }
+  var galleryInput = document.getElementById('images'), galleryZone = document.querySelector('.sc-gallery-upload .sc-dropzone'), pending = document.getElementById('gallery-pending');
+  if (galleryInput) {
+    function renderPending(files) {
+      pending.innerHTML = '';
+      Array.from(files).slice(0, 12).forEach(function (file) {
+        var li = document.createElement('li');
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = '';
+        var name = document.createElement('span');
+        name.textContent = file.name;
+        li.appendChild(img); li.appendChild(name); pending.appendChild(li);
+      });
+    }
+    galleryInput.addEventListener('change', function () { renderPending(galleryInput.files); });
+    ['dragenter', 'dragover'].forEach(function (evt) { galleryZone.addEventListener(evt, function (e) { e.preventDefault(); galleryZone.classList.add('is-dragover'); }); });
+    ['dragleave', 'drop'].forEach(function (evt) { galleryZone.addEventListener(evt, function (e) { e.preventDefault(); galleryZone.classList.remove('is-dragover'); }); });
+    galleryZone.addEventListener('drop', function (e) {
+      if (e.dataTransfer.files.length) { galleryInput.files = e.dataTransfer.files; renderPending(galleryInput.files); }
+    });
+  }
+})();
+</script>
 
 <div class="sc-admin-actions"><label class="sc-admin-check"><input type="checkbox" name="is_featured" value="1" <?= $item['is_featured'] ? 'checked' : '' ?>>Featured on homepage</label><label class="sc-admin-check"><input type="checkbox" name="is_published" value="1" <?= $item['is_published'] ? 'checked' : '' ?>>Published</label></div>
 <div class="btn-row"><button type="submit" class="btn-save"><?= $item['is_published'] ? 'Save design' : 'Save & publish when ready' ?></button><a class="btn-cancel" href="/admin/showcase">Back to archive</a>
