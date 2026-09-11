@@ -80,7 +80,13 @@
   display: flex; align-items: center; gap: 12px; padding: 8px;
   border: 1px solid rgba(var(--text-rgb),0.15); background: rgba(var(--text-rgb),0.02);
 }
-.sc-gallery-row.dragging { background: rgba(var(--text-rgb),0.12); outline: 1px solid var(--red); }
+.sc-gallery-row.dragging {
+  background: rgba(var(--text-rgb),0.12); outline: 1px solid var(--red);
+  position: relative; z-index: 2; will-change: transform;
+}
+.sc-gallery-row.dragging .drag-handle { cursor: grabbing; }
+/* Row holds an image swap that hasn't been saved yet. */
+.sc-gallery-row.is-replaced { border-color: rgba(var(--red-rgb),0.55); }
 .sc-gallery-list.reordering { cursor: grabbing; }
 .drag-handle {
   background: none; border: none; cursor: grab; touch-action: none; padding: 6px;
@@ -93,6 +99,16 @@
    stays definite, aspect-ratio is ignored, and a portrait upload renders 96px
    wide by its full natural height. */
 .sc-gallery-thumb img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
+.sc-gallery-replace { display: block; position: relative; cursor: pointer; overflow: hidden; }
+.sc-gallery-replace-hint {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.6); color: #fff;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  opacity: 0; transition: opacity .15s;
+}
+.sc-gallery-replace:hover .sc-gallery-replace-hint,
+.sc-gallery-replace-input:focus-visible + .sc-gallery-replace .sc-gallery-replace-hint { opacity: 1; }
+.sc-gallery-replace-input:focus-visible + .sc-gallery-replace { outline: 2px solid var(--red); outline-offset: 2px; }
 .sc-gallery-remove {
   position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border-radius: 50%;
   background: rgba(0,0,0,.65); color: #fff; display: flex; align-items: center; justify-content: center;

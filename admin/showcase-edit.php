@@ -83,6 +83,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['quick_create']) && !
                 $newImages[] = $new;
             }
         }
+        // Per-row replacements. gallery_replace[<image id>] is a flat file array, so
+        // $_FILES hands back ['name'][$id] rather than the doubly-nested shape a
+        // gallery[<id>][replace] name would produce.
+        $replacements = $_FILES['gallery_replace'] ?? null;
+        if ($replacements && is_array($replacements['name'])) {
+            foreach ($gallery as &$image) {
+                $iid = (int)$image['id'];
+                if ($image['remove'] || !isset($replacements['error'][$iid])) continue;
+                if ($replacements['error'][$iid] === UPLOAD_ERR_NO_FILE) continue;
+                $file = ['name'=>$replacements['name'][$iid],'tmp_name'=>$replacements['tmp_name'][$iid],'size'=>$replacements['size'][$iid],'error'=>$replacements['error'][$iid]];
+                $new = showcaseUpload($file); $created[] = $new;
+                $removed[] = $image['media'];
+                $image['media'] = $new;
+            }
+            unset($image);
+        }
         // New images start as draft until the author supplies meaningful alt text.
         if ($newImages) $item['is_published'] = 0;
         $pdo->beginTransaction();
@@ -100,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['quick_create']) && !
             if ($image['remove']) {
                 showcaseQuery($pdo, 'DELETE FROM showcase_images WHERE id=? AND showcase_id=?', [(int)$image['id'],$id]);
                 $removed[] = $image['media'];
-            } else showcaseQuery($pdo, 'UPDATE showcase_images SET alt_text=?,caption=?,sort_order=? WHERE id=? AND showcase_id=?', [$image['alt_text'],$image['caption'],$image['sort_order'],(int)$image['id'],$id]);
+            } else showcaseQuery($pdo, 'UPDATE showcase_images SET media=?,alt_text=?,caption=?,sort_order=? WHERE id=? AND showcase_id=?', [$image['media'],$image['alt_text'],$image['caption'],$image['sort_order'],(int)$image['id'],$id]);
         }
         $order = (int)showcaseQuery($pdo, 'SELECT COALESCE(MAX(sort_order),0) FROM showcase_images WHERE showcase_id=?', [$id])->fetchColumn();
         foreach ($newImages as $media) showcaseQuery($pdo, 'INSERT INTO showcase_images (showcase_id,media,sort_order) VALUES (?,?,?)', [$id,$media,++$order]);
@@ -203,7 +219,11 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <li class="sc-gallery-row" data-id="<?= $iid ?>">
   <button type="button" class="drag-handle" aria-label="Reorder image" title="Drag to reorder. Keyboard: Space to pick up, arrow keys to move, Space to drop, Escape to cancel.">&#8942;&#8942;</button>
   <div class="sc-gallery-thumb">
-    <?= showcaseImage($image['media'], $image['alt_text']) ?>
+    <input class="sc-dropzone-input sc-gallery-replace-input" type="file" id="replace-<?= $iid ?>" name="gallery_replace[<?= $iid ?>]" accept="image/jpeg,image/png,image/webp" aria-label="Replace this image">
+    <label class="sc-gallery-replace" for="replace-<?= $iid ?>">
+      <?= showcaseImage($image['media'], $image['alt_text']) ?>
+      <span class="sc-gallery-replace-hint" aria-hidden="true">Replace</span>
+    </label>
     <input class="sc-dropzone-input" type="checkbox" id="remove-<?= $iid ?>" name="gallery[<?= $iid ?>][remove]" value="1" <?= !empty($image['remove']) ? 'checked' : '' ?>>
     <label class="sc-gallery-remove" for="remove-<?= $iid ?>" aria-label="Mark image for removal">✕</label>
   </div>
@@ -232,6 +252,8 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
   var list = document.getElementById('gallery-list');
   if (list) {
     var status = document.getElementById('gallery-order-status'), drag = null;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var SLIDE = 180, EASE = 'cubic-bezier(0.2,0,0,1)';
     function rows() { return Array.from(list.querySelectorAll('.sc-gallery-row')); }
     function renumber() {
       rows().forEach(function (row, index) {
@@ -239,34 +261,81 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
         if (order) order.value = index + 1;
       });
     }
-    function restore(previous) { previous.forEach(function (row) { list.appendChild(row); }); renumber(); }
-    function begin(handle, pointerId) {
+    function clearMotion(row) { row.style.transition = ''; row.style.transform = ''; }
+    /* FLIP. Measure every row, let `mutate` reorder the DOM, then start each row
+       from where it used to be and let it travel to its new slot. Without this
+       the rows teleport — which is the snappiness. `skip` is the row under the
+       pointer: it is already tracking the cursor and must not be animated. */
+    function flip(mutate, skip) {
+      if (reduceMotion) { mutate(); return; }
+      var moving = rows(), before = new Map();
+      moving.forEach(function (row) { before.set(row, row.getBoundingClientRect().top); });
+      mutate();
+      moving.forEach(function (row) {
+        if (row === skip) return;
+        var delta = before.get(row) - row.getBoundingClientRect().top;
+        if (!delta) return;
+        row.style.transition = 'none';
+        row.style.transform = 'translateY(' + delta + 'px)';
+        row.getBoundingClientRect();            // flush, so the jump isn't animated
+        row.style.transition = 'transform ' + SLIDE + 'ms ' + EASE;
+        row.style.transform = '';
+      });
+    }
+    function restore(previous) {
+      flip(function () { previous.forEach(function (row) { list.appendChild(row); }); }, drag && drag.row);
+      renumber();
+    }
+    function begin(handle, pointerId, clientY) {
       if (drag) return false;
-      drag = { row: handle.closest('.sc-gallery-row'), previous: rows(), pointerId: pointerId };
-      drag.row.classList.add('dragging');
+      var row = handle.closest('.sc-gallery-row');
+      drag = {
+        row: row, previous: rows(), pointerId: pointerId,
+        grabOffset: clientY === undefined ? 0 : clientY - row.getBoundingClientRect().top
+      };
+      row.classList.add('dragging');
       status.textContent = 'Move image, then release to place it';
       return true;
     }
+    /* Pin the dragged row to the cursor. Transform is cleared first so the rect
+       we measure is the row's real layout slot, not its dragged position. */
+    function track(y) {
+      var row = drag.row;
+      row.style.transition = 'none';
+      row.style.transform = '';
+      var top = row.getBoundingClientRect().top;
+      row.style.transform = 'translateY(' + (y - drag.grabOffset - top) + 'px)';
+    }
+    /* Midpoints come from offsetTop/offsetHeight, not getBoundingClientRect:
+       those are layout values that transforms don't touch, so a row that is
+       mid-FLIP can't feed its animated position back in and cause oscillation. */
+    function moveAt(y) {
+      var origin = list.getBoundingClientRect().top - list.offsetTop;
+      var before = rows().filter(function (row) { return row !== drag.row; }).find(function (row) {
+        return y < origin + row.offsetTop + row.offsetHeight / 2;
+      }) || null;
+      if (before !== drag.row.nextElementSibling) {
+        flip(function () { list.insertBefore(drag.row, before); }, drag.row);
+      }
+      track(y);
+    }
     function finish(cancel) {
       if (!drag) return;
-      var previous = drag.previous;
-      drag.row.classList.remove('dragging');
-      if (drag.pointerId !== undefined && list.hasPointerCapture(drag.pointerId)) list.releasePointerCapture(drag.pointerId);
-      drag = null;
+      var row = drag.row, previous = drag.previous, pointerId = drag.pointerId;
       if (cancel) { restore(previous); status.textContent = 'Reorder cancelled'; }
       else { renumber(); status.textContent = 'Image order updated'; }
-    }
-    function moveAt(y) {
-      var others = rows().filter(function (row) { return row !== drag.row; });
-      var before = others.find(function (row) {
-        var rect = row.getBoundingClientRect();
-        return y < rect.top + rect.height / 2;
-      });
-      list.insertBefore(drag.row, before || null);
+      row.classList.remove('dragging');
+      if (pointerId !== undefined && list.hasPointerCapture(pointerId)) list.releasePointerCapture(pointerId);
+      drag = null;
+      // Settle back into the slot rather than snapping out of the cursor's grip.
+      if (reduceMotion || !row.style.transform) { clearMotion(row); return; }
+      row.style.transition = 'transform ' + SLIDE + 'ms ' + EASE;
+      row.style.transform = '';
+      setTimeout(function () { clearMotion(row); }, SLIDE);
     }
     list.addEventListener('pointerdown', function (event) {
       var handle = event.target.closest('.drag-handle');
-      if (!handle || event.button !== 0 || !begin(handle, event.pointerId)) return;
+      if (!handle || event.button !== 0 || !begin(handle, event.pointerId, event.clientY)) return;
       event.preventDefault();
       handle.focus();
       list.setPointerCapture(event.pointerId);
@@ -289,11 +358,30 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
       } else if (drag && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {
         event.preventDefault();
         var sibling = event.key === 'ArrowUp' ? drag.row.previousElementSibling : drag.row.nextElementSibling;
-        if (sibling) list.insertBefore(drag.row, event.key === 'ArrowUp' ? sibling : sibling.nextElementSibling);
+        if (sibling) flip(function () {
+          list.insertBefore(drag.row, event.key === 'ArrowUp' ? sibling : sibling.nextElementSibling);
+        });
         handle.focus(); drag.row.scrollIntoView({ block: 'nearest' });
       }
     });
+    /* Replacing a thumb: show the chosen file straight away so the row reflects
+       the pending swap. srcset has to go or the browser keeps picking a variant
+       of the old image over the blob src. */
+    list.addEventListener('change', function (event) {
+      var input = event.target.closest('.sc-gallery-replace-input');
+      if (!input || !input.files || !input.files.length) return;
+      var img = input.parentNode.querySelector('img');
+      if (!img) return;
+      if (img.dataset.blob) URL.revokeObjectURL(img.dataset.blob);
+      var url = URL.createObjectURL(input.files[0]);
+      img.dataset.blob = url;
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.src = url;
+      input.closest('.sc-gallery-row').classList.add('is-replaced');
+    });
   }
+
   var galleryInput = document.getElementById('images'), galleryZone = document.querySelector('.sc-gallery-upload .sc-dropzone'), pending = document.getElementById('gallery-pending');
   if (galleryInput) {
     function renderPending(files) {
