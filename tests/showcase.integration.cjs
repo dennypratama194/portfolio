@@ -27,12 +27,12 @@ test('public archive, metadata, filters, pagination, drafts and regressions', as
   assert.equal(list.res.status, 200);
   assert.equal((list.html.match(/class="sc-card"/g) || []).length, 12);
   assert.doesNotMatch(list.html, /private-draft|-1600.webp/);
-  assert.match(list.html, /srcset=/); assert.match(list.html, /aria-label="Filter designs/);
+  assert.match(list.html, /srcset=/);
   const second = await get('/showcase?page=2');
   assert.equal((second.html.match(/class="sc-card"/g) || []).length, 2);
   assert.match(second.html, /rel="canonical" href="https:\/\/dennypratama.com\/showcase\?page=2"/);
+  // The category pill nav is hidden for now, but ?category= filtering itself still works server-side.
   const filtered = await get('/showcase?category=dashboard'); clean(filtered.html);
-  assert.match(filtered.html, /dashboard" aria-current="page"/);
   assert.equal((filtered.html.match(/class="sc-card"/g) || []).length, 5);
   const empty = await get('/showcase?category=branding');
   assert.equal(empty.res.status, 200); assert.match(empty.html, /No designs in this category/);
@@ -51,7 +51,9 @@ test('public archive, metadata, filters, pagination, drafts and regressions', as
     const page = await get(url); assert.equal(page.res.status, 200, url); clean(page.html);
   }
   const home = await get('/');
-  assert.equal((home.html.match(/class="sc-card"/g) || []).length, 6);
+  // "From the archive" is feature-flagged off ($showcase_home_enabled in index.php)
+  // until the archive has been tested — flip the flag and this back to 6 to re-enable.
+  assert.equal((home.html.match(/class="sc-card"/g) || []).length, 0);
   assert.match(home.html, /pm-form/); // Existing contact modal still renders.
 });
 

@@ -26,7 +26,7 @@ $title = ($category ? $category['name'] . ' — ' : '') . 'Design Showcase — D
 $description = $category ? $category['name'] . ' designs and visual explorations by Denny Pratama. Browse the archive of interfaces, ideas and experiments.' : 'A curated archive of UI/UX design, web interfaces, dashboards and digital product experiments by Denny Pratama. Individual ideas, explored through design.';
 $canonical = 'https://dennypratama.com' . showcaseUrl($category_slug, $page);
 $og_image = 'https://dennypratama.com/assets/logo.png';
-$page_css = '/css/showcase.css?v=1';
+$page_css = '/css/showcase.css?v=2';
 $shot_heading_level = 2;
 $jsonld = json_encode(['@context'=>'https://schema.org','@type'=>'CollectionPage','name'=>$title,'url'=>$canonical,'description'=>$description,'author'=>['@type'=>'Person','name'=>'Denny Pratama'],
     'mainEntity'=>['@type'=>'ItemList','itemListElement'=>array_map(function ($shot, $index) use ($page) { return ['@type'=>'ListItem','position'=>($page-1)*12+$index+1,'url'=>'https://dennypratama.com/showcase/' . rawurlencode($shot['slug'])]; }, $items, array_keys($items))]], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
@@ -39,7 +39,7 @@ $jsonld = json_encode(['@context'=>'https://schema.org','@type'=>'CollectionPage
 <main id="main-content" class="sc-page">
   <section class="sc-hero"><p class="sc-eyebrow">The design archive</p><h1>Ideas, made visible.</h1><div class="sc-hero-bottom"><p>Interfaces, experiments, and details worth keeping.<br>A collection of my work, one design at a time.</p><a class="sc-text-link" href="/case-studies">Looking for the full story? Case studies ↗</a></div></section>
   <section class="sc-archive" aria-label="Design showcase">
-    <div class="sc-toolbar"><nav class="sc-filters" aria-label="Filter designs by category"><a href="/showcase" <?= !$category ? 'aria-current="page"' : '' ?>>All work</a><?php foreach ($categories as $filter): ?><a href="<?= escHtml(showcaseUrl($filter['slug'])) ?>" <?= $category && $category['id'] === $filter['id'] ? 'aria-current="page"' : '' ?>><?= escHtml($filter['name']) ?></a><?php endforeach; ?></nav><span class="sc-count"><?= $total ?> <?= $total === 1 ? 'design' : 'designs' ?></span></div>
+    <div class="sc-toolbar"><span class="sc-count"><?= $total ?> <?= $total === 1 ? 'design' : 'designs' ?></span></div>
     <?php if (!$items): ?><div class="sc-empty"><h2><?= $unavailable ? 'The archive is taking a moment.' : ($category ? 'More to explore soon.' : 'A new archive is on its way.') ?></h2><p><?= $unavailable ? 'Please check back shortly.' : ($category ? 'No designs in this category yet. Explore the rest of the collection.' : 'Designs and experiments will appear here as they are published.') ?></p><?php if ($category): ?><a class="btn btn-secondary" href="/showcase">Explore all work</a><?php endif; ?></div>
     <?php else: ?><div class="sc-grid"><?php foreach ($items as $i=>$shot): $shot_eager = $i === 0; include __DIR__ . '/partials/showcase-card.php'; endforeach; ?></div><?php endif; ?>
     <?php if ($pages > 1): ?><nav class="sc-pagination" aria-label="Showcase pagination"><?php if ($page > 1): ?><a class="btn btn-secondary" href="<?= escHtml(showcaseUrl($category_slug,$page-1)) ?>">← Previous</a><?php endif; ?><span>Page <?= $page ?> of <?= $pages ?></span><?php if ($page < $pages): ?><a class="btn btn-secondary" href="<?= escHtml(showcaseUrl($category_slug,$page+1)) ?>">Next →</a><?php endif; ?></nav><?php endif; ?>

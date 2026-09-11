@@ -53,7 +53,7 @@ function showcaseImage(?string $json, string $alt, bool $grid = true, bool $eage
     foreach ($variants as $width => $file) $srcset[] = '/admin/uploads/showcase/' . $file . ' ' . $width . 'w';
     $sizes = $grid ? '(max-width: 767px) calc(100vw - 48px), (max-width: 1024px) 44vw, 30vw' : '(max-width: 768px) calc(100vw - 48px), (max-width: 1280px) 90vw, 1200px';
     $width = $grid && isset($media['grid_variants']) ? (int)array_key_last($variants) : (int)$media['width'];
-    $height = $grid && isset($media['grid_variants']) ? max(1,(int)round($width * 3 / 4)) : (int)$media['height'];
+    $height = $grid && isset($media['grid_variants']) ? max(1,(int)round($width * 9 / 16)) : (int)$media['height'];
     return '<img src="/admin/uploads/showcase/' . escHtml(end($variants)) . '" srcset="' . escHtml(implode(', ', $srcset))
         . '" sizes="' . $sizes . '" width="' . $width . '" height="' . $height
         . '" alt="' . escHtml($alt) . '" decoding="async" ' . ($eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"') . '>';

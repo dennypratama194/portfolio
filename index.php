@@ -10,7 +10,7 @@ $showcase_featured = [];
 if ($showcase_home_enabled) {
     try { $showcase_featured = showcaseCards($pdo, null, 6, 0, true); }
     catch (PDOException $e) { error_log('Homepage Showcase: ' . $e->getMessage()); }
-    if ($showcase_featured) $page_css = '/css/showcase.css?v=1';
+    if ($showcase_featured) $page_css = '/css/showcase.css?v=2';
 }
 
 $bp_stmt = $pdo->query(

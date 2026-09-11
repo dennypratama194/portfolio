@@ -21,7 +21,7 @@ $description = mb_substr($item['short_description'] ?: $item['title'] . ' — a 
 $canonical = 'https://dennypratama.com/showcase/' . rawurlencode($item['slug']);
 $cover = showcaseMedia($item['thumbnail']);
 $og_image = $cover ? 'https://dennypratama.com/admin/uploads/showcase/' . end($cover['variants']) : 'https://dennypratama.com/assets/logo.png';
-$og_type = 'article'; $page_css = '/css/showcase.css?v=1';
+$og_type = 'article'; $page_css = '/css/showcase.css?v=2';
 $jsonld = json_encode(['@context'=>'https://schema.org','@type'=>'CreativeWork','name'=>$item['title'],'description'=>$description,'url'=>$canonical,'image'=>$og_image,'dateModified'=>$item['updated_at'],'creator'=>['@type'=>'Person','name'=>'Denny Pratama','url'=>'https://dennypratama.com']], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 ?>
 <!DOCTYPE html><html lang="en"><head><?php include __DIR__ . '/partials/head.php'; ?></head><body><?php include __DIR__ . '/partials/nav.php'; ?>

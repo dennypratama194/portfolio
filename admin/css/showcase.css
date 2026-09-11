@@ -6,7 +6,7 @@
 .sc-admin-design { display: flex; align-items: center; gap: 16px; min-width: 240px; }
 .sc-admin-thumb { width: 96px; flex: 0 0 96px; }
 .sc-admin-thumb img, .sc-admin-preview img { display: block; width: 100%; height: auto; }
-.sc-admin-thumb img { aspect-ratio: 4 / 3; object-fit: cover; }
+.sc-admin-thumb img { aspect-ratio: 16 / 9; object-fit: cover; }
 .sc-admin-preview { max-width: 360px; margin-bottom: 16px; }
 .sc-admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 24px 0; }
 .sc-admin-actions form { margin: 0; }

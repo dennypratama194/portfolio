@@ -7,15 +7,12 @@
 .sc-hero-bottom p, .sc-description { font-size: 18px; line-height: 1.6; color: var(--ink-2); max-width: 720px; }
 .sc-text-link { color: var(--ink); text-decoration: underline; text-underline-offset: 8px; font-size: 14px; display: inline-flex; align-items: center; min-height: 44px; }
 .sc-archive, .sc-related, .sc-home { padding: 48px var(--pad-x) 96px; }
-.sc-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 40px; }
-.sc-filters { display: flex; flex-wrap: wrap; gap: 8px; }
-.sc-filters a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; padding: 8px 20px; border: 1px solid var(--border); border-radius: 32px; text-decoration: none; font-size: 14px; color: var(--ink-2); }
-.sc-filters a[aria-current], .sc-filters a:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.sc-toolbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 40px; }
 .sc-count { white-space: nowrap; font-size: 14px; color: var(--ink-3); }
 .sc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; }
 .sc-card { min-width: 0; }
 .sc-card a { display: block; color: inherit; text-decoration: none; }
-.sc-card-image { aspect-ratio: 4 / 3; overflow: hidden; background: var(--border); }
+.sc-card-image { aspect-ratio: 16 / 9; overflow: hidden; background: var(--border); }
 .sc-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
 .sc-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-top: 16px; }
 .sc-card-heading :is(h2,h3) { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 500; letter-spacing: -.025em; overflow-wrap: anywhere; }

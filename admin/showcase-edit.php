@@ -173,7 +173,7 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <div class="field"><label for="short_description">Short description</label><textarea id="short_description" name="short_description" maxlength="2000"><?= escHtml($item['short_description'] ?? '') ?></textarea></div>
 <fieldset class="sc-admin-section"><legend>Cover image</legend>
 <?php if ($item['thumbnail']): ?><div class="sc-admin-preview"><?= showcaseImage($item['thumbnail'], $item['thumbnail_alt']) ?></div><label class="sc-admin-check"><input type="checkbox" name="remove_thumbnail" value="1">Remove cover</label><?php endif; ?>
-<div class="field"><label for="thumbnail">Replace cover</label><input type="file" id="thumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp"><p class="sc-admin-hint">JPG, PNG or WebP, up to 5 MB and 16 megapixels. Cards use a centered 4:3 crop; the detail page keeps the full image.</p></div>
+<div class="field"><label for="thumbnail">Replace cover</label><input type="file" id="thumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp"><p class="sc-admin-hint">JPG, PNG or WebP, up to 5 MB and 16 megapixels. Cards use a centered 16:9 crop; the detail page keeps the full image.</p></div>
 <div class="field"><label for="thumbnail_alt">Cover alt text</label><input type="text" id="thumbnail_alt" name="thumbnail_alt" maxlength="500" value="<?= escHtml($item['thumbnail_alt']) ?>"><p class="sc-admin-hint">Describe what is visible in the design. Required before publishing.</p></div></fieldset>
 
 <details class="sc-admin-more"><summary>More details</summary>
