@@ -26,7 +26,7 @@ $title = ($category ? $category['name'] . ' — ' : '') . 'Design Showcase — D
 $description = $category ? $category['name'] . ' designs and visual explorations by Denny Pratama. Browse the archive of interfaces, ideas and experiments.' : 'A curated archive of UI/UX design, web interfaces, dashboards and digital product experiments by Denny Pratama. Individual ideas, explored through design.';
 $canonical = 'https://dennypratama.com' . showcaseUrl($category_slug, $page);
 $og_image = 'https://dennypratama.com/assets/logo.png';
-$page_css = '/css/showcase.css?v=2';
+$page_css = '/css/showcase.css?v=3';
 $shot_heading_level = 2;
 $jsonld = json_encode(['@context'=>'https://schema.org','@type'=>'CollectionPage','name'=>$title,'url'=>$canonical,'description'=>$description,'author'=>['@type'=>'Person','name'=>'Denny Pratama'],
     'mainEntity'=>['@type'=>'ItemList','itemListElement'=>array_map(function ($shot, $index) use ($page) { return ['@type'=>'ListItem','position'=>($page-1)*12+$index+1,'url'=>'https://dennypratama.com/showcase/' . rawurlencode($shot['slug'])]; }, $items, array_keys($items))]], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);

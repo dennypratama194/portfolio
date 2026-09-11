@@ -37,11 +37,9 @@ function showcaseUpload(array $file): string {
     try {
         foreach (['detail'=>[480,800,1600], 'grid'=>[480,800]] as $kind=>$targets) {
           foreach ($targets as $target) {
-            // Grid thumbnails crop to 16:9 — matches the blog cards elsewhere on the
-            // site, and crops far less off a typical wide website screenshot than 4:3 would.
-            $cropWidth = $kind === 'grid' ? min($size[0], (int)floor($size[1] * 16 / 9)) : $size[0];
+            $cropWidth = $kind === 'grid' ? min($size[0], (int)floor($size[1] * 4 / 3)) : $size[0];
             $cropWidth = max(1, $cropWidth);
-            $cropHeight = $kind === 'grid' ? max(1, min($size[1], (int)round($cropWidth * 9 / 16))) : $size[1];
+            $cropHeight = $kind === 'grid' ? max(1, min($size[1], (int)round($cropWidth * 3 / 4))) : $size[1];
             $width = min($target, $cropWidth);
             if (($kind === 'grid' && isset($gridVariants[$width])) || ($kind === 'detail' && isset($variants[$width]))) continue;
             $height = max(1, (int)round($cropHeight * $width / $cropWidth));

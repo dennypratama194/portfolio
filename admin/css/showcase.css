@@ -6,8 +6,31 @@
 .sc-admin-design { display: flex; align-items: center; gap: 16px; min-width: 240px; }
 .sc-admin-thumb { width: 96px; flex: 0 0 96px; }
 .sc-admin-thumb img, .sc-admin-preview img { display: block; width: 100%; height: auto; }
-.sc-admin-thumb img { aspect-ratio: 16 / 9; object-fit: cover; }
+.sc-admin-thumb img { aspect-ratio: 4 / 3; object-fit: cover; }
 .sc-admin-preview { max-width: 360px; margin-bottom: 16px; }
+.sc-cover { position: relative; max-width: 360px; margin-bottom: 8px; }
+.sc-cover-preview { display: block; position: relative; cursor: pointer; overflow: hidden; }
+.sc-cover-preview img { display: block; width: 100%; height: auto; }
+.sc-cover-empty {
+  display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3;
+  background: rgba(var(--text-rgb),0.08); color: rgba(var(--text-rgb),0.5); font-size: 14px; text-align: center; padding: 16px;
+}
+.sc-cover-hint {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.55); color: #fff; font-size: 14px; opacity: 0; transition: opacity .15s;
+}
+.sc-cover-preview:hover .sc-cover-hint { opacity: 1; }
+#thumbnail:focus-visible + .sc-cover-preview { outline: 2px solid var(--red); outline-offset: 4px; }
+#thumbnail:focus-visible + .sc-cover-preview .sc-cover-hint { opacity: 1; }
+.sc-cover-remove {
+  position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(0,0,0,.65); color: #fff; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; line-height: 1; transition: background .15s;
+}
+.sc-cover-remove:hover { background: var(--red); }
+#remove_thumbnail:focus-visible + .sc-cover-remove { outline: 2px solid var(--red); outline-offset: 2px; }
+#remove_thumbnail:checked + .sc-cover-remove { background: var(--red); }
+.sc-cover:has(#remove_thumbnail:checked) .sc-cover-preview { opacity: .35; }
 .sc-admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 24px 0; }
 .sc-admin-actions form { margin: 0; }
 .sc-admin .btn-outline { min-height: 44px; }

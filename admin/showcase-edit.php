@@ -172,9 +172,27 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <div class="field"><label for="title">Title</label><input type="text" id="title" name="title" maxlength="255" value="<?= escHtml($item['title']) ?>" required autofocus></div>
 <div class="field"><label for="short_description">Short description</label><textarea id="short_description" name="short_description" maxlength="2000"><?= escHtml($item['short_description'] ?? '') ?></textarea></div>
 <fieldset class="sc-admin-section"><legend>Cover image</legend>
-<?php if ($item['thumbnail']): ?><div class="sc-admin-preview"><?= showcaseImage($item['thumbnail'], $item['thumbnail_alt']) ?></div><label class="sc-admin-check"><input type="checkbox" name="remove_thumbnail" value="1">Remove cover</label><?php endif; ?>
-<div class="field"><label for="thumbnail">Replace cover</label><input type="file" id="thumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp"><p class="sc-admin-hint">JPG, PNG or WebP, up to 5 MB and 16 megapixels. Cards use a centered 16:9 crop; the detail page keeps the full image.</p></div>
+<div class="sc-cover">
+  <input class="sc-dropzone-input" type="file" id="thumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp">
+  <label class="sc-cover-preview" for="thumbnail">
+    <?php if ($item['thumbnail']): ?><?= showcaseImage($item['thumbnail'], $item['thumbnail_alt']) ?><?php else: ?><span class="sc-cover-empty">Click to upload a cover</span><?php endif; ?>
+    <span class="sc-cover-hint" aria-hidden="true">Click to replace</span>
+  </label>
+  <?php if ($item['thumbnail']): ?>
+  <input class="sc-dropzone-input" type="checkbox" id="remove_thumbnail" name="remove_thumbnail" value="1">
+  <label class="sc-cover-remove" for="remove_thumbnail" aria-label="Mark cover for removal">✕</label>
+  <?php endif; ?>
+</div>
+<p class="sc-admin-hint" id="cover-status" role="status">JPG, PNG or WebP, up to 5 MB and 16 megapixels. Cards use a centered 4:3 crop; the detail page keeps the full image.</p>
 <div class="field"><label for="thumbnail_alt">Cover alt text</label><input type="text" id="thumbnail_alt" name="thumbnail_alt" maxlength="500" value="<?= escHtml($item['thumbnail_alt']) ?>"><p class="sc-admin-hint">Describe what is visible in the design. Required before publishing.</p></div></fieldset>
+<script>
+(function () {
+  var file = document.getElementById('thumbnail'), status = document.getElementById('cover-status'), original = status.textContent;
+  file.addEventListener('change', function () {
+    status.textContent = file.files.length ? 'New cover selected — click Save design below to apply it.' : original;
+  });
+})();
+</script>
 
 <details class="sc-admin-more"><summary>More details</summary>
 <div class="sc-admin-fields">
