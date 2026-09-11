@@ -1,6 +1,17 @@
 <?php
 require __DIR__ . '/api/db.php';
 require __DIR__ . '/api/helpers.php';
+require_once __DIR__ . '/api/showcase.php';
+
+// Showcase homepage section hidden until the archive has been tested — flip
+// to true to bring back "From the archive" once ready to launch publicly.
+$showcase_home_enabled = false;
+$showcase_featured = [];
+if ($showcase_home_enabled) {
+    try { $showcase_featured = showcaseCards($pdo, null, 6, 0, true); }
+    catch (PDOException $e) { error_log('Homepage Showcase: ' . $e->getMessage()); }
+    if ($showcase_featured) $page_css = '/css/showcase.css?v=1';
+}
 
 $bp_stmt = $pdo->query(
     'SELECT title, slug, excerpt, featured_image,
@@ -314,6 +325,14 @@ $jsonld = json_encode([
 
     </div>
   </section>
+
+  <?php if ($showcase_featured): ?>
+  <section class="sc-home" aria-labelledby="showcase-preview-title">
+    <p class="sc-eyebrow">From the archive</p>
+    <div class="sc-section-head"><h2 id="showcase-preview-title">Designs &amp; explorations.</h2><a class="sc-text-link" href="/showcase">View all showcase ↗</a></div>
+    <div class="sc-grid"><?php foreach ($showcase_featured as $shot): $shot_eager = false; include __DIR__ . '/partials/showcase-card.php'; endforeach; ?></div>
+  </section>
+  <?php endif; ?>
 
   <section id="about">
     <div class="about-grid">

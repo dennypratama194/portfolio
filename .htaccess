@@ -2,6 +2,9 @@ Options -Indexes
 
 RewriteEngine On
 
+# Showcase media is generated raster output only; never execute uploaded files.
+RewriteRule ^admin/uploads/showcase/(?![a-f0-9]{32}-(?:grid-)?[0-9]+\.(?:webp|jpg)$) - [F,L]
+
 # ── HTTPS redirect ──────────────────────────────────
 # Skip when a proxy/CDN (e.g. Cloudflare) already terminated TLS, otherwise
 # the origin sees HTTP and 301-loops forever on non-cached paths like /admin.
@@ -58,6 +61,9 @@ RewriteRule ^blog/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [NC,QSA,L]
 RewriteCond %{REQUEST_URI} !^/admin/ [NC]
 RewriteCond %{REQUEST_URI} !^/api/   [NC]
 RewriteRule ^case-studies/([A-Za-z0-9_-]+)/?$ case-study.php?slug=$1 [NC,QSA,L]
+
+# Showcase detail. Discard extra query parameters so they cannot override the slug.
+RewriteRule ^showcase/([a-z0-9]+(?:-[a-z0-9]+)*)/?$ showcase-item.php?slug=$1 [L]
 
 # Try .php first (e.g. /blog → blog.php, /post → post.php)
 RewriteCond %{REQUEST_FILENAME} !-d

@@ -48,6 +48,16 @@ foreach ($projects as $p) {
     ];
 }
 
+/* Showcase is additive: deployment before its migration must preserve this sitemap. */
+try {
+    $showcase_stmt = $pdo->prepare('SELECT slug,updated_at FROM showcase_projects WHERE is_published=1 ORDER BY id');
+    $showcase_stmt->execute();
+    $urls[] = ['loc'=>$base . '/showcase','changefreq'=>'weekly','priority'=>'0.8'];
+    foreach ($showcase_stmt as $design) {
+        $urls[] = ['loc'=>$base . '/showcase/' . rawurlencode($design['slug']), 'lastmod'=>date('Y-m-d',strtotime($design['updated_at'])), 'changefreq'=>'monthly','priority'=>'0.6'];
+    }
+} catch (PDOException $e) { error_log('Sitemap Showcase: ' . $e->getMessage()); }
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 foreach ($urls as $u) {

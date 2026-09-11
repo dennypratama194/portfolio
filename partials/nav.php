@@ -21,6 +21,9 @@
       <a class="nav-overlay-link" href="/#work"><span class="nav-overlay-num">01</span><span class="nav-overlay-label">Work</span></a>
       <a class="nav-overlay-link" href="/#about"><span class="nav-overlay-num">02</span><span class="nav-overlay-label">About</span></a>
       <a class="nav-overlay-link" href="/blog"><span class="nav-overlay-num">03</span><span class="nav-overlay-label">Blog</span></a>
+      <!-- Showcase hidden until tested — restore this line and renumber Contact to 05 to bring it back
+      <a class="nav-overlay-link" href="/showcase"><span class="nav-overlay-num">04</span><span class="nav-overlay-label">Showcase</span></a>
+      -->
       <!-- Ebooks hidden until ready — restore this line and renumber Contact to 05 to bring it back
       <a class="nav-overlay-link" href="/ebooks"><span class="nav-overlay-num">04</span><span class="nav-overlay-label">Ebooks</span></a>
       -->

@@ -1,0 +1,60 @@
+/* Showcase uses the site's paper/ink palette, typography and spacing tokens. */
+.sc-page { padding-top: 32px; overflow-wrap: anywhere; }
+.sc-hero { padding: 96px var(--pad-x) 64px; border-bottom: 1px solid var(--border); }
+.sc-eyebrow { font: 500 12px var(--font-mono); text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); margin-bottom: 24px; }
+.sc-hero h1, .sc-detail h1 { font-size: var(--text-h1); line-height: var(--leading-h1); letter-spacing: -.04em; font-weight: 500; margin-bottom: 32px; overflow-wrap: anywhere; }
+.sc-hero-bottom { display: flex; gap: 32px; justify-content: space-between; align-items: end; }
+.sc-hero-bottom p, .sc-description { font-size: 18px; line-height: 1.6; color: var(--ink-2); max-width: 720px; }
+.sc-text-link { color: var(--ink); text-decoration: underline; text-underline-offset: 8px; font-size: 14px; display: inline-flex; align-items: center; min-height: 44px; }
+.sc-archive, .sc-related, .sc-home { padding: 48px var(--pad-x) 96px; }
+.sc-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 40px; }
+.sc-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc-filters a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; padding: 8px 20px; border: 1px solid var(--border); border-radius: 32px; text-decoration: none; font-size: 14px; color: var(--ink-2); }
+.sc-filters a[aria-current], .sc-filters a:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.sc-count { white-space: nowrap; font-size: 14px; color: var(--ink-3); }
+.sc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 24px; row-gap: 48px; }
+.sc-card { min-width: 0; }
+.sc-card a { display: block; color: inherit; text-decoration: none; }
+.sc-card-image { aspect-ratio: 4 / 3; overflow: hidden; background: var(--border); }
+.sc-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+.sc-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; margin-top: 16px; }
+.sc-card-heading :is(h2,h3) { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 500; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.sc-card-heading > span { font-size: 24px; }
+.sc-card-meta { margin-top: 8px; color: var(--ink-3); font-size: 14px; line-height: 1.6; }
+.sc-pagination { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 24px; margin-top: 64px; font-size: 14px; }
+.sc-empty { padding: 64px 0; }
+.sc-empty h2, .sc-section-head h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 500; }
+.sc-empty p { font-size: 16px; margin: 16px 0 24px; }
+.sc-missing { min-height: 240px; height: 100%; display: grid; place-items: center; background: var(--border); color: var(--ink-3); font-size: 16px; }
+.sc-detail { max-width: 1328px; margin: 0 auto; padding: 64px var(--pad-x) 0; }
+.sc-detail-head { position: static; background: none; border: 0; padding: 0 0 48px; width: auto; height: auto; z-index: auto; }
+.sc-detail-meta { display: flex; gap: 16px; margin: 48px 0 16px; font-size: 14px; color: var(--ink-3); }
+.sc-detail-meta a { color: inherit; text-underline-offset: 4px; }
+.sc-detail-image { margin: 0 0 32px; }
+.sc-detail-image img { display: block; width: 100%; height: auto; background: var(--border); }
+.sc-detail-image figcaption { font-size: 14px; line-height: 1.6; color: var(--ink-3); padding: 16px 0; }
+.sc-project-info { padding: 32px 0 64px; display: flex; justify-content: space-between; align-items: center; gap: 32px; }
+.sc-project-info dl { display: flex; flex-wrap: wrap; gap: 32px; }
+.sc-project-info dt { color: var(--ink-3); font-size: 14px; margin-bottom: 8px; }
+.sc-project-info dd { margin: 0; font-size: 16px; overflow-wrap: anywhere; }
+.sc-adjacent { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px; padding: 32px var(--pad-x); border-block: 1px solid var(--border); }
+.sc-adjacent > div:last-child { text-align: right; }
+.sc-adjacent a { color: inherit; text-decoration: none; display: block; font-size: 20px; overflow-wrap: anywhere; }
+.sc-adjacent span { display: block; font-size: 14px; margin-bottom: 12px; color: var(--ink-3); }
+.sc-section-head { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 32px; }
+.sc-home { border-bottom: 1px solid var(--border); }
+.sc-page :is(a,button):focus-visible, .sc-home a:focus-visible { outline: 2px solid var(--red); outline-offset: 6px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .sc-card a:hover img { transform: scale(1.025); } }
+@media (max-width: 1024px) { .sc-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .sc-hero-bottom { align-items: start; flex-direction: column; } }
+@media (max-width: 767px) {
+  .sc-hero { padding: 64px var(--pad-x-sm) 40px; }
+  .sc-archive, .sc-related, .sc-home { padding: 32px var(--pad-x-sm) 64px; }
+  .sc-grid { grid-template-columns: 1fr; gap: 32px; }
+  .sc-toolbar { align-items: start; flex-direction: column; gap: 16px; }
+  .sc-detail { padding: 48px var(--pad-x-sm) 0; }
+  .sc-hero-bottom p, .sc-description { font-size: 16px; }
+  .sc-project-info, .sc-section-head { align-items: start; flex-direction: column; }
+  .sc-adjacent { padding: 24px var(--pad-x-sm); }
+  .sc-adjacent a { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .sc-card-image img { transition: none; transform: none; } }

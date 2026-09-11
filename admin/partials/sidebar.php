@@ -9,6 +9,8 @@ if (in_array($__page, ['index.php', 'edit.php', 'auto-post.php'], true)) {
     $__nav = 'ebooks';
 } elseif (in_array($__page, ['projects.php', 'project-edit.php'], true)) {
     $__nav = 'projects';
+} elseif (in_array($__page, ['showcase.php', 'showcase-edit.php', 'showcase-categories.php'], true)) {
+    $__nav = 'showcase';
 } elseif ($__page === 'change-password.php') {
     $__nav = 'password';
 } else {
@@ -38,6 +40,9 @@ if (in_array($__page, ['index.php', 'edit.php', 'auto-post.php'], true)) {
     <a class="sidebar-link<?= $__nav === 'projects' ? ' active' : '' ?>" href="projects.php">
       <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
       Case Studies</a>
+    <a class="sidebar-link<?= $__nav === 'showcase' ? ' active' : '' ?>" href="showcase.php">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 16 5-5 4 4 4-6 5 7"/></svg>
+      Showcase</a>
     <a class="sidebar-link<?= $__nav === 'password' ? ' active' : '' ?>" href="change-password.php">
       <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       Change Password</a>

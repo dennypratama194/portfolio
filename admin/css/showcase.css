@@ -1,0 +1,30 @@
+.sc-admin { max-width: 1600px; }
+.sc-admin h1 { margin-bottom: 16px; }
+.sc-admin-intro { max-width: 720px; margin-bottom: 32px; font-size: 16px; line-height: 1.6; }
+.sc-admin a { color: inherit; }
+.sc-admin td { padding: 16px 16px 16px 0; font-size: 14px; }
+.sc-admin-design { display: flex; align-items: center; gap: 16px; min-width: 240px; }
+.sc-admin-thumb { width: 96px; flex: 0 0 96px; }
+.sc-admin-thumb img, .sc-admin-preview img { display: block; width: 100%; height: auto; }
+.sc-admin-thumb img { aspect-ratio: 4 / 3; object-fit: cover; }
+.sc-admin-preview { max-width: 360px; margin-bottom: 16px; }
+.sc-admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin: 24px 0; }
+.sc-admin-actions form { margin: 0; }
+.sc-admin .btn-outline { min-height: 44px; }
+.sc-admin-form { max-width: 1040px; }
+.sc-admin-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.sc-admin-section { border: 1px solid rgba(var(--text-rgb),0.2); padding: 24px; margin: 24px 0; min-width: 0; }
+.sc-admin-section legend { padding: 0 8px; font-size: 20px; }
+.sc-admin-hint { font-size: 14px; line-height: 1.6; margin: 8px 0 16px; opacity: .75; }
+.sc-admin-check { display: flex; align-items: center; gap: 12px; min-height: 44px; text-transform: none; letter-spacing: 0; font-size: 16px; color: inherit; }
+.sc-admin-gallery-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px; border-bottom: 1px solid rgba(var(--text-rgb),0.2); margin-bottom: 24px; padding-bottom: 24px; }
+.sc-admin-category { display: flex; gap: 16px; align-items: end; flex-wrap: wrap; padding: 24px 0; border-bottom: 1px solid rgba(var(--text-rgb),0.2); }
+.sc-admin-category .field { flex: 1 1 160px; margin: 0; }
+.sc-admin :is(input,textarea,select,button,a):focus-visible { outline: 2px solid var(--red); outline-offset: 4px; }
+.sc-admin .sc-missing { padding: 16px; font-size: 14px; border: 1px solid rgba(var(--text-rgb),0.2); }
+@media (max-width: 768px) {
+  .sc-admin-fields, .sc-admin-gallery-row { grid-template-columns: 1fr; }
+  .sc-admin-section { padding: 16px; }
+  .sc-admin .top-bar { align-items: start; gap: 16px; flex-direction: column; }
+  .sc-admin .btn-row { flex-wrap: wrap; }
+}

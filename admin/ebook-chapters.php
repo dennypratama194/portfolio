@@ -55,41 +55,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     /* ── Reorder chapter (AJAX — returns JSON, no HTML) ── */
-    if ($action === 'reorder_chapter') {
+    if ($action === 'reorder_chapters') {
         header('Content-Type: application/json');
-        $cid = (int)($_POST['chapter_id'] ?? 0);
-        $dir = $_POST['direction'] ?? '';
-        if (!$cid || !in_array($dir, ['up', 'down'], true)) {
-            echo json_encode(['success' => false]); exit;
+        $ids = json_decode($_POST['chapter_ids'] ?? '[]', true);
+        try {
+            $pdo->beginTransaction();
+            $all = $pdo->prepare('SELECT id FROM ebook_chapters WHERE product_id = ? FOR UPDATE');
+            $all->execute([$product_id]);
+            $expected = array_map('intval', $all->fetchAll(PDO::FETCH_COLUMN));
+            $valid = is_array($ids) && array_values($ids) === $ids && count($ids) === count($expected);
+            if ($valid) {
+                foreach ($ids as $id) {
+                    if (!is_int($id) || $id <= 0) { $valid = false; break; }
+                }
+            }
+            $sorted = $valid ? $ids : [];
+            sort($sorted);
+            sort($expected);
+            if (!$valid || $sorted !== $expected) {
+                $pdo->rollBack();
+                http_response_code(409);
+                echo json_encode(['success' => false, 'error' => 'Chapter list changed. Reload before reordering.']);
+                exit;
+            }
+            $update = $pdo->prepare('UPDATE ebook_chapters SET sort_order = ? WHERE id = ? AND product_id = ?');
+            foreach ($ids as $index => $id) $update->execute([$index + 1, $id, $product_id]);
+            $pdo->commit();
+            echo json_encode(['success' => true]);
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Could not save chapter order. Please try again.']);
         }
-        $cur_stmt = $pdo->prepare('SELECT id, sort_order FROM ebook_chapters WHERE id = ? AND product_id = ?');
-        $cur_stmt->execute([$cid, $product_id]);
-        $current = $cur_stmt->fetch();
-        if (!$current) { echo json_encode(['success' => false]); exit; }
-
-        if ($dir === 'up') {
-            $adj_stmt = $pdo->prepare(
-                'SELECT id, sort_order FROM ebook_chapters WHERE product_id = ? AND sort_order < ? ORDER BY sort_order DESC LIMIT 1'
-            );
-        } else {
-            $adj_stmt = $pdo->prepare(
-                'SELECT id, sort_order FROM ebook_chapters WHERE product_id = ? AND sort_order > ? ORDER BY sort_order ASC LIMIT 1'
-            );
-        }
-        $adj_stmt->execute([$product_id, $current['sort_order']]);
-        $adjacent = $adj_stmt->fetch();
-        if (!$adjacent) { echo json_encode(['success' => false]); exit; }
-
-        $pdo->prepare('UPDATE ebook_chapters SET sort_order = ? WHERE id = ?')
-            ->execute([$adjacent['sort_order'], $current['id']]);
-        $pdo->prepare('UPDATE ebook_chapters SET sort_order = ? WHERE id = ?')
-            ->execute([$current['sort_order'], $adjacent['id']]);
-        echo json_encode(['success' => true]);
         exit;
     }
 
     /* ── Save chapter ── */
     if ($action === 'save_chapter') {
+        $autosave = ($_POST['autosave'] ?? '') === '1';
+        if ($autosave) header('Content-Type: application/json');
         $cid          = (int)($_POST['chapter_id'] ?? 0);
         $title        = trim($_POST['title']        ?? '');
         $slug         = trim($_POST['slug']         ?? '');
@@ -99,6 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (!$title) $errors[] = 'Chapter title is required.';
         if (!$slug)  $errors[] = 'Slug is required.';
+        $exists = $pdo->prepare('SELECT id FROM ebook_chapters WHERE id = ? AND product_id = ?');
+        $exists->execute([$cid, $product_id]);
+        if (!$exists->fetch()) $errors[] = 'Chapter no longer exists.';
         if ($slug) {
             $chk = $pdo->prepare('SELECT id FROM ebook_chapters WHERE product_id = ? AND slug = ? AND id != ?');
             $chk->execute([$product_id, $slug, $cid]);
@@ -106,15 +113,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors) && $cid) {
-            /* Try with excerpt first; fall back if column doesn't exist yet (run migrations/002_chapter_excerpt.sql) */
             try {
                 $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, excerpt=?, body=?, is_published=? WHERE id=? AND product_id=?')
                     ->execute([$title, $slug, $excerpt, $body, $is_published, $cid, $product_id]);
             } catch (\PDOException $e) {
-                $pdo->prepare('UPDATE ebook_chapters SET title=?, slug=?, body=?, is_published=? WHERE id=? AND product_id=?')
-                    ->execute([$title, $slug, $body, $is_published, $cid, $product_id]);
+                $errors[] = 'Could not save chapter. Your edits are still here. Please retry.';
             }
-            header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$cid");
+            if ($autosave && empty($errors)) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
+            if (empty($errors)) {
+                header("Location: /admin/ebook-chapters?product_id=$product_id&chapter_id=$cid");
+                exit;
+            }
+        }
+        if ($autosave) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'error' => implode(' ', $errors)]);
             exit;
         }
 
@@ -220,12 +236,18 @@ if ($chapter_id && !$edit_chapter) {
     }
     .pub-dot.live { background: #4caf50; }
     .chapter-controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
-    .btn-order, .btn-del-ch {
+    .drag-handle, .btn-del-ch {
       background: none; border: none; cursor: pointer; padding: 4px 8px;
       font-size: 12px; color: rgba(var(--text-rgb),0.2); transition: color 0.15s;
       font-family: inherit; line-height: 1;
     }
-    .btn-order:hover { color: rgba(var(--text-rgb),0.7); }
+    .drag-handle { cursor: grab; touch-action: none; font-size: 20px; padding: 6px; }
+    .drag-handle:hover, .drag-handle:focus-visible { color: var(--text); }
+    .chapter-item.dragging { background: rgba(var(--text-rgb),0.12); outline: 1px solid var(--red); }
+    .chapter-list.reordering .drag-handle { cursor: wait; }
+    .save-status, .order-status { font-size: 12px; color: rgba(var(--text-rgb),0.6); }
+    .order-status { padding: 0 20px 12px; }
+    .save-status[data-error="true"], .order-status[data-error="true"] { color: var(--red); }
     .btn-del-ch { color: rgba(var(--red-rgb),0.3); }
     .btn-del-ch:hover { color: var(--red); }
 
@@ -351,7 +373,8 @@ if ($chapter_id && !$edit_chapter) {
           <?php else: ?>
             <?php foreach ($chapters as $ch): ?>
               <?php $is_active_ch = ($chapter_id && $ch['id'] === $chapter_id); ?>
-              <div class="chapter-item <?= $is_active_ch ? 'active' : '' ?>" id="ch-row-<?= $ch['id'] ?>">
+              <div class="chapter-item <?= $is_active_ch ? 'active' : '' ?>" id="ch-row-<?= $ch['id'] ?>" data-id="<?= $ch['id'] ?>">
+                <button type="button" class="drag-handle" aria-label="Reorder chapter" title="Drag to reorder. Keyboard: Space to pick up, arrow keys to move, Space to drop, Escape to cancel.">&#8942;&#8942;</button>
                 <a class="chapter-item-left"
                    href="ebook-chapters.php?product_id=<?= $product_id ?>&chapter_id=<?= $ch['id'] ?>">
                   <span class="chapter-num"><?= (int)$ch['sort_order'] ?></span>
@@ -360,8 +383,6 @@ if ($chapter_id && !$edit_chapter) {
                         title="<?= $ch['is_published'] ? 'Published' : 'Draft' ?>"></span>
                 </a>
                 <div class="chapter-controls">
-                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="up" title="Move up">↑</button>
-                  <button class="btn-order" data-id="<?= $ch['id'] ?>" data-dir="down" title="Move down">↓</button>
                   <form method="POST" action="?product_id=<?= $product_id ?>"
                         style="display:inline" onsubmit="return confirm('Delete this chapter? This cannot be undone.')">
                     <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
@@ -376,6 +397,7 @@ if ($chapter_id && !$edit_chapter) {
         </div>
 
         <div class="panel-list-footer">
+          <div id="order-status" class="order-status" role="status">Drag chapters to reorder</div>
           <form method="POST" action="?product_id=<?= $product_id ?>">
             <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
             <input type="hidden" name="action" value="add_chapter"/>
@@ -393,6 +415,8 @@ if ($chapter_id && !$edit_chapter) {
             <div class="editor-title">
               <span><?= htmlspecialchars($edit_chapter['title']) ?></span>
             </div>
+            <p id="save-status" class="save-status" role="status">All changes saved</p>
+            <button type="button" id="retry-save" class="btn-save" hidden>Retry save</button>
 
             <?php if (!empty($errors)): ?>
               <ul class="errors">
@@ -402,7 +426,7 @@ if ($chapter_id && !$edit_chapter) {
               </ul>
             <?php endif; ?>
 
-            <form method="POST"
+            <form id="chapter-form" method="POST"
                   action="?product_id=<?= $product_id ?>&chapter_id=<?= $chapter_id ?>">
               <input type="hidden" name="csrf"       value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
               <input type="hidden" name="action"     value="save_chapter"/>
@@ -446,9 +470,7 @@ if ($chapter_id && !$edit_chapter) {
                 </label>
               </div>
 
-              <div class="btn-row">
-                <button type="submit" class="btn-save">Save Chapter →</button>
-              </div>
+              <noscript><div class="btn-row"><button type="submit" class="btn-save">Save Chapter</button></div></noscript>
             </form>
           </div>
         <?php endif; ?>
@@ -518,6 +540,7 @@ if ($chapter_id && !$edit_chapter) {
     document.getElementById('quill-editor').style.display = '';
   } catch (e) {
     /* Quill failed (CDN/JS error) — leave the textarea visible so editing & saving still work */
+    quill = null;
     console.error('Rich editor failed to load; using plain text fallback.', e);
   }
 
@@ -536,40 +559,9 @@ if ($chapter_id && !$edit_chapter) {
   });
   slugEl.addEventListener('input', function () { slugEdited = true; });
 
-  /* ── Sync the rich editor into the textarea before submit (textarea is the saved field) ── */
-  var editForm = document.querySelector('form[action*="chapter_id"]');
-  if (editForm) editForm.addEventListener('submit', function () {
-    if (quill) document.getElementById('body-input').value = quill.root.innerHTML;
-  });
   <?php endif; ?>
-
-  /* ── Up / Down reorder ── */
-  document.querySelectorAll('.btn-order').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var chapterId = btn.dataset.id;
-      var direction = btn.dataset.dir;
-      btn.disabled = true;
-
-      fetch('ebook-chapters.php?product_id=' + PRODUCT_ID, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          csrf:       CSRF_TOKEN,
-          action:     'reorder_chapter',
-          chapter_id: chapterId,
-          direction:  direction,
-        }),
-      })
-      .then(function (r) { return r.json(); })
-      .then(function (json) {
-        if (json.success) window.location.reload();
-        else btn.disabled = false;
-      })
-      .catch(function () { btn.disabled = false; });
-    });
-  });
-
 </script>
+<script src="ebook-chapters.js?v=1"></script>
 <script src="admin.js"></script>
 </body>
 </html>
