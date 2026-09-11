@@ -70,10 +70,13 @@ test('admin authorization, CSRF, CRUD, uploads, escaping and deletion', async ()
   for (const csrf of ['', 'incorrect']) {
     const result = await post('/admin/showcase', { csrf, id: 1, action: 'delete' }); assert.equal(result.res.status, 403);
   }
-  const badSlug = await post('/admin/showcase-edit', { ...fields, slug: "../../evil' OR 1=1" });
-  assert.match(badSlug.html, /Enter a title and a slug/); clean(badSlug.html);
-  const duplicate = await post('/admin/showcase-edit', { ...fields, slug: 'design-1' });
-  assert.match(duplicate.html, /already used/);
+  const noTitle = await post('/admin/showcase-edit', { ...fields, title: '' });
+  assert.match(noTitle.html, /Enter a title/); clean(noTitle.html);
+  // Slug is server-generated from the title, not user input — verify it auto-suffixes
+  // instead of colliding with the seeded "design-1" (title "Finance, at a glance").
+  const duplicateTitle = await post('/admin/showcase-edit', { ...fields, title: 'Design 1', is_published: 1 }, { name: 'dup.webp', mime: 'image/webp', data: upload });
+  assert.equal(duplicateTitle.res.status, 302, duplicateTitle.html.slice(-300));
+  assert.equal((await get('/showcase/design-1-2')).res.status, 200);
   for (const file of [
     { name: 'fake.webp', mime: 'image/webp', data: '<?php echo "bad"; ?>' },
     { name: 'image.php', mime: 'image/webp', data: upload },
@@ -83,7 +86,9 @@ test('admin authorization, CSRF, CRUD, uploads, escaping and deletion', async ()
     const result = await post('/admin/showcase-edit', fields, file);
     assert.equal(result.res.status, 200); assert.match(result.html, /class="errors"/); clean(result.html);
   }
-  const created = await post('/admin/showcase-edit', { ...fields, title: '</script><script>alert(1)</script>', is_published: 1 }, { name: 'real.webp', mime: 'image/webp', data: upload });
+  // XSS payload goes in short_description (not title) so the resulting slug stays
+  // the predictable "integration-test" the rest of this test relies on.
+  const created = await post('/admin/showcase-edit', { ...fields, short_description: '</script><script>alert(1)</script>', is_published: 1 }, { name: 'real.webp', mime: 'image/webp', data: upload });
   assert.equal(created.res.status, 302, created.html.slice(-300));
   const location = created.res.headers.get('location');
   const id = new URL(base + location).searchParams.get('id');

@@ -36,8 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_create']) && !$
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['quick_create']) && !$errors) {
     $created = []; $removed = [];
     try {
-        foreach (['title'=>255,'slug'=>180,'short_description'=>2000,'thumbnail_alt'=>500,'tools'=>255,'client'=>100] as $field=>$max) $item[$field] = showcaseText($_POST, $field, $max);
-        if ($item['title'] === '' || !showcaseSlug($item['slug'])) throw new RuntimeException('Enter a title and a slug using lowercase letters, numbers and single hyphens.');
+        foreach (['title'=>255,'short_description'=>2000,'thumbnail_alt'=>500,'tools'=>255,'client'=>100] as $field=>$max) $item[$field] = showcaseText($_POST, $field, $max);
+        if ($item['title'] === '') throw new RuntimeException('Enter a title.');
+        // Slug is derived from the title, not user-entered. It's generated once — on
+        // creation, or the first time a real title replaces the "untitled-design"
+        // placeholder — then left alone so a published URL never moves under you.
+        if (!$id || preg_match('/^untitled-design(-\d+)?$/D', $item['slug'])) {
+            $item['slug'] = showcaseUniqueSlug($pdo, showcaseSlugify($item['title']) ?: 'design', $id ?: null);
+        }
         $item['year'] = ($_POST['year'] ?? '') === '' ? null : showcaseInt($_POST, 'year', 1900, 2155);
         $item['sort_order'] = showcaseInt($_POST, 'sort_order');
         $item['category_id'] = showcaseInt($_POST, 'category_id') ?: null;
@@ -47,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['quick_create']) && !
         foreach (['category_id'=>$categories,'related_case_study_id'=>$cases] as $field=>$choices) {
             if ($item[$field] !== null && !in_array($item[$field], array_map('intval', array_column($choices, 'id')), true)) throw new RuntimeException('The selected category or case study no longer exists.');
         }
-        if (showcaseQuery($pdo, 'SELECT id FROM showcase_projects WHERE slug=? AND id!=?', [$item['slug'],$id])->fetch()) throw new RuntimeException('That slug is already used. Choose a different one.');
         $edits = $_POST['gallery'] ?? [];
         if (!is_array($edits)) throw new RuntimeException('Invalid gallery. Reload and try again.');
         foreach ($gallery as &$image) {
@@ -164,14 +169,7 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <?php if (isset($_GET['draft'])): ?><p role="status">Image uploaded. Add a title and a few details, then publish when ready.</p>
 <?php elseif (isset($_GET['saved'])): ?><p role="status"><?= isset($_GET['images']) ? 'Images uploaded. Add their alt text below, then publish when ready.' : 'Design saved.' ?></p><?php endif; ?>
 <form method="post" enctype="multipart/form-data" class="sc-admin-form"><input type="hidden" name="csrf" value="<?= escHtml($_SESSION['csrf_token']) ?>">
-<div class="sc-admin-fields">
-<?php foreach (['title'=>['Title',255],'slug'=>['Slug',180]] as $field=>$settings): ?>
-<div class="field"><label for="<?= $field ?>"><?= $settings[0] ?></label><input type="text" id="<?= $field ?>" name="<?= $field ?>" maxlength="<?= $settings[1] ?>" value="<?= escHtml($item[$field]) ?>" required <?= $field === 'slug' ? 'pattern="[a-z0-9]+(-[a-z0-9]+)*"' : '' ?>><?php if ($field === 'slug'): ?><p class="sc-admin-hint">Permanent URL: /showcase/your-design. Keep this stable after publishing.</p><?php endif; ?></div>
-<?php endforeach; ?>
-<div class="field"><label for="category_id">Category</label><select id="category_id" name="category_id"><option value="0">Uncategorized</option><?php foreach ($categories as $category): ?><option value="<?= (int)$category['id'] ?>" <?= (int)$item['category_id'] === (int)$category['id'] ? 'selected' : '' ?>><?= escHtml($category['name']) ?></option><?php endforeach; ?></select><a href="/admin/showcase-categories" target="_blank" rel="noopener">Manage categories</a></div>
-<div class="field"><label for="year">Year (optional)</label><input type="number" id="year" name="year" min="1900" max="2155" value="<?= escHtml((string)$item['year']) ?>"></div>
-<div class="field"><label for="tools">Tools (optional)</label><input type="text" id="tools" name="tools" maxlength="255" value="<?= escHtml($item['tools']) ?>"></div>
-</div>
+<div class="field"><label for="title">Title</label><input type="text" id="title" name="title" maxlength="255" value="<?= escHtml($item['title']) ?>" required autofocus></div>
 <div class="field"><label for="short_description">Short description</label><textarea id="short_description" name="short_description" maxlength="2000"><?= escHtml($item['short_description'] ?? '') ?></textarea></div>
 <fieldset class="sc-admin-section"><legend>Cover image</legend>
 <?php if ($item['thumbnail']): ?><div class="sc-admin-preview"><?= showcaseImage($item['thumbnail'], $item['thumbnail_alt']) ?></div><label class="sc-admin-check"><input type="checkbox" name="remove_thumbnail" value="1">Remove cover</label><?php endif; ?>
@@ -180,9 +178,12 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 
 <details class="sc-admin-more"><summary>More details</summary>
 <div class="sc-admin-fields">
+<div class="field"><label for="category_id">Category (optional)</label><select id="category_id" name="category_id"><option value="0">Uncategorized</option><?php foreach ($categories as $category): ?><option value="<?= (int)$category['id'] ?>" <?= (int)$item['category_id'] === (int)$category['id'] ? 'selected' : '' ?>><?= escHtml($category['name']) ?></option><?php endforeach; ?></select><a href="/admin/showcase-categories" target="_blank" rel="noopener">Manage categories</a></div>
+<div class="field"><label for="year">Year (optional)</label><input type="number" id="year" name="year" min="1900" max="2155" value="<?= escHtml((string)$item['year']) ?>"></div>
+<div class="field"><label for="tools">Tools (optional)</label><input type="text" id="tools" name="tools" maxlength="255" value="<?= escHtml($item['tools']) ?>"></div>
 <div class="field"><label for="client">Client (optional)</label><input type="text" id="client" name="client" maxlength="100" value="<?= escHtml($item['client']) ?>"></div>
 <div class="field"><label for="related_case_study_id">Related case study (optional)</label><select id="related_case_study_id" name="related_case_study_id"><option value="0">None</option><?php foreach ($cases as $case): ?><option value="<?= (int)$case['id'] ?>" <?= (int)$item['related_case_study_id'] === (int)$case['id'] ? 'selected' : '' ?>><?= escHtml($case['title'] . ($case['is_published'] ? '' : ' (draft)')) ?></option><?php endforeach; ?></select></div>
-<div class="field"><label for="sort_order">Display order</label><input type="number" id="sort_order" name="sort_order" min="0" max="2147483647" value="<?= (int)$item['sort_order'] ?>"><p class="sc-admin-hint">Lower numbers appear first.</p></div>
+<div class="field"><label for="sort_order">Display order (optional)</label><input type="number" id="sort_order" name="sort_order" min="0" max="2147483647" value="<?= (int)$item['sort_order'] ?>"><p class="sc-admin-hint">Lower numbers appear first.</p></div>
 </div>
 </details>
 
@@ -203,18 +204,6 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
 <?php if (!$item['is_published']): ?><form method="post" action="/admin/showcase" onsubmit="return confirm('Discard this draft? Its image will be deleted.')" class="sc-admin-discard"><input type="hidden" name="csrf" value="<?= escHtml($_SESSION['csrf_token']) ?>"><input type="hidden" name="id" value="<?= $id ?>"><button class="btn-outline" name="action" value="delete">Discard draft</button></form><?php endif; ?>
 </div>
 </form>
-<script>
-(function () {
-  var title = document.getElementById('title'), slug = document.getElementById('slug');
-  // A freshly dropped draft starts as "Untitled design" / "untitled-design" — treat that
-  // pairing as still-automatic so editing the placeholder title updates the slug too.
-  var automatic = !slug.value || (title.value === 'Untitled design' && /^untitled-design(-\d+)?$/.test(slug.value));
-  slug.addEventListener('input', function () { automatic = false; });
-  title.addEventListener('input', function () {
-    if (automatic) slug.value = title.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 180).replace(/-$/, '');
-  });
-})();
-</script>
 
 <?php endif; ?>
 
