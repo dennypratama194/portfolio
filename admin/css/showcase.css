@@ -84,6 +84,8 @@
   background: rgba(var(--text-rgb),0.12); outline: 1px solid var(--red);
   position: relative; z-index: 2; will-change: transform;
 }
+/* Just dropped and still sliding home — stay above the rows it's passing. */
+.sc-gallery-row.is-settling { position: relative; z-index: 2; }
 .sc-gallery-row.dragging .drag-handle { cursor: grabbing; }
 /* Row holds an image swap that hasn't been saved yet. */
 .sc-gallery-row.is-replaced { border-color: rgba(var(--red-rgb),0.55); }

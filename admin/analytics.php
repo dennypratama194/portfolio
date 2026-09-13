@@ -199,7 +199,7 @@ for ($i = 11; $i >= 0; $i--) {
   <link rel="icon" type="image/png" href="/assets/logo.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="theme.css?v=8"/>
+  <link rel="stylesheet" href="theme.css?v=10"/>
   <style>
     /* ── Stat cards ── */
     .stats-grid {
@@ -216,9 +216,11 @@ for ($i = 11; $i >= 0; $i--) {
       padding: 24px;
     }
     .stat-label {
+      display: flex; align-items: center; gap: 8px;
       font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
       color: rgba(var(--text-rgb),0.3); margin-bottom: 12px;
     }
+    .stat-icon { width: 16px; height: 16px; flex-shrink: 0; }
     .stat-value {
       font-size: 32px; font-weight: 600; letter-spacing: -0.03em; color: var(--text);
     }
@@ -350,22 +352,22 @@ for ($i = 11; $i >= 0; $i--) {
     <!-- ── Row 1: Core stats ── -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Total Views</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Total Views</div>
         <div class="stat-value"><?= number_format($total_views) ?></div>
         <div class="stat-sub">all time</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Unique Visitors</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Unique Visitors</div>
         <div class="stat-value"><?= number_format($unique_visitors) ?></div>
         <div class="stat-sub">all time</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Today</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Today</div>
         <div class="stat-value accent"><?= number_format($views_today) ?></div>
         <div class="stat-sub">views</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">This Month</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>This Month</div>
         <div class="stat-value"><?= number_format($views_month) ?></div>
         <div class="stat-sub"><?= number_format($views_week) ?> this week</div>
       </div>
@@ -374,22 +376,22 @@ for ($i = 11; $i >= 0; $i--) {
     <!-- ── Row 2: Session + visitor stats ── -->
     <div class="stats-grid-2">
       <div class="stat-card">
-        <div class="stat-label">Avg Session Duration</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Avg Session Duration</div>
         <div class="stat-value"><?= fmt_duration($avg_duration_sec) ?></div>
         <div class="stat-sub">across all pages</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg Time on Posts</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7Z"/></svg>Avg Time on Posts</div>
         <div class="stat-value"><?= fmt_duration((int)($dur_rows['post'] ?? 0)) ?></div>
         <div class="stat-sub">blog post pages</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Returning Visitors</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Returning Visitors</div>
         <div class="stat-value"><?= number_format($returning) ?></div>
         <div class="stat-sub"><?= $unique_visitors > 0 ? round($returning / $unique_visitors * 100) : 0 ?>% of total</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">New Visitors</div>
+        <div class="stat-label"><svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>New Visitors</div>
         <div class="stat-value"><?= number_format($new_visitors) ?></div>
         <div class="stat-sub"><?= $unique_visitors > 0 ? round($new_visitors / $unique_visitors * 100) : 0 ?>% of total</div>
       </div>

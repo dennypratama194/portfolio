@@ -38,6 +38,23 @@
 
 /* Focus-visible: visible ring for keyboard nav on all interactive elements */
 :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+/* Scrollbars — thin thumb, no track, no arrow buttons.
+   Chromium/Safari get ::-webkit-scrollbar. Firefox only gets the standard
+   properties: Chrome 121+ also understands scrollbar-color, and once it's set
+   Chrome ignores every ::-webkit-scrollbar rule and falls back to its default
+   scrollbar with arrow buttons — so the standard pair must not reach it. */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--text-rgb),0.16);
+  border: 2px solid transparent; border-radius: 8px; background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: rgba(var(--text-rgb),0.32); }
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-width: thin; scrollbar-color: rgba(var(--text-rgb),0.16) transparent; }
+}
 /* Inputs already have custom :focus border-color — suppress double ring */
 input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }
 
@@ -460,6 +477,12 @@ tr.row-link:hover { background: rgba(var(--text-rgb),0.03); }
 [data-theme="light"] .chart-wrap   { border-color: rgba(var(--text-light-rgb),0.08); }
 [data-theme="light"] .chart-label  { color: rgba(var(--text-light-rgb),0.3); }
 [data-theme="light"] .chart-value  { color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"] .chart-tabs   { border-color: rgba(var(--text-light-rgb),0.12); }
+[data-theme="light"] .chart-tab    { color: rgba(var(--text-light-rgb),0.65); border-right-color: rgba(var(--text-light-rgb),0.12); }
+/* :not(.is-active) + extra specificity: analytics.php's inline .chart-tab:hover
+   loads after this file and would otherwise paint hovered tabs in the dark
+   theme's near-white --text; the active tab keeps its red on hover. */
+[data-theme="light"] .chart-tab:not(.is-active):hover { color: var(--text-light); }
 
 /* Analytics: section headings */
 [data-theme="light"] .section-heading { color: rgba(var(--text-light-rgb),0.35); border-bottom-color: rgba(var(--text-light-rgb),0.08); }
@@ -515,6 +538,13 @@ tr.row-link:hover { background: rgba(var(--text-rgb),0.03); }
 [data-theme="light"] tr.row-link:hover { background: rgba(var(--text-light-rgb),0.03); }
 [data-theme="light"] .panel-list       { border-right-color: rgba(var(--text-light-rgb),0.08); }
 [data-theme="light"] .panel-list-header { color: rgba(var(--text-light-rgb),0.35); }
+[data-theme="light"]::-webkit-scrollbar-thumb,
+[data-theme="light"] ::-webkit-scrollbar-thumb       { background-color: rgba(var(--text-light-rgb),0.18); }
+[data-theme="light"]::-webkit-scrollbar-thumb:hover,
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background-color: rgba(var(--text-light-rgb),0.35); }
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="light"] * { scrollbar-color: rgba(var(--text-light-rgb),0.18) transparent; }
+}
 [data-theme="light"] .chapter-item     { border-bottom-color: rgba(var(--text-light-rgb),0.05); }
 [data-theme="light"] .chapter-item:hover  { background: rgba(var(--text-light-rgb),0.03); }
 [data-theme="light"] .chapter-item.active { background: rgba(var(--text-light-rgb),0.06); }

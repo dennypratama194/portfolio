@@ -253,7 +253,7 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
   if (list) {
     var status = document.getElementById('gallery-order-status'), drag = null;
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var SLIDE = 180, EASE = 'cubic-bezier(0.2,0,0,1)';
+    var SLIDE = 260, EASE = 'cubic-bezier(0.2,0.8,0.2,1)';
     function rows() { return Array.from(list.querySelectorAll('.sc-gallery-row')); }
     function renumber() {
       rows().forEach(function (row, index) {
@@ -268,16 +268,21 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
        pointer: it is already tracking the cursor and must not be animated. */
     function flip(mutate, skip) {
       if (reduceMotion) { mutate(); return; }
-      var moving = rows(), before = new Map();
-      moving.forEach(function (row) { before.set(row, row.getBoundingClientRect().top); });
+      var moving = rows().filter(function (row) { return row !== skip; }), first = new Map();
+      // First: where each row is on screen now, including any slide still in flight.
+      moving.forEach(function (row) { first.set(row, row.getBoundingClientRect().top); });
       mutate();
+      // Last: the settled slot. Strip running transforms before measuring, or a row
+      // still sliding from the previous swap reports a half-way position and the new
+      // animation starts from the wrong place — the jerk when dragging past rows fast.
+      moving.forEach(function (row) { row.style.transition = 'none'; row.style.transform = ''; });
       moving.forEach(function (row) {
-        if (row === skip) return;
-        var delta = before.get(row) - row.getBoundingClientRect().top;
-        if (!delta) return;
-        row.style.transition = 'none';
-        row.style.transform = 'translateY(' + delta + 'px)';
-        row.getBoundingClientRect();            // flush, so the jump isn't animated
+        var delta = first.get(row) - row.getBoundingClientRect().top;
+        if (delta) row.style.transform = 'translateY(' + delta + 'px)';
+      });
+      list.getBoundingClientRect();             // flush once, so the inverted start isn't animated
+      moving.forEach(function (row) {
+        if (!row.style.transform) return;
         row.style.transition = 'transform ' + SLIDE + 'ms ' + EASE;
         row.style.transform = '';
       });
@@ -311,8 +316,11 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
        mid-FLIP can't feed its animated position back in and cause oscillation. */
     function moveAt(y) {
       var origin = list.getBoundingClientRect().top - list.offsetTop;
+      // Swap when the dragged row's centre crosses a neighbour's midpoint — not the
+      // raw pointer, which makes swaps late and abrupt when a row is grabbed near an edge.
+      var centre = y - drag.grabOffset + drag.row.offsetHeight / 2;
       var before = rows().filter(function (row) { return row !== drag.row; }).find(function (row) {
-        return y < origin + row.offsetTop + row.offsetHeight / 2;
+        return centre < origin + row.offsetTop + row.offsetHeight / 2;
       }) || null;
       if (before !== drag.row.nextElementSibling) {
         flip(function () { list.insertBefore(drag.row, before); }, drag.row);
@@ -328,10 +336,12 @@ $admin_title = $id ? 'Edit showcase' : 'New showcase';
       if (pointerId !== undefined && list.hasPointerCapture(pointerId)) list.releasePointerCapture(pointerId);
       drag = null;
       // Settle back into the slot rather than snapping out of the cursor's grip.
+      // is-settling keeps it stacked above its neighbours until it lands.
       if (reduceMotion || !row.style.transform) { clearMotion(row); return; }
+      row.classList.add('is-settling');
       row.style.transition = 'transform ' + SLIDE + 'ms ' + EASE;
       row.style.transform = '';
-      setTimeout(function () { clearMotion(row); }, SLIDE);
+      setTimeout(function () { clearMotion(row); row.classList.remove('is-settling'); }, SLIDE);
     }
     list.addEventListener('pointerdown', function (event) {
       var handle = event.target.closest('.drag-handle');
