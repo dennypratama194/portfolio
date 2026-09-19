@@ -16,67 +16,97 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 /* ── Parse input — accept JSON body or form POST ── */
 $raw   = file_get_contents('php://input');
 $json  = json_decode($raw, true);
+$json  = is_array($json) ? $json : [];
 $email = trim($json['email'] ?? $_POST['email'] ?? '');
+$product_id_in = $json['product_id'] ?? $_POST['product_id'] ?? null;
+$csrf_in = $json['csrf'] ?? $_POST['csrf'] ?? '';
+
+/* ── Detect authenticated admin (session + CSRF) vs public recover ──
+   Only open a session if a cookie is already present — public recover must
+   not create anonymous sessions. ── */
+$is_admin = false;
+if (isset($_COOKIE[session_name()]) || (session_status() === PHP_SESSION_ACTIVE)) {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_samesite', 'Lax');
+        ini_set('session.cookie_secure', '1');
+        session_start();
+    }
+    $is_admin = isset($_SESSION['authed']) && verifyCsrf(is_string($csrf_in) ? $csrf_in : '');
+}
 
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Valid email required']);
+    if ($is_admin) {
+        echo json_encode(['success' => false, 'message' => 'Valid email required']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Valid email required']);
+    }
     exit;
 }
 
 $email = strtolower($email);
 
-/* ── Rate limiting: per-IP (anti-enumeration) + per-email (anti-spam) ──
-   Both recorded BEFORE the lookup, so probing non-existent emails still
-   burns the attacker's budget. ── */
-$rate_dir = __DIR__ . '/logs/ratelimit';
-if (!is_dir($rate_dir)) {
-    mkdir($rate_dir, 0755, true);
-}
-$one_hour_ago = time() - 3600;
-
-$rate_ok = function (string $file, int $max) use ($rate_dir, $one_hour_ago): bool {
-    $path = $rate_dir . '/' . $file;
-    $ts   = [];
-    if (file_exists($path)) {
-        $stored = json_decode(file_get_contents($path), true);
-        if (is_array($stored)) {
-            $ts = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
-        }
+/* ── Rate limiting (public only): per-IP + per-email ──
+   Recorded BEFORE the lookup so probing non-existent emails still burns budget.
+   Admin resend from the dashboard skips this. ── */
+if (!$is_admin) {
+    $rate_dir = __DIR__ . '/logs/ratelimit';
+    if (!is_dir($rate_dir)) {
+        mkdir($rate_dir, 0755, true);
     }
-    if (count($ts) >= $max) return false;
-    $ts[] = time();
-    file_put_contents($path, json_encode($ts), LOCK_EX);
-    return true;
-};
+    $one_hour_ago = time() - 3600;
 
-$ip = client_ip();
-if (!$rate_ok('recover_ip_' . hash('sha256', $ip) . '.json', 15)
-    || !$rate_ok('recover_' . hash('sha256', $email) . '.json', 3)) {
-    http_response_code(429);
-    echo json_encode(['status' => 'rate_limited']);
-    exit;
+    $rate_ok = function (string $file, int $max) use ($rate_dir, $one_hour_ago): bool {
+        $path = $rate_dir . '/' . $file;
+        $ts   = [];
+        if (file_exists($path)) {
+            $stored = json_decode(file_get_contents($path), true);
+            if (is_array($stored)) {
+                $ts = array_values(array_filter($stored, fn($t) => $t > $one_hour_ago));
+            }
+        }
+        if (count($ts) >= $max) return false;
+        $ts[] = time();
+        file_put_contents($path, json_encode($ts), LOCK_EX);
+        return true;
+    };
+
+    $ip = client_ip();
+    if (!$rate_ok('recover_ip_' . hash('sha256', $ip) . '.json', 15)
+        || !$rate_ok('recover_' . hash('sha256', $email) . '.json', 3)) {
+        http_response_code(429);
+        echo json_encode(['status' => 'rate_limited']);
+        exit;
+    }
 }
 
 /* ── Load secrets + DB ── */
 require_once __DIR__ . '/db.php';
 
-/* ── Look up all purchases for this email with active products ── */
-$stmt = $pdo->prepare(
-    'SELECT pu.token, pu.paid_at,
+/* ── Look up purchases (admin may scope to one product_id) ── */
+$sql = 'SELECT pu.token, pu.paid_at,
             ep.title AS product_title, ep.slug AS product_slug
      FROM ebook_purchases pu
      JOIN ebook_products ep ON ep.id = pu.product_id
-     WHERE LOWER(pu.email) = ? AND ep.is_active = 1
-     ORDER BY pu.paid_at DESC'
-);
-$stmt->execute([$email]);
+     WHERE LOWER(pu.email) = ? AND ep.is_active = 1';
+$params = [$email];
+if ($is_admin && $product_id_in !== null && $product_id_in !== '') {
+    $sql .= ' AND pu.product_id = ?';
+    $params[] = (int)$product_id_in;
+}
+$sql .= ' ORDER BY pu.paid_at DESC';
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $purchases = $stmt->fetchAll();
 
-/* ── Generic response: never reveal whether this email has purchases
-   (prevents customer enumeration). Only actually send if there are any. ── */
+/* ── Public: generic anti-enumeration response. Admin: honest success/failure. ── */
 if (empty($purchases)) {
-    echo json_encode(['status' => 'sent']);
+    if ($is_admin) {
+        echo json_encode(['success' => false, 'message' => 'No matching purchase found for that email/product.']);
+    } else {
+        echo json_encode(['status' => 'sent']);
+    }
     exit;
 }
 
@@ -216,13 +246,22 @@ $curl_err    = curl_errno($ch);
 curl_close($ch);
 
 if ($curl_err || $email_code < 200 || $email_code >= 300) {
-    /* Log server-side, but still return the generic 'sent' response so a
-       send failure can't be used to confirm an email has purchases. */
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) { mkdir($log_dir, 0755, true); }
     $log_entry = date('c') . ' | http=' . $email_code . ' | curl_err=' . $curl_err . PHP_EOL;
     file_put_contents($log_dir . '/resend-errors.log', $log_entry, FILE_APPEND | LOCK_EX);
+
+    if ($is_admin) {
+        http_response_code(502);
+        echo json_encode(['success' => false, 'message' => 'Email provider failed — try again or check logs.']);
+        exit;
+    }
+    /* Public: still return generic 'sent' so failures can't confirm ownership. */
 }
 
-/* Always generic — never leak whether the email existed or the send result. */
-echo json_encode(['status' => 'sent']);
+if ($is_admin) {
+    echo json_encode(['success' => true, 'ok' => true]);
+} else {
+    /* Always generic — never leak whether the email existed or the send result. */
+    echo json_encode(['status' => 'sent']);
+}

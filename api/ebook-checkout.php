@@ -19,6 +19,7 @@ if (!$product_slug) {
     exit('Missing product.');
 }
 
+require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/db.php'; /* also loads .secrets.php → defines SITE_URL */
 
 /* ── All errors redirect back to the sales page ── */
@@ -26,6 +27,7 @@ function checkout_fail(string $slug, string $code): never {
     header('Location: ' . SITE_URL . '/ebook/' . rawurlencode($slug) . '?error=' . $code);
     exit;
 }
+
 
 /* ── Validate email ── */
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -90,6 +92,13 @@ $payload = json_encode([
     'currency'             => 'IDR',
     'invoice_duration'     => 86400, /* 24 hours */
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+/* ── Rate limit: max 5 invoice creations per IP per hour ── */
+if (!rateLimit('ebook_checkout', 5)) {
+    http_response_code(429);
+    header('Content-Type: text/plain; charset=utf-8');
+    exit('Too many checkout attempts. Please try again later.');
+}
 
 /* ── Call Xendit Invoices API ── */
 /*

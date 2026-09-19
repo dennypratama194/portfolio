@@ -108,6 +108,63 @@ if (!$product) {
     wok();
 }
 
+/* ── Re-fetch invoice from Xendit and verify before granting access ──
+   Never trust webhook body alone for status/amount — confirm with the API. ── */
+$ch = curl_init('https://api.xendit.co/v2/invoices/' . rawurlencode($invoice_id));
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_HTTPHEADER     => [
+        'Authorization: Basic ' . base64_encode(XENDIT_SECRET_KEY . ':'),
+    ],
+]);
+$remote_raw  = curl_exec($ch);
+$remote_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$remote_err  = curl_errno($ch);
+curl_close($ch);
+
+if ($remote_err || $remote_raw === false || ($remote_code !== 200 && $remote_code !== 201)) {
+    wlog('ERR', 'invoice re-fetch failed — invoice_id=' . $invoice_id
+        . ' http=' . $remote_code . ' curl_err=' . $remote_err);
+    http_response_code(502);
+    exit;
+}
+
+$remote = json_decode($remote_raw, true);
+if (!is_array($remote)) {
+    wlog('ERR', 'invoice re-fetch unparseable — invoice_id=' . $invoice_id);
+    http_response_code(502);
+    exit;
+}
+
+$remote_status = $remote['status'] ?? '';
+if ($remote_status !== 'PAID') {
+    wlog('WARN', 'remote status not PAID — status=' . $remote_status . ' invoice_id=' . $invoice_id);
+    /* 200 so Xendit stops retrying; do NOT insert a purchase */
+    wok();
+}
+
+$remote_amount = (int)($remote['amount'] ?? -1);
+$expected_price = (int)$product['price'];
+if ($remote_amount !== $expected_price) {
+    wlog('ERR', 'amount mismatch — remote=' . $remote_amount
+        . ' expected=' . $expected_price . ' invoice_id=' . $invoice_id);
+    http_response_code(400);
+    exit;
+}
+
+$remote_currency = $remote['currency'] ?? null;
+if ($remote_currency !== null && $remote_currency !== '' && $remote_currency !== 'IDR') {
+    wlog('ERR', 'currency mismatch — currency=' . $remote_currency . ' invoice_id=' . $invoice_id);
+    http_response_code(400);
+    exit;
+}
+
+/* Prefer payer_email from the verified remote invoice when present */
+if (!empty($remote['payer_email']) && filter_var($remote['payer_email'], FILTER_VALIDATE_EMAIL)) {
+    $payer_email = $remote['payer_email'];
+}
+
 /* ── Generate secure access token ── */
 $token = bin2hex(random_bytes(32)); /* 64-char hex, fits VARCHAR(64) */
 
