@@ -192,3 +192,37 @@ function rateLimit(string $bucket, int $max, int $window_sec = 3600): bool {
     @file_put_contents($file, json_encode($timestamps), LOCK_EX);
     return true;
 }
+
+/**
+ * Ensure a CSRF token exists in the session and return it.
+ * Caller must have started the session first.
+ */
+function csrfToken(): string {
+    if (empty($_SESSION['csrf_token']) || !is_string($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Constant-time CSRF check. Pass the submitted token, or null to read $_POST['csrf'].
+ */
+function verifyCsrf(?string $submitted = null): bool {
+    $expected = $_SESSION['csrf_token'] ?? '';
+    if ($submitted === null) {
+        $submitted = $_POST['csrf'] ?? '';
+    }
+    return is_string($expected) && $expected !== ''
+        && is_string($submitted) && $submitted !== ''
+        && hash_equals($expected, $submitted);
+}
+
+/**
+ * Exit 403 unless the submitted CSRF token is valid.
+ */
+function requireCsrf(?string $submitted = null): void {
+    if (!verifyCsrf($submitted)) {
+        http_response_code(403);
+        exit('Your session expired. Reload the page and try again.');
+    }
+}

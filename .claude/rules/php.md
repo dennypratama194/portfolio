@@ -37,11 +37,12 @@ $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 ```
 
 ## Shared helpers — `api/helpers.php`
-Never redefine `escHtml()`, `formatDate()`, or `isAllowedImage()` inline. Always require:
+Never redefine `escHtml()`, `formatDate()`, `isAllowedImage()`, or CSRF helpers inline. Always require:
 ```php
 require __DIR__ . '/api/helpers.php';       // from project root
 require __DIR__ . '/../api/helpers.php';    // from admin/ or partials/
 ```
+CSRF: `csrfToken()`, `verifyCsrf(?string $submitted = null)`, `requireCsrf()` — all use `hash_equals`.
 
 ## Database access
 Always prepared statements — never interpolate user input into SQL:

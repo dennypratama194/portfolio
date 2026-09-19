@@ -11,6 +11,14 @@ if (realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'] ?? '')) {
     exit('Forbidden');
 }
 
+/* Require PHP 8.1+ — docs historically said 7.4+ but code uses 8.1 syntax
+   (union types, str_contains, etc.). Fail clearly on older runtimes. */
+if (PHP_VERSION_ID < 80100) {
+    http_response_code(503);
+    header('Content-Type: application/json; charset=utf-8');
+    die(json_encode(['error' => 'PHP 8.1+ is required (running ' . PHP_VERSION . ').']));
+}
+
 require_once __DIR__ . '/.secrets.php';
 
 /* ── Admin password hash ── */

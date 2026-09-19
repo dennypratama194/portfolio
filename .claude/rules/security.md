@@ -2,8 +2,12 @@
 
 ## Admin pages
 - Session check + auth guard before any output (see php.md for boilerplate)
-- CSRF token on every form: `<input type="hidden" name="csrf" value="<?= $_SESSION['csrf_token'] ?>"/>`
-- Verify on POST: `if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) { http_response_code(403); exit; }`
+- CSRF token on every form: `<input type="hidden" name="csrf" value="<?= escHtml(csrfToken()) ?>"/>`
+- Verify on POST with the shared helper (constant-time via `hash_equals`):
+  ```php
+  requireCsrf(); // or: if (!verifyCsrf()) { http_response_code(403); exit; }
+  ```
+  Never compare CSRF with `!==` — use `hash_equals` / `verifyCsrf()` / `requireCsrf()` from `api/helpers.php`.
 
 ## File uploads
 - Validate MIME with `isAllowedImage()` from `api/helpers.php` — **not** `mime_content_type()` (removed in PHP 8.1+)

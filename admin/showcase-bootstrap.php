@@ -6,8 +6,9 @@ ini_set('session.cookie_secure', '1');
 session_start();
 if (($_SESSION['authed'] ?? false) !== true) { header('Location: /admin/login'); exit; }
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf']))) {
-    http_response_code(403); exit('Your session expired. Reload the page and try again.');
+require_once __DIR__ . '/../api/helpers.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrf();
 }
 require __DIR__ . '/../api/db.php';
 require_once __DIR__ . '/../api/showcase.php';

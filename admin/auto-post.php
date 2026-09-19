@@ -18,9 +18,7 @@ $saved = false;
 
 /* ── Save settings ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
     $action = $_POST['action'] ?? 'save';
 
     if ($action === 'regenerate_token') {
@@ -58,7 +56,8 @@ $model    = $config['model']    ?? 'claude-haiku-4-5-20251001';
 $has_ant  = !empty($config['anthropic_api_key']);
 $has_oai  = !empty($config['openai_api_key']);
 $site_host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'dennypratama.com');
-$cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
+$cron_url = $site_host . '/api/auto-post.php'; // auth via Authorization: Bearer (not ?token=)
+$csrf     = csrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -173,11 +172,11 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         <div class="section-heading" style="margin-top:48px">Cron Setup (cPanel)</div>
         <div class="cron-box">
           <?php if ($token): ?>
-            <label class="cron-label">Your cron URL</label>
-            <div class="cron-url" id="cron-url"><?= $cron_url ?></div>
-            <button class="cron-copy" onclick="copyUrl()">Copy URL</button>
+            <label class="cron-label">CLI command (recommended)</label>
+            <div class="cron-url" id="cron-url">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php') ?: (__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></div>
+            <button class="cron-copy" onclick="copyUrl()">Copy command</button>
           <?php else: ?>
-            <div class="hint">Save your settings first to generate the cron URL.</div>
+            <div class="hint">Save your settings first to generate the cron command.</div>
           <?php endif; ?>
 
           <div class="cron-label" style="margin-bottom:10px">Suggested schedules</div>
@@ -197,10 +196,9 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
           </div>
 
           <div class="hint" style="margin-top:16px">
-            In cPanel → Cron Jobs, use the PHP CLI command (recommended — no HTTP timeout):<br>
-            <code class="cron-code">php <?= htmlspecialchars(realpath(__DIR__ . '/../api/auto-post.php')) ?> <?= htmlspecialchars($token) ?></code><br><br>
-            Or via wget (two requests, each under 30s):<br>
-            <code class="cron-code">wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=1" &amp;&amp; wget -q -O /dev/null "<?= $cron_url ?>&amp;phase=2"</code>
+            In cPanel → Cron Jobs, prefer the PHP CLI command above (no HTTP timeout).<br><br>
+            HTTP alternative (Bearer header — do <strong>not</strong> put the token in the query string):<br>
+            <code class="cron-code">curl -s -o /dev/null -H "Authorization: Bearer <?= htmlspecialchars($token) ?>" "<?= htmlspecialchars($cron_url) ?>?phase=all"</code>
           </div>
 
           <?php if ($last_run): ?>
@@ -286,7 +284,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       navigator.clipboard.writeText(url.textContent.trim()).then(function(){
         var btn = document.querySelector('.cron-copy');
         btn.textContent = 'Copied!';
-        setTimeout(function(){ btn.textContent = 'Copy URL'; }, 2000);
+        setTimeout(function(){ btn.textContent = 'Copy command'; }, 2000);
       });
     }
 
@@ -298,14 +296,19 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     /* ── Run Now (two-phase) ── */
     var runBtn    = document.getElementById('run-btn');
     var runStatus = document.getElementById('run-status');
-    var TOKEN     = '<?= addslashes($token) ?>';
+    var CSRF      = <?= json_encode($csrf) ?>;
+    var HAS_TOKEN = <?= $token ? 'true' : 'false' ?>;
 
-    /* Fetch wrapper: returns parsed JSON or throws with the raw body as the message.
+    /* Fetch wrapper: session cookie + CSRF header (secret token stays server-side).
        Cache-buster + no-store: the run URL is identical every click, so any cache
        layer (browser/Cloudflare) could replay a stale result instead of running. */
     function fetchJSON(url) {
       url += (url.indexOf('?') === -1 ? '?' : '&') + '_=' + Date.now();
-      return fetch(url, { cache: 'no-store' }).then(function(r) {
+      return fetch(url, {
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: { 'X-CSRF-Token': CSRF }
+      }).then(function(r) {
         return r.text().then(function(txt) {
           try {
             var d = JSON.parse(txt);
@@ -323,7 +326,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
        server-side (api/logs/run-status.json), so navigating away and coming
        back resumes the progress display instead of losing it. ── */
     if (runBtn) {
-      var base        = '/api/auto-post.php?token=' + encodeURIComponent(TOKEN);
+      var base        = '/api/auto-post.php';
       var pollTimer   = null, tickTimer = null, polls = 0, runStarted = 0;
       var progressBox = document.getElementById('run-progress');
       var elapsedEl   = document.getElementById('run-elapsed');
@@ -446,7 +449,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
             runBtn.disabled = false;
             return;
           }
-          fetchJSON(base + '&phase=status')
+          fetchJSON(base + '?phase=status')
             .then(function(d){ if (d.ok) showRunState(d.run); })
             .catch(function(){ /* transient poll failure — keep polling */ });
         }, 3000);
@@ -461,12 +464,12 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
 
         /* Preflight (~30 tokens): verifies deployed file + API key before
            any generation is paid for. */
-        fetchJSON(base + '&phase=test')
+        fetchJSON(base + '?phase=test')
           .then(function(t){
             if (!t.ok) throw new Error(t.error || 'Connection test failed');
             if (!t.v)  throw new Error('Server is running an outdated api/auto-post.php — re-upload it, then retry.');
             runStatus.innerHTML = loadingHtml('Starting background run');
-            return fetchJSON(base + '&phase=start');
+            return fetchJSON(base + '?phase=start');
           })
           .then(function(s){
             if (!s.ok) throw new Error(s.error || 'Could not start the run');
@@ -486,7 +489,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
          run can start. The API refuses while the run is still reporting. */
       clearBtn.addEventListener('click', function(){
         clearBtn.disabled = true;
-        fetchJSON(base + '&phase=clear')
+        fetchJSON(base + '?phase=clear')
           .then(function(d){
             if (!d.ok) throw new Error(d.error || 'Could not clear the run');
             clearBtn.style.display = 'none';
@@ -510,7 +513,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
         salvageBtn.disabled = true;
         runStatus.className = 'run-status';
         runStatus.innerHTML = loadingHtml('Publishing saved output');
-        fetchJSON(base + '&phase=salvage')
+        fetchJSON(base + '?phase=salvage')
           .then(function(d){
             if (!d.ok) throw new Error(d.error || 'Salvage failed');
             salvageBtn.disabled = false;
@@ -531,7 +534,7 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
       /* ── Resume on page load: the run survives navigation server-side, so
          if one is active (or stuck) show it immediately instead of a dead
          button that rejects clicks with "a run is already in progress". ── */
-      fetchJSON(base + '&phase=status')
+      fetchJSON(base + '?phase=status')
         .then(function(d){
           var run = d.ok ? d.run : null;
           if (!run || run.done) return;
@@ -546,14 +549,14 @@ $cron_url = $site_host . '/api/auto-post.php?token=' . htmlspecialchars($token);
     /* ── Per-post image regenerate ── */
     document.querySelectorAll('.regen-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        if (!TOKEN) return;
+        if (!HAS_TOKEN) return;
         var id     = btn.dataset.id;
         var status = document.querySelector('.regen-status[data-status-for="' + id + '"]');
         btn.disabled = true;
         status.className = 'regen-status';
         status.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
-        fetchJSON('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(TOKEN) + '&post_id=' + encodeURIComponent(id))
+        fetchJSON('/api/auto-post.php?phase=regen&post_id=' + encodeURIComponent(id))
           .then(function (d) {
             if (d.image) {
               status.className   = 'regen-status ok';

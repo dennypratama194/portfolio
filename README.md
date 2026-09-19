@@ -6,7 +6,7 @@ PHP + MySQL portfolio / ebook storefront. No build tools — edit CSS and JS dir
 
 | Layer | Tech |
 |---|---|
-| Backend | PHP 7.4+, MySQL via PDO |
+| Backend | PHP 8.1+, MySQL via PDO |
 | Frontend | Vanilla CSS + JS, GSAP 3 (CDN), Quill (admin editor) |
 | Payments | Xendit Invoices API (IDR) |
 | Email | Resend API (transactional) |
@@ -15,7 +15,7 @@ PHP + MySQL portfolio / ebook storefront. No build tools — edit CSS and JS dir
 
 ## Local setup
 
-1. **Requirements**: PHP 7.4+ with the `pdo_mysql` extension, and a MySQL/MariaDB server.
+1. **Requirements**: PHP 8.1+ with the `pdo_mysql` extension, and a MySQL/MariaDB server.
 2. **Clone and serve**:
    ```bash
    php -S localhost:8000

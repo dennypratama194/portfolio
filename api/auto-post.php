@@ -2,19 +2,12 @@
 /* ════════════════════════════════════════════════════════════════
    Auto-post v2 — AI blog publishing (Claude text + gpt-image-2)
 
-   Entry modes (token-authed):
-     ?token=X                     cron  → phase all (text + image)
-     ?token=X&phase=start         admin → spawn background phase-all run
-     ?token=X&phase=status        admin → poll background run progress
-     ?token=X&phase=clear         admin → release a stuck run
-     ?token=X&phase=salvage       admin → publish the saved output of a
-                                          killed run (no new Claude call)
-     ?token=X&phase=test          admin → ~30-token pipeline check
-     ?token=X&phase=1             admin → generate + publish post
-     ?token=X&phase=2&post_id&image_prompt   admin → featured image
-     ?token=X&phase=regen&post_id admin → rebuild image for a post
-     ?token=X&phase=reformat&post_id  admin → repair code blocks (no save)
-     CLI: php auto-post.php TOKEN → phase all
+   Auth modes:
+     CLI/cron (secret token — never put in browser JS or ?token=):
+       php api/auto-post.php TOKEN              → phase all
+       Authorization: Bearer TOKEN  (+ optional ?phase=all|1|2)
+     Admin UI (session + CSRF header X-CSRF-Token — no secret in page JS):
+       ?phase=start|status|clear|salvage|test|regen|reformat|1|2
 
    v2 design notes (why this file looks the way it does):
    - Claude is called with stream:true. Bytes arrive continuously, and
@@ -47,9 +40,76 @@ set_time_limit($is_cli ? 0 : 300);
    already paid for. The post publishes server-side and appears on reload. */
 ignore_user_abort(true);
 
-require __DIR__ . '/helpers.php'; // needed below for readJsonFile()
+require __DIR__ . '/helpers.php'; // needed below for readJsonFile() + CSRF helpers
 
-if (!$is_cli) {
+/* ── Config ────────────────────────────────────────── */
+$config_file = __DIR__ . '/.auto_post_config.json';
+if (!file_exists($config_file)) {
+    respond(503, ['ok' => false, 'error' => 'Auto-post not configured yet.']);
+}
+$config = readJsonFile($config_file, null);
+if (!is_array($config)) {
+    respond(500, ['ok' => false, 'error' => 'Config file exists but is not valid JSON — open the admin panel and click Save Settings to rewrite it.']);
+}
+
+$anthropic_key = $config['anthropic_api_key'] ?? '';
+$openai_key    = $config['openai_api_key']    ?? '';
+$model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
+$phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
+
+/* Admin-only phases must use session+CSRF. Token auth is for CLI/cron only
+   (phase all/1/2). Never accept ?token= — it leaks into logs and browser history. */
+$admin_phases = ['start', 'status', 'clear', 'salvage', 'test', 'regen', 'reformat'];
+$cron_phases  = ['all', '1', '2'];
+
+/**
+ * Read Authorization: Bearer <token> from the request (Apache/CGI/FPM safe).
+ */
+function autoPostBearerToken(): string {
+    $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if ($auth === '' && function_exists('getallheaders')) {
+        foreach (getallheaders() as $k => $v) {
+            if (strcasecmp($k, 'Authorization') === 0) { $auth = $v; break; }
+        }
+    }
+    if (preg_match('/^Bearer\s+(\S+)$/i', $auth, $m)) {
+        return $m[1];
+    }
+    return '';
+}
+
+$token = '';
+if ($is_cli) {
+    $token = $argv[1] ?? '';
+    if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token)) {
+        respond(403, ['ok' => false, 'error' => 'Forbidden.']);
+    }
+} else {
+    /* Session must start before any output so Set-Cookie / auth can work. */
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_secure', '1');
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    $is_admin = isset($_SESSION['authed']);
+    if ($is_admin && in_array($phase, $admin_phases, true)) {
+        $csrf = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf'] ?? '');
+        if (!verifyCsrf(is_string($csrf) ? $csrf : '')) {
+            respond(403, ['ok' => false, 'error' => 'CSRF check failed. Reload the admin page and try again.']);
+        }
+        /* spawnBackgroundRun still needs the cron token server-side (never sent to JS). */
+        $token = $config['token'] ?? '';
+    } elseif (in_array($phase, $cron_phases, true)) {
+        $token = autoPostBearerToken();
+        if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token)) {
+            respond(403, ['ok' => false, 'error' => 'Forbidden. Use Authorization: Bearer <token> (not ?token=).']);
+        }
+    } else {
+        respond(403, ['ok' => false, 'error' => 'Forbidden.']);
+    }
+
     /* Commit status + headers now, before the long API calls start.
        Compression off — heartbeat bytes must reach the wire, not a gzip buffer. */
     ini_set('zlib.output_compression', '0');
@@ -64,29 +124,9 @@ if (!$is_cli) {
     ob_start(); // capture stray PHP warnings so they can't corrupt the JSON body
 }
 
-/* ── Config + auth ─────────────────────────────────── */
-$config_file = __DIR__ . '/.auto_post_config.json';
-if (!file_exists($config_file)) {
-    respond(503, ['ok' => false, 'error' => 'Auto-post not configured yet.']);
-}
-$config = readJsonFile($config_file, null);
-if (!is_array($config)) {
-    respond(500, ['ok' => false, 'error' => 'Config file exists but is not valid JSON — open the admin panel and click Save Settings to rewrite it.']);
-}
-
-$token = $is_cli ? ($argv[1] ?? '') : ($_GET['token'] ?? '');
-if (!$token || !isset($config['token']) || !hash_equals($config['token'], $token)) {
-    respond(403, ['ok' => false, 'error' => 'Forbidden.']);
-}
-
-$anthropic_key = $config['anthropic_api_key'] ?? '';
-$openai_key    = $config['openai_api_key']    ?? '';
-$model         = $config['model']             ?? 'claude-haiku-4-5-20251001';
-$phase         = $is_cli ? 'all' : ($_GET['phase'] ?? 'all');
-
-/* regen/reformat/test/status/clear are manual admin actions or read-only — they
-   bypass the enable toggle (it gates publishing, not admin diagnostics). */
-if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status', 'clear', 'salvage'], true)) {
+/* regen/reformat/test/status/clear/salvage/start are manual admin actions —
+   they bypass the enable toggle (it gates publishing, not admin diagnostics). */
+if (empty($config['enabled']) && !in_array($phase, ['regen', 'reformat', 'test', 'status', 'clear', 'salvage', 'start'], true)) {
     respond(200, ['ok' => false, 'error' => 'Auto-post is disabled.']);
 }
 
@@ -939,12 +979,15 @@ function spawnBackgroundRun(string $token): string {
         return $setsid ? 'cli+setsid' : 'cli+nohup';
     }
     $host = $_SERVER['HTTP_HOST'] ?? 'dennypratama.com';
-    $ch = curl_init('https://' . $host . '/api/auto-post.php?token=' . rawurlencode($token) . '&phase=all');
+    $ch = curl_init('https://' . $host . '/api/auto-post.php?phase=all');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT_MS     => 1500,
         CURLOPT_NOSIGNAL       => true,
         CURLOPT_SSL_VERIFYPEER => false, // self-call via hostname can resolve to the local vhost
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $token,
+        ],
     ]);
     @curl_exec($ch);
     curl_close($ch);

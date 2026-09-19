@@ -5,6 +5,7 @@ ini_set('session.cookie_secure', '1');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
+require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
@@ -12,13 +13,14 @@ $error   = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
+    $current = $_POST['current_password'] ?? '';
     $new     = $_POST['new_password']     ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
-    if (strlen($new) < 8) {
+    if ($current === '' || !password_verify($current, ADMIN_PASS_HASH)) {
+        $error = 'Current password is incorrect.';
+    } elseif (strlen($new) < 8) {
         $error = 'Password must be at least 8 characters.';
     } elseif ($new !== $confirm) {
         $error = 'Passwords do not match.';
@@ -27,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hash_file = __DIR__ . '/../api/.admin_hash';
 
         if (file_put_contents($hash_file, $hash) !== false) {
+            session_regenerate_id(true);
             $success = 'Password updated successfully.';
         } else {
             $error = 'Could not save password. Check folder permissions.';
@@ -66,6 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" action="">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"/>
+      <div class="field">
+        <label for="current_password">Current Password</label>
+        <input type="password" id="current_password" name="current_password"
+               placeholder="Your current password" required autocomplete="current-password"/>
+      </div>
       <div class="field">
         <label for="new_password">New Password</label>
         <input type="password" id="new_password" name="new_password"

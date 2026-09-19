@@ -9,14 +9,13 @@ require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
-/* ── Auto-post token (lets us call /api/auto-post.php?phase=regen for AI image
-   regeneration on existing posts). Token is generated on the auto-post settings
-   page; if the user hasn't visited that page yet the button is simply hidden. ── */
-$auto_token = '';
+/* ── Auto-post available? (session+CSRF calls /api/auto-post.php — no secret in page JS).
+   Hide AI buttons until settings exist (token generated on the auto-post page). ── */
 $auto_cfg_file = __DIR__ . '/../api/.auto_post_config.json';
+$auto_configured = false;
 if (file_exists($auto_cfg_file)) {
-    $auto_cfg = json_decode(@file_get_contents($auto_cfg_file), true);
-    if (is_array($auto_cfg)) $auto_token = $auto_cfg['token'] ?? '';
+    $auto_cfg = readJsonFile($auto_cfg_file, null);
+    $auto_configured = is_array($auto_cfg) && !empty($auto_cfg['token']);
 }
 
 $id   = isset($_GET['id']) ? (int)$_GET['id'] : null;
@@ -33,9 +32,7 @@ if ($id) {
 
 /* ── Handle form submit ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
     $title             = trim($_POST['title']       ?? '');
     $slug              = trim($_POST['slug']        ?? '');
     $excerpt           = trim($_POST['excerpt']     ?? '');
@@ -376,7 +373,7 @@ $sched_val = !empty($post['scheduled_at'])
 
             <input type="hidden" name="remove_image" id="remove-image-flag" value="0"/>
 
-            <?php $can_regen_image = $id && $auto_token; ?>
+            <?php $can_regen_image = $id && $auto_configured; ?>
             <?php if ($can_regen_image): ?>
             <div class="img-regen">
               <button type="button" class="img-action" id="img-regen">✨ Regenerate with AI</button>
@@ -448,8 +445,8 @@ $sched_val = !empty($post['scheduled_at'])
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js" integrity="sha512-P2W2rr8ikUPfa31PLBo5bcBQrsa+TNj8jiKadtaIrHQGMo6hQM6RdPjQYxlNguwHz8AwSQ28VkBK6kHBLgd/8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <?php if ($can_regen_image): ?>
   <script>
-    var REGEN_TOKEN = '<?= addslashes($auto_token) ?>';
-    var POST_ID     = <?= (int)$id ?>;
+    var CSRF   = <?= json_encode(csrfToken()) ?>;
+    var POST_ID = <?= (int)$id ?>;
   </script>
   <?php endif; ?>
   <script>
@@ -557,14 +554,14 @@ $sched_val = !empty($post['scheduled_at'])
        (Returns body for review; does NOT save until you click the form's Save button.) ── */
     const bodyReformatBtn    = document.getElementById('body-reformat');
     const bodyReformatStatus = document.getElementById('body-reformat-status');
-    if (bodyReformatBtn && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
+    if (bodyReformatBtn && typeof CSRF !== 'undefined' && typeof POST_ID !== 'undefined') {
       bodyReformatBtn.addEventListener('click', () => {
         if (!confirm('Re-format the body with AI? It will rewrite this post\'s body so stripped code blocks come back. The new content loads into the editor for review — your current draft will be replaced in the editor, but nothing is saved until you click Save.')) return;
         bodyReformatBtn.disabled = true;
         bodyReformatStatus.className = 'img-regen-status';
         bodyReformatStatus.innerHTML = loadingHtml('Re-formatting', ' (30–60s)');
 
-        fetch('/api/auto-post.php?phase=reformat&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
+        fetch('/api/auto-post.php?phase=reformat&post_id=' + encodeURIComponent(POST_ID), { credentials: 'same-origin', headers: { 'X-CSRF-Token': CSRF }, cache: 'no-store' })
           .then(r => r.json())
           .then(d => {
             if (d.ok && d.body) {
@@ -592,14 +589,14 @@ $sched_val = !empty($post['scheduled_at'])
     /* ── Regenerate featured image via /api/auto-post.php?phase=regen ── */
     const imgRegen       = document.getElementById('img-regen');
     const imgRegenStatus = document.getElementById('img-regen-status');
-    if (imgRegen && typeof REGEN_TOKEN !== 'undefined' && typeof POST_ID !== 'undefined') {
+    if (imgRegen && typeof CSRF !== 'undefined' && typeof POST_ID !== 'undefined') {
       imgRegen.addEventListener('click', () => {
         if (!confirm('Regenerate the featured image with AI? This uses the post\'s saved title + excerpt and replaces the current image.')) return;
         imgRegen.disabled = true;
         imgRegenStatus.className = 'img-regen-status';
         imgRegenStatus.innerHTML = loadingHtml('Generating', ' (30–60s)');
 
-        fetch('/api/auto-post.php?phase=regen&token=' + encodeURIComponent(REGEN_TOKEN) + '&post_id=' + encodeURIComponent(POST_ID))
+        fetch('/api/auto-post.php?phase=regen&post_id=' + encodeURIComponent(POST_ID), { credentials: 'same-origin', headers: { 'X-CSRF-Token': CSRF }, cache: 'no-store' })
           .then(r => r.json())
           .then(d => {
             if (d.image) {
