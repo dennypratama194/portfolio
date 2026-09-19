@@ -41,7 +41,7 @@ I design and build digital products end-to-end. Most clients come to me when the
 
 ## Technical Stack
 
-- **Languages:** PHP 7.4+, JavaScript (ES6+), HTML5, CSS3
+- **Languages:** PHP 8.1+, JavaScript (ES6+), HTML5, CSS3
 - **Database:** MySQL via PDO, query optimisation, indexing
 - **CSS:** Vanilla CSS, CSS custom properties, Grid, Flexbox, GSAP 3
 - **Tools:** Figma, VS Code, Claude Code, Git, cPanel

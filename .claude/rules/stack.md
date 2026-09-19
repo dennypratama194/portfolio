@@ -3,7 +3,7 @@
 ## Stack
 | Layer | Tech |
 |---|---|
-| Backend | PHP 7.4+, MySQL via PDO |
+| Backend | PHP 8.1+, MySQL via PDO |
 | Frontend | Vanilla CSS + JS, GSAP 3 (CDN), Quill (admin editor) |
 | Payments | Xendit Invoices API (IDR) |
 | Email | Resend API (transactional) |
