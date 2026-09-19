@@ -36,9 +36,7 @@ if ($id) {
 
 /* ── Handle form submit ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
 
     $title       = trim($_POST['title']       ?? '');
     $slug        = trim($_POST['slug']        ?? '');

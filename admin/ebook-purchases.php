@@ -5,14 +5,13 @@ ini_set('session.cookie_secure', '1');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
+require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 /* ── Delete purchase ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
     $del_id = (int)($_POST['purchase_id'] ?? 0);
     if ($del_id) {
         $pdo->prepare('DELETE FROM ebook_purchases WHERE id = ?')->execute([$del_id]);

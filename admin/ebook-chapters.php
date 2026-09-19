@@ -5,6 +5,7 @@ ini_set('session.cookie_secure', '1');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
+require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
@@ -25,9 +26,7 @@ $edit_chapter = null;
    Handle POST actions — all before any HTML output
    ────────────────────────────────────────────────────────── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
     $action = $_POST['action'] ?? '';
 
     /* ── Add chapter ── */

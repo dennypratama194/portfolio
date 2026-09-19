@@ -5,14 +5,13 @@ ini_set('session.cookie_secure', '1');
 session_start();
 if (!isset($_SESSION['authed'])) { header('Location: /admin/login'); exit; }
 require __DIR__ . '/../api/db.php';
+require __DIR__ . '/../api/helpers.php';
 
 $_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 /* ── Delete action ── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-    if (($_POST['csrf'] ?? '') !== $_SESSION['csrf_token']) {
-        http_response_code(403); exit('Forbidden.');
-    }
+    requireCsrf();
     $id = (int)($_POST['id'] ?? 0);
     if ($id) {
         /* remove image file if exists */
