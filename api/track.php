@@ -1,6 +1,22 @@
 <?php
 header('Content-Type: application/json');
 
+/* The new Next.js site on dennypratama.com calls this cross-origin once the PHP
+   backend lives on its own host (cms.dennypratama.com). Credentials are allowed
+   so the dp_notrack cookie still keeps the owner's visits out. */
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, ['https://dennypratama.com', 'https://www.dennypratama.com'], true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: POST');
+    header('Access-Control-Allow-Headers: Content-Type');
+}
+header('Vary: Origin');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 require_once __DIR__ . '/helpers.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -35,7 +51,7 @@ if (!empty($_COOKIE['dp_notrack'])) {
 $page = $input['page'] ?? '';
 $slug = isset($input['slug']) ? trim((string)$input['slug']) : null;
 
-if (!in_array($page, ['home', 'blog', 'post'], true)) {
+if (!in_array($page, ['home', 'blog', 'post', 'work', 'about'], true)) {
     echo json_encode(['ok' => false]);
     exit;
 }
