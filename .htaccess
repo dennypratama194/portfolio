@@ -18,7 +18,8 @@ RewriteRule ^ https://%{HTTP_HOST:4}%{REQUEST_URI} [L,R=301]
 
 # ── CMS host ─────────────────────────────────────────
 # The public site moved to the Next.js build on dennypratama.com. On the cms.
-# host only the admin, the API, uploads and admin assets stay; every other path
+# host only the admin, the API, uploads, admin assets and the ebook reader for
+# existing buyers stay; every other path
 # goes to the same URL on the new site, so nothing is indexed twice.
 RewriteCond %{HTTP_HOST} ^cms\. [NC]
 RewriteCond %{REQUEST_URI} !^/(admin|api|assets)(/|$) [NC]
