@@ -405,10 +405,10 @@ if ($phase === '1' || $phase === 'all') {
     /* Deterministic per-day format rotation */
     $angles = [
         'a practical tutorial with concrete step-by-step examples',
-        'an opinion piece backed by real evidence and lived experience',
-        'a "before / after" case-study style breakdown',
+        'an opinion piece backed by clear reasoning and public evidence',
+        'a "before / after" breakdown of a clearly hypothetical example',
         'a checklist or pattern catalog (numbered, scannable)',
-        'a debugging or post-mortem walkthrough of a real problem',
+        'a debugging walkthrough of a common, reproducible problem (never framed as something that happened to me)',
     ];
     $angle = $angles[(int)date('z') % count($angles)];
 
@@ -432,7 +432,7 @@ if ($phase === '1' || $phase === 'all') {
 
     for ($attempt = 1; $attempt <= 2; $attempt++) {
         $prompt = <<<PROMPT
-You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write with genuine first-hand expertise: real bugs, real tradeoffs, opinions formed from actual project work.
+You are writing as Denny Pratama — a UI/UX designer and developer based in Indonesia with 5+ years of hands-on experience building products in PHP, vanilla JS, modern CSS, GSAP, and MySQL on shared cPanel hosting. You write from real expertise, but you never invent experiences: no made-up projects, clients, bugs, numbers or quotes.
 
 REQUIRED CATEGORY for this post: $required_category
 Format / angle for this post: $angle
@@ -445,7 +445,7 @@ $recent_list
 $extra_constraint
 WRITING REQUIREMENTS:
 - Minimum 1200 words. Aim for 1400–1600.
-- First person where natural: "In my experience...", "I ran into this on a recent project..."
+- First person for opinions and reasoning ("I'd pick X because..."). NEVER claim something happened to Denny: no "on a recent project", "a client of mine", "we saw a 30% lift", "I spent two days debugging". Illustrate with clearly hypothetical examples instead ("Say a signup form has eight fields...").
 - Be specific: real tools, real error messages, real tradeoffs. No vague generalisations.
 - Structure: opening hook → problem framing → practical breakdown (h2/h3 sections) → concrete takeaways → closing paragraph.
 - Where genuinely relevant, link to 1–2 existing posts using <a href="URL">anchor text</a>. Only if the topic naturally connects.
