@@ -18,10 +18,10 @@ RewriteRule ^ https://%{HTTP_HOST:4}%{REQUEST_URI} [L,R=301]
 
 # ── CMS host ─────────────────────────────────────────
 # The public site moved to the Next.js build on dennypratama.com. On the cms.
-# host only the admin, the API, uploads, admin assets and the ebook reader for
-# existing buyers stay; every other path goes to the same URL on the new site, so nothing is indexed twice.
+# host only the admin, the API, uploads, admin assets, the ebook pages, reader
+# and library, and the legal pages stay; every other path goes to the same URL on the new site, so nothing is indexed twice.
 RewriteCond %{HTTP_HOST} ^cms\. [NC]
-RewriteCond %{REQUEST_URI} !^/(admin|api|assets|css|read|my-library|ebook/recover|style\.css|script\.js)(/|$) [NC]
+RewriteCond %{REQUEST_URI} !^/(admin|api|assets|css|read|my-library|ebooks?|privacy-policy|terms-and-conditions|style\.css|script\.js)(/|$|\.php) [NC]
 RewriteRule ^ https://dennypratama.com%{REQUEST_URI} [L,R=301]
 
 # ── Dynamic sitemap (generated from DB; keeps the /sitemap.xml URL) ──
